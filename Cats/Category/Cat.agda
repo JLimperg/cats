@@ -6,7 +6,7 @@ open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 open import Cats.Category
 open import Cats.Functor
-open import Cats.Util.Assoc using ([_] ; _∷_ ; reassoc)
+open import Cats.Util.Assoc using (assoc!)
 
 infixr 9 _∘_
 infixr 4 _≈_
@@ -123,11 +123,7 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
                 back iso D.∘ F.fmap f D.∘ forth iso
               ≈⟨ D.∘-preserves-≈ ≈.refl (D.∘-preserves-≈ (fmap-≈-FG f) ≈.refl) ⟩
                 forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G
-              ≈⟨ reassoc D
-                  ([ forth F≅G ] ∷ (back F≅G ∷ G.fmap f ∷ [ forth F≅G ] ) ∷ [ [ back F≅G ] ])
-                  ((forth F≅G ∷ [ back F≅G ]) ∷ [ G.fmap f ] ∷ [ forth F≅G ] ∷ [ [ back F≅G ] ])
-                  ≡.refl
-               ⟩
+              ≈⟨ lem ⟩
                 (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
               ≈⟨ D.∘-preserves-≈ (forth-back F≅G) ≈.refl ⟩
                 D.id D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
@@ -139,6 +135,11 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
                 G.fmap f
               ∎
             )
+          where
+            module F≅G {x} = Category._≅_ (F≅G {x})
+            lem : forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G D.≈
+                  (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
+            lem = assoc! D
 
     trans : ∀ {F G H : C ⇒ D} → F ≈ G → G ≈ H → F ≈ H
     trans {F} {G} {H}
@@ -166,10 +167,7 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
                 back iso D.∘ H.fmap f D.∘ forth iso
               ≡⟨ ≡.refl ⟩
                 (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G
-              ≈⟨ reassoc D
-                   ((back F≅G ∷ [ back G≅H ]) ∷ [ H.fmap f ] ∷ [ forth G≅H ] ∷ [ [ forth F≅G ] ])
-                   ([ back F≅G ] ∷ (back G≅H ∷ H.fmap f ∷ [ forth G≅H ]) ∷ [ [ forth F≅G ] ])
-                   ≡.refl ⟩
+              ≈⟨ lem ⟩
                 back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
               ≈⟨ D.∘-preserves-≈ ≈.refl (D.∘-preserves-≈ (≈.sym (fmap-≈-GH f)) ≈.refl) ⟩
                 back F≅G D.∘ G.fmap f D.∘ forth F≅G
@@ -177,6 +175,10 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
                 F.fmap f
               ∎
             )
+          where
+            lem : (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G D.≈
+                  back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
+            lem = assoc! D
 
 
 ∘-preserves-≈ : ∀ {C D E} → _∘_ {C} {D} {E} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
@@ -212,10 +214,7 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
             back iso E.∘ G.fmap (I.fmap f) E.∘ forth iso
           ≡⟨ ≡.refl ⟩
             (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
-          ≈⟨ reassoc E
-               ((back F≅G ∷ [ G.fmap (back H≅I) ]) ∷ [ G.fmap (I.fmap f) ] ∷ [ G.fmap (forth H≅I) ] ∷ [ [ forth F≅G ] ])
-               ([ back F≅G ] ∷ (G.fmap (back H≅I) ∷ G.fmap (I.fmap f) ∷ [ G.fmap (forth H≅I) ]) ∷ [ [ forth F≅G ] ])
-               ≡.refl ⟩
+          ≈⟨ lem ⟩
             back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
           ≈⟨ E.∘-preserves-≈ ≈.refl (E.∘-preserves-≈ (≈.trans (E.∘-preserves-≈ ≈.refl (≈.sym (G.∘-commut _ _))) (≈.sym (G.∘-commut _ _))) ≈.refl) ⟩
             back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
@@ -225,6 +224,10 @@ record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
             F.fmap (H.fmap f)
           ∎
         )
+      where
+        lem : (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G) E.≈
+              back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
+        lem = assoc! E
 
 id-identity-r : ∀ {C D} {F : C ⇒ D} → F ∘ id ≈ F
 id-identity-r {C} {D} {F} = record
