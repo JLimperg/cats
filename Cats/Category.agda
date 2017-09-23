@@ -1,5 +1,6 @@
 module Cats.Category where
 
+open import Data.Product using (_,_ ; proj₁ ; proj₂ ; Σ-syntax)
 open import Level
 open import Relation.Binary using
   (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_ ; Setoid)
@@ -110,3 +111,28 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
   module ≅ = IsEquivalence ≅-equiv
   module ≅-Reasoning = EqReasoning ≅-Setoid
+
+
+module _ {lo la l≈} {{C : Category lo la l≈}} where
+
+  open Category C
+
+
+  IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
+  IsMono {A} f = ∀ {C} {g h : C ⇒ A} → f ∘ g ≈ f ∘ h → g ≈ h
+
+
+  IsEpi : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
+  IsEpi {A} {B} f = ∀ {C} {g h : B ⇒ C} → g ∘ f ≈ h ∘ f → g ≈ h
+
+
+  IsUnique : ∀ {A B} → A ⇒ B → Set _
+  IsUnique {A} {B} f = ∀ (f′ : A ⇒ B) → f ≈ f′
+
+
+  IsInitial : Obj → Set (lo ⊔ la ⊔ l≈)
+  IsInitial Zero = ∀ X → Σ[ f ∈ Zero ⇒ X ] (IsUnique f)
+
+
+  IsTerminal : Obj → Set (lo ⊔ la ⊔ l≈)
+  IsTerminal One = ∀ X → Σ[ f ∈ X ⇒ One ] (IsUnique f)
