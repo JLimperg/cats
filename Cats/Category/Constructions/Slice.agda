@@ -17,8 +17,9 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
 
 
   record Obj : Set (lo ⊔ la) where
+    constructor mkObj
     field
-      Dom : C.Obj
+      {Dom} : C.Obj
       arr : Dom C.⇒ X
 
   open Obj
@@ -45,8 +46,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
 
 
   id : ∀ {A} → A ⇒ A
-  id {record { Dom = Dom ; arr = arr }}
-      = record { dom = C.id ; commute = ≈.sym C.id-identity-r }
+  id = record { dom = C.id ; commute = ≈.sym C.id-identity-r }
 
 
   _∘_ : ∀ {A B C} → (B ⇒ C) → (A ⇒ B) → (A ⇒ C)
@@ -94,7 +94,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
   ∘-assoc _ _ _ = ≈-i (C.∘-assoc _ _ _)
 
 
-  _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈
+  instance _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈
   _/_ = record
       { Obj = Obj
       ; _⇒_ = _⇒_
