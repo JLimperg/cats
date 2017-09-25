@@ -1,4 +1,4 @@
-module Cats.Category.Constructions.Op where
+module Cats.Category.Op where
 
 open import Relation.Binary using (Rel ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡

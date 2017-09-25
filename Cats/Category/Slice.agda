@@ -1,4 +1,4 @@
-module Cats.Category.Constructions.Slice where
+module Cats.Category.Slice where
 
 open import Data.Product using (_,_ ; proj₁ ; proj₂)
 open import Level

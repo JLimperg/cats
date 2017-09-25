@@ -1,4 +1,4 @@
-module Cats.Category.Constructions.Arrow where
+module Cats.Category.Arrow where
 
 open import Level
 open import Relation.Binary using (IsEquivalence ; _Preserves₂_⟶_⟶_)
