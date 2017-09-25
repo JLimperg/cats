@@ -56,7 +56,7 @@ module _  {lo la l≈} (C : Category lo la l≈) where
 
 module _ {lo la l≈ : Level} where
 
-  private module Cat = Category (Cat {lo} {la} {l≈})
+  private module Cat = Category (Cat lo la l≈)
 
   op-involution : {C : Category lo la l≈} → ((C ᵒᵖ) ᵒᵖ) Cat.≅ C
   op-involution {C} = record
