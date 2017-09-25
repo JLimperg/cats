@@ -16,9 +16,9 @@ record Functor {lo la l≈}
   field
     fobj : C.Obj → D.Obj
     fmap : ∀ {A B} → A C.⇒ B → fobj A D.⇒ fobj B
-    fmap-preserves-≈ : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ D._≈_
-    id-preservation : ∀ {A} → fmap (C.id {A}) D.≈ D.id
-    ∘-commut : ∀ {a b c} (f : b C.⇒ c) (g : a C.⇒ b)
+    fmap-resp : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ D._≈_
+    fmap-id : ∀ {A} → fmap (C.id {A}) D.≈ D.id
+    fmap-∘ : ∀ {a b c} (f : b C.⇒ c) (g : a C.⇒ b)
       → fmap (f C.∘ g) D.≈ fmap f D.∘ fmap g
 
 
@@ -30,21 +30,21 @@ record Functor {lo la l≈}
       ; back-forth
           = begin
               fmap (back x≅y) D.∘ fmap (forth x≅y)
-            ≈⟨ ≈.sym (∘-commut _ _) ⟩
+            ≈⟨ ≈.sym (fmap-∘ _ _) ⟩
               fmap (back x≅y C.∘ forth x≅y)
-            ≈⟨  fmap-preserves-≈ (back-forth x≅y) ⟩
+            ≈⟨  fmap-resp (back-forth x≅y) ⟩
               fmap C.id
-            ≈⟨ id-preservation ⟩
+            ≈⟨ fmap-id ⟩
               D.id
             ∎
       ; forth-back
           = begin
             fmap (forth x≅y) D.∘ fmap (back x≅y)
-          ≈⟨ ≈.sym (∘-commut _ _) ⟩
+          ≈⟨ ≈.sym (fmap-∘ _ _) ⟩
             fmap (forth x≅y C.∘ back x≅y)
-          ≈⟨  fmap-preserves-≈ (forth-back x≅y) ⟩
+          ≈⟨ fmap-resp (forth-back x≅y) ⟩
             fmap C.id
-          ≈⟨ id-preservation ⟩
+          ≈⟨ fmap-id ⟩
             D.id
           ∎
       }

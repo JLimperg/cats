@@ -30,9 +30,9 @@ module _ lo la l≈ where
   id {C} = record
       { fobj = λ x → x
       ; fmap = λ f → f
-      ; fmap-preserves-≈ = λ eq → eq
-      ; id-preservation = C.≈.reflexive ≡.refl
-      ; ∘-commut = λ _ _ → C.≈.reflexive ≡.refl
+      ; fmap-resp = λ eq → eq
+      ; fmap-id = C.≈.reflexive ≡.refl
+      ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
       }
     where
       module C = Category C
@@ -42,9 +42,9 @@ module _ lo la l≈ where
   _∘_ {C} {D} {E} F G = record
       { fobj = fobj
       ; fmap = fmap
-      ; fmap-preserves-≈ = fmap-preserves-≈
-      ; id-preservation = id-preservation
-      ; ∘-commut = ∘-commut
+      ; fmap-resp = fmap-resp
+      ; fmap-id = fmap-id
+      ; fmap-∘ = fmap-∘
       }
     where
       module F = Functor F
@@ -59,17 +59,15 @@ module _ lo la l≈ where
       fmap : ∀ {A B} → A C.⇒ B → fobj A E.⇒ fobj B
       fmap = λ f → F.fmap (G.fmap f)
 
-      fmap-preserves-≈ : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ E._≈_
-      fmap-preserves-≈ eq = F.fmap-preserves-≈ (G.fmap-preserves-≈ eq)
+      fmap-resp : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ E._≈_
+      fmap-resp eq = F.fmap-resp (G.fmap-resp eq)
 
-      id-preservation : ∀ {A} → F.fmap (G.fmap (C.id {A})) E.≈ E.id
-      id-preservation
-          = ≈.trans (F.fmap-preserves-≈ G.id-preservation) F.id-preservation
+      fmap-id : ∀ {A} → F.fmap (G.fmap (C.id {A})) E.≈ E.id
+      fmap-id = ≈.trans (F.fmap-resp G.fmap-id) F.fmap-id
 
-      ∘-commut : ∀ {A B C} (f : B C.⇒ C) (g : A C.⇒ B)
+      fmap-∘ : ∀ {A B C} (f : B C.⇒ C) (g : A C.⇒ B)
         → fmap (f C.∘ g) E.≈ fmap f E.∘ fmap g
-      ∘-commut f g
-          = ≈.trans (F.fmap-preserves-≈ (G.∘-commut _ _)) (F.∘-commut _ _)
+      fmap-∘ f g = ≈.trans (F.fmap-resp (G.fmap-∘ _ _)) (F.fmap-∘ _ _)
 
 
   record _≈_ {C D} (F G : C ⇒ D) : Set (lo ⊔ la ⊔ l≈) where
@@ -222,9 +220,9 @@ module _ lo la l≈ where
               (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
             ≈⟨ lem ⟩
               back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
-            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (≈.trans (E.∘-resp ≈.refl (≈.sym (G.∘-commut _ _))) (≈.sym (G.∘-commut _ _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (≈.trans (E.∘-resp ≈.refl (≈.sym (G.fmap-∘ _ _))) (≈.sym (G.fmap-∘ _ _))) ≈.refl) ⟩
               back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
-            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (G.fmap-preserves-≈ (D.≈.sym (fmap-≈-HI _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (G.fmap-resp (D.≈.sym (fmap-≈-HI _))) ≈.refl) ⟩
               back F≅G E.∘ G.fmap (H.fmap f) E.∘ forth F≅G
             ≈⟨ ≈.sym (fmap-≈-FG _) ⟩
               F.fmap (H.fmap f)
@@ -286,9 +284,9 @@ Zero-Initial X = f , f-Unique
     f = record
         { fobj = λ()
         ; fmap = λ{}
-        ; fmap-preserves-≈ = λ{}
-        ; id-preservation = λ{}
-        ; ∘-commut = λ{}
+        ; fmap-resp = λ{}
+        ; fmap-id = λ{}
+        ; fmap-∘ = λ{}
         }
 
     f-Unique : IsUnique f
@@ -305,9 +303,9 @@ One-Terminal X = f , f-Unique
     f = record
         { fobj = λ x → tt
         ; fmap = λ _ → tt
-        ; fmap-preserves-≈ = λ _ → tt
-        ; id-preservation = tt
-        ; ∘-commut = λ _ _ → tt
+        ; fmap-resp = λ _ → tt
+        ; fmap-id = tt
+        ; fmap-∘ = λ _ _ → tt
         }
 
     f-Unique : IsUnique f

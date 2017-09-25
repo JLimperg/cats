@@ -63,16 +63,16 @@ module _ {lo la l≈ : Level} where
       { forth = record
           { fobj = λ x → x
           ; fmap = λ f → f
-          ; fmap-preserves-≈ = λ eq → eq
-          ; id-preservation = C.≈.reflexive ≡.refl
-          ; ∘-commut = λ _ _ → C.≈.reflexive ≡.refl
+          ; fmap-resp = λ eq → eq
+          ; fmap-id = C.≈.reflexive ≡.refl
+          ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
           }
       ; back = record
           { fobj = λ x → x
           ; fmap = λ f → f
-          ; fmap-preserves-≈ = λ eq → eq
-          ; id-preservation = C.≈.reflexive ≡.refl
-          ; ∘-commut = λ _ _ → C.≈.reflexive ≡.refl
+          ; fmap-resp = λ eq → eq
+          ; fmap-id = C.≈.reflexive ≡.refl
+          ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
           }
       ; back-forth = record
           { iso = record
