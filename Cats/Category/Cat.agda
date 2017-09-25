@@ -89,8 +89,8 @@ module _ lo la l≈ where
         → F.fmap f D.≈ back iso D.∘ G.fmap f D.∘ forth iso
 
 
-  ≈-equiv : ∀ {C D} → IsEquivalence (_≈_ {C = C} {D})
-  ≈-equiv {C} {D} = record
+  equiv : ∀ {C D} → IsEquivalence (_≈_ {C = C} {D})
+  equiv {C} {D} = record
       { refl = refl
       ; sym = sym
       ; trans = trans
@@ -104,8 +104,7 @@ module _ lo la l≈ where
       refl : ∀ {F : C ⇒ D} → F ≈ F
       refl = record
           { iso = D.≅.refl
-          ; fmap-≈ = λ _ →
-              ≈.trans (≈.sym D.id-identity-r) (≈.sym D.id-identity-l)
+          ; fmap-≈ = λ _ → ≈.trans (≈.sym D.id-r) (≈.sym D.id-l)
           }
 
       sym : ∀ {F G : C ⇒ D} → F ≈ G → G ≈ F
@@ -128,17 +127,17 @@ module _ lo la l≈ where
               = ≈.sym
               ( begin
                   back iso D.∘ F.fmap f D.∘ forth iso
-                ≈⟨ D.∘-preserves-≈ ≈.refl (D.∘-preserves-≈ (fmap-≈-FG f) ≈.refl) ⟩
+                ≈⟨ D.∘-resp ≈.refl (D.∘-resp (fmap-≈-FG f) ≈.refl) ⟩
                   forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G
                 ≈⟨ lem ⟩
                   (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                ≈⟨ D.∘-preserves-≈ (forth-back F≅G) ≈.refl ⟩
+                ≈⟨ D.∘-resp (forth-back F≅G) ≈.refl ⟩
                   D.id D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                ≈⟨ D.id-identity-l ⟩
+                ≈⟨ D.id-l ⟩
                   G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                ≈⟨ D.∘-preserves-≈ ≈.refl (forth-back F≅G) ⟩
+                ≈⟨ D.∘-resp ≈.refl (forth-back F≅G) ⟩
                   G.fmap f D.∘ D.id
-                ≈⟨ D.id-identity-r ⟩
+                ≈⟨ D.id-r ⟩
                   G.fmap f
                 ∎
               )
@@ -176,7 +175,7 @@ module _ lo la l≈ where
                   (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G
                 ≈⟨ lem ⟩
                   back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
-                ≈⟨ D.∘-preserves-≈ ≈.refl (D.∘-preserves-≈ (≈.sym (fmap-≈-GH f)) ≈.refl) ⟩
+                ≈⟨ D.∘-resp ≈.refl (D.∘-resp (≈.sym (fmap-≈-GH f)) ≈.refl) ⟩
                   back F≅G D.∘ G.fmap f D.∘ forth F≅G
                 ≈⟨ ≈.sym (fmap-≈-FG f) ⟩
                   F.fmap f
@@ -188,8 +187,8 @@ module _ lo la l≈ where
               lem = assoc! D
 
 
-  ∘-preserves-≈ : ∀ {C D E} → _∘_ {C} {D} {E} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-preserves-≈ {C} {D} {E} {F} {G} {H} {I}
+  ∘-resp : ∀ {C D E} → _∘_ {C} {D} {E} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
+  ∘-resp {C} {D} {E} {F} {G} {H} {I}
     record { iso = F≅G ; fmap-≈ = fmap-≈-FG }
     record { iso = H≅I ; fmap-≈ = fmap-≈-HI }
       = record
@@ -223,9 +222,9 @@ module _ lo la l≈ where
               (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
             ≈⟨ lem ⟩
               back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
-            ≈⟨ E.∘-preserves-≈ ≈.refl (E.∘-preserves-≈ (≈.trans (E.∘-preserves-≈ ≈.refl (≈.sym (G.∘-commut _ _))) (≈.sym (G.∘-commut _ _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (≈.trans (E.∘-resp ≈.refl (≈.sym (G.∘-commut _ _))) (≈.sym (G.∘-commut _ _))) ≈.refl) ⟩
               back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
-            ≈⟨ E.∘-preserves-≈ ≈.refl (E.∘-preserves-≈ (G.fmap-preserves-≈ (D.≈.sym (fmap-≈-HI _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (G.fmap-preserves-≈ (D.≈.sym (fmap-≈-HI _))) ≈.refl) ⟩
               back F≅G E.∘ G.fmap (H.fmap f) E.∘ forth F≅G
             ≈⟨ ≈.sym (fmap-≈-FG _) ⟩
               F.fmap (H.fmap f)
@@ -236,29 +235,29 @@ module _ lo la l≈ where
                 back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
           lem = assoc! E
 
-  id-identity-r : ∀ {C D} {F : C ⇒ D} → F ∘ id ≈ F
-  id-identity-r {C} {D} {F} = record
+  id-r : ∀ {C D} {F : C ⇒ D} → F ∘ id ≈ F
+  id-r {C} {D} {F} = record
       { iso = D.≅.refl
-      ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-identity-l D.id-identity-r)
+      ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-l D.id-r)
       }
     where
       module D = Category D
 
 
-  id-identity-l : ∀ {C D} {F : C ⇒ D} → id ∘ F ≈ F
-  id-identity-l {C} {D} {F} = record
+  id-l : ∀ {C D} {F : C ⇒ D} → id ∘ F ≈ F
+  id-l {C} {D} {F} = record
       { iso = D.≅.refl
-      ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-identity-l D.id-identity-r)
+      ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-l D.id-r)
       }
     where
       module D = Category D
 
 
-  ∘-assoc : ∀ {B C D E} (F : D ⇒ E) (G : C ⇒ D) (H : B ⇒ C)
+  assoc : ∀ {B C D E} (F : D ⇒ E) (G : C ⇒ D) (H : B ⇒ C)
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
-  ∘-assoc {B} {C} {D} {E} F G H = record
+  assoc {B} {C} {D} {E} F G H = record
       { iso = E.≅.refl
-      ; fmap-≈ = λ _ → E.≈.sym (E.≈.trans E.id-identity-l E.id-identity-r)
+      ; fmap-≈ = λ _ → E.≈.sym (E.≈.trans E.id-l E.id-r)
       }
     where
       module E = Category E
@@ -271,11 +270,11 @@ module _ lo la l≈ where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; ≈-equiv = ≈-equiv
-      ; ∘-preserves-≈ = ∘-preserves-≈
-      ; id-identity-r = id-identity-r
-      ; id-identity-l = id-identity-l
-      ; ∘-assoc = ∘-assoc
+      ; equiv = equiv
+      ; ∘-resp = ∘-resp
+      ; id-r = id-r
+      ; id-l = id-l
+      ; assoc = assoc
       }
 
 

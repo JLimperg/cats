@@ -54,8 +54,8 @@ module _ (l : Level) where
     field eq : ∀ {x} → arr f x ≡ arr g x
 
 
-  ≈-equiv : ∀ {M N} → IsEquivalence (_≈_ {M} {N})
-  ≈-equiv = record
+  equiv : ∀ {M N} → IsEquivalence (_≈_ {M} {N})
+  equiv = record
       { refl = ≈-i ≡.refl
       ; sym = λ { (≈-i eq) → ≈-i (≡.sym eq) }
       ; trans = λ { (≈-i eq₁) (≈-i eq₂) → ≈-i (≡.trans eq₁ eq₂) }
@@ -70,22 +70,22 @@ module _ (l : Level) where
     }
 
 
-  ∘-preserves-≈ : ∀ {M N O} → _∘_ {M} {N} {O} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-preserves-≈ {x = f} {g} {h} {i} (≈-i f≈g) (≈-i h≈i)
+  ∘-resp : ∀ {M N O} → _∘_ {M} {N} {O} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
+  ∘-resp {x = f} {g} {h} {i} (≈-i f≈g) (≈-i h≈i)
       = ≈-i (≡.trans f≈g (≡.cong (arr g) h≈i))
 
 
-  id-identity-r : ∀ {M N} {f : M ⇒ N} → f ∘ id ≈ f
-  id-identity-r = ≈-i ≡.refl
+  id-r : ∀ {M N} {f : M ⇒ N} → f ∘ id ≈ f
+  id-r = ≈-i ≡.refl
 
 
-  id-identity-l : ∀ {M N} {f : M ⇒ N} → id ∘ f ≈ f
-  id-identity-l = ≈-i ≡.refl
+  id-l : ∀ {M N} {f : M ⇒ N} → id ∘ f ≈ f
+  id-l = ≈-i ≡.refl
 
 
-  ∘-assoc : ∀ {M N O P} (f : O ⇒ P) (g : N ⇒ O) (h : M ⇒ N)
+  assoc : ∀ {M N O P} (f : O ⇒ P) (g : N ⇒ O) (h : M ⇒ N)
     → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  ∘-assoc _ _ _ = ≈-i ≡.refl
+  assoc _ _ _ = ≈-i ≡.refl
 
 
   Mon : Category (lsuc l) (lsuc l) l
@@ -95,26 +95,26 @@ module _ (l : Level) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; ≈-equiv = ≈-equiv
-      ; ∘-preserves-≈ = ∘-preserves-≈
-      ; id-identity-r = id-identity-r
-      ; id-identity-l = id-identity-l
-      ; ∘-assoc = ∘-assoc
+      ; equiv = equiv
+      ; ∘-resp = ∘-resp
+      ; id-r = id-r
+      ; id-l = id-l
+      ; assoc = assoc
       }
 
 
 monoidAsCategory : ∀ {l} → Monoid l → Category lzero l l
 monoidAsCategory M = record
     { Obj = ⊤
-    ; _⇒_ = λ _ _ → Carrier
+    ; _⇒_ = λ _ _ → M.Carrier
     ; _≈_ = _≡_
-    ; id = unit
-    ; _∘_ = _⊕_
-    ; ≈-equiv = ≡.isEquivalence
-    ; ∘-preserves-≈ = ≡.cong₂ _⊕_
-    ; id-identity-r = id-r
-    ; id-identity-l = id-l
-    ; ∘-assoc = assoc
+    ; id = M.unit
+    ; _∘_ = M._⊕_
+    ; equiv = ≡.isEquivalence
+    ; ∘-resp = ≡.cong₂ M._⊕_
+    ; id-r = M.id-r
+    ; id-l = M.id-l
+    ; assoc = M.assoc
     }
   where
-    open Monoid M
+    module M = Monoid M

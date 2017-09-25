@@ -23,28 +23,28 @@ id x = x
 _≈_ : ∀ {la lb} {A : Set la} {B : Set lb} → Rel (A → B) (la ⊔ lb)
 f ≈ g = ∀ x → f x ≡ g x
 
-≈-equiv : ∀ {la lb} {A : Set la} {B : Set lb}
+equiv : ∀ {la lb} {A : Set la} {B : Set lb}
   → IsEquivalence (_≈_ {A = A} {B})
-≈-equiv = record
+equiv = record
     { refl = λ _ → ≡.refl
     ; sym = λ eq x → ≡.sym (eq x)
     ; trans = λ eq₁ eq₂ x → ≡.trans (eq₁ x) (eq₂ x)
     }
 
-∘-preserves-≈ : ∀ {l} {A B C : Set l}
+∘-resp : ∀ {l} {A B C : Set l}
   → (_∘_ {A = A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-∘-preserves-≈ {x = f} {g} {h} {i} f≈g h≈i x
+∘-resp {x = f} {g} {h} {i} f≈g h≈i x
     = ≡.trans (≡.cong f (h≈i x)) (f≈g (i x))
 
-id-identity-r : ∀ {l} {A B : Set l} {f : A → B} → f ∘ id ≈ f
-id-identity-r _ = ≡.refl
+id-r : ∀ {l} {A B : Set l} {f : A → B} → f ∘ id ≈ f
+id-r _ = ≡.refl
 
-id-identity-l : ∀ {l} {A B : Set l} {f : A → B} → id ∘ f ≈ f
-id-identity-l _ = ≡.refl
+id-l : ∀ {l} {A B : Set l} {f : A → B} → id ∘ f ≈ f
+id-l _ = ≡.refl
 
-∘-assoc : ∀ {l} {A B C D : Set l} (f : C → D) (g : B → C) (h : A → B)
+assoc : ∀ {l} {A B C D : Set l} (f : C → D) (g : B → C) (h : A → B)
   → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-∘-assoc _ _ _ _ = ≡.refl
+assoc _ _ _ _ = ≡.refl
 
 
 instance Sets : ∀ l → Category (suc l) l l
@@ -54,11 +54,11 @@ Sets l = record
     ; _≈_ = _≈_
     ; id = id
     ; _∘_ = _∘_
-    ; ≈-equiv = ≈-equiv
-    ; ∘-preserves-≈ = ∘-preserves-≈
-    ; id-identity-r = id-identity-r
-    ; id-identity-l = id-identity-l
-    ; ∘-assoc = ∘-assoc
+    ; equiv = equiv
+    ; ∘-resp = ∘-resp
+    ; id-r = id-r
+    ; id-l = id-l
+    ; assoc = assoc
     }
 
 

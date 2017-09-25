@@ -32,12 +32,12 @@ module _  {lo la l≈} (C : Category lo la l≈) where
   _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈
   _≈_ = C._≈_
 
-  ∘-preserves-≈ : ∀ {A B C} → _∘_ {A} {B} {C} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-preserves-≈ {x = f} {g} {h} {i} f≈g h≈i = C.∘-preserves-≈ h≈i f≈g
+  ∘-resp : ∀ {A B C} → _∘_ {A} {B} {C} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
+  ∘-resp {x = f} {g} {h} {i} f≈g h≈i = C.∘-resp h≈i f≈g
 
-  ∘-assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
+  assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
     → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  ∘-assoc f g h = ≈.sym (C.∘-assoc h g f)
+  assoc f g h = ≈.sym (C.assoc h g f)
 
   _ᵒᵖ : Category lo la l≈
   _ᵒᵖ = record
@@ -46,11 +46,11 @@ module _  {lo la l≈} (C : Category lo la l≈) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = λ f g → g C.∘ f
-      ; ≈-equiv = C.≈-equiv
-      ; ∘-preserves-≈ = ∘-preserves-≈
-      ; id-identity-r = C.id-identity-l
-      ; id-identity-l = C.id-identity-r
-      ; ∘-assoc = ∘-assoc
+      ; equiv = C.equiv
+      ; ∘-resp = ∘-resp
+      ; id-r = C.id-l
+      ; id-l = C.id-r
+      ; assoc = assoc
       }
 
 
@@ -78,19 +78,19 @@ module _ {lo la l≈ : Level} where
           { iso = record
               { forth = C.id
               ; back = C.id
-              ; back-forth = C.id-identity-l
-              ; forth-back = C.id-identity-l
+              ; back-forth = C.id-l
+              ; forth-back = C.id-l
               }
-          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-identity-l C.id-identity-r)
+          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-l C.id-r)
           }
       ; forth-back = record
           { iso = record
               { forth = C.id
               ; back = C.id
-              ; back-forth = C.id-identity-l
-              ; forth-back = C.id-identity-l
+              ; back-forth = C.id-l
+              ; forth-back = C.id-r
               }
-          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-identity-l C.id-identity-r)
+          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-l C.id-r)
           }
       }
     where

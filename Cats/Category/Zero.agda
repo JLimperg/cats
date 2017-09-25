@@ -13,9 +13,9 @@ Zero = record
     ; _≈_ = λ {}
     ; id = λ{}
     ; _∘_ = λ{}
-    ; ≈-equiv = λ{}
-    ; ∘-preserves-≈ = λ{}
-    ; id-identity-r = λ{}
-    ; id-identity-l = λ{}
-    ; ∘-assoc = λ{}
+    ; equiv = λ{}
+    ; ∘-resp = λ{}
+    ; id-r = λ{}
+    ; id-l = λ{}
+    ; assoc = λ{}
     }

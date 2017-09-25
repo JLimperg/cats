@@ -12,14 +12,14 @@ One = record
     ; _≈_ = λ _ _ → ⊤
     ; id = tt
     ; _∘_ = λ _ _ → tt
-    ; ≈-equiv
+    ; equiv
         = record
         { refl = tt
         ; sym = λ _ → tt
         ; trans = λ _ _ → tt
         }
-    ; ∘-preserves-≈ = λ _ _ → tt
-    ; id-identity-r = tt
-    ; id-identity-l = tt
-    ; ∘-assoc = λ _ _ _ → tt
+    ; ∘-resp = λ _ _ → tt
+    ; id-r = tt
+    ; id-l = tt
+    ; assoc = λ _ _ _ → tt
     }

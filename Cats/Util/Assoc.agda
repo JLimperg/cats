@@ -76,8 +76,8 @@ module _ {lo la l≈} (C : Category lo la l≈) where
   reassoc-canon : ∀ {A B} (t : CompTree _⇒_ A B)
     → render t ≈ render (rightAssoc t)
   reassoc-canon [ x ] = ≈.refl
-  reassoc-canon ([ x ] ∷ r) = ∘-preserves-≈ ≈.refl (reassoc-canon r)
-  reassoc-canon ((ll ∷ lr) ∷ r) = ≈.trans (∘-assoc _ _ _) (reassoc-canon (ll ∷ lr ∷ r))
+  reassoc-canon ([ x ] ∷ r) = ∘-resp ≈.refl (reassoc-canon r)
+  reassoc-canon ((ll ∷ lr) ∷ r) = ≈.trans (assoc _ _ _) (reassoc-canon (ll ∷ lr ∷ r))
 
 
   reassoc : ∀ {A B} (t s : CompTree _⇒_ A B)

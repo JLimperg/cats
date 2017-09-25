@@ -19,11 +19,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
     _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈
     id : {O : Obj} → O ⇒ O
     _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
-    ≈-equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-    ∘-preserves-≈ : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-    id-identity-r : ∀ {A B} {f : A ⇒ B} → f ∘ id ≈ f
-    id-identity-l : ∀ {A B} {f : A ⇒ B} → id ∘ f ≈ f
-    ∘-assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
+    equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
+    ∘-resp : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
+    id-r : ∀ {A B} {f : A ⇒ B} → f ∘ id ≈ f
+    id-l : ∀ {A B} {f : A ⇒ B} → id ∘ f ≈ f
+    assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
       → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
 
   _∘ʳ_ : ∀ {A B C} → A ⇒ B → B ⇒ C → A ⇒ C
@@ -34,11 +34,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   ≈-Setoid A B = record
       { Carrier = A ⇒ B
       ; _≈_ = _≈_
-      ; isEquivalence = ≈-equiv
+      ; isEquivalence = equiv
       }
 
 
-  module ≈ {A B} = IsEquivalence (≈-equiv {A} {B})
+  module ≈ {A B} = IsEquivalence (equiv {A} {B})
   module ≈-Reasoning {A B} = EqReasoning (≈-Setoid A B)
 
 
@@ -60,8 +60,8 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
       refl {A} = record
           { forth = id
           ; back = id
-          ; back-forth = id-identity-l
-          ; forth-back = id-identity-l
+          ; back-forth = id-l
+          ; forth-back = id-l
           }
 
       sym : ∀ {A B} → A ≅ B → B ≅ A
@@ -79,11 +79,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
           ; back-forth
               = begin
                   (back A≅B ∘ back B≅C) ∘ forth B≅C ∘ forth A≅B
-                ≈⟨ ∘-assoc (back A≅B) (back B≅C) (forth B≅C ∘ forth A≅B) ⟩
+                ≈⟨ assoc (back A≅B) (back B≅C) (forth B≅C ∘ forth A≅B) ⟩
                   back A≅B ∘ back B≅C ∘ forth B≅C ∘ forth A≅B
-                ≈⟨ ∘-preserves-≈ ≈.refl (≈.trans (≈.sym (∘-assoc _ _ _)) (∘-preserves-≈ (back-forth B≅C) ≈.refl)) ⟩
+                ≈⟨ ∘-resp ≈.refl (≈.trans (≈.sym (assoc _ _ _)) (∘-resp (back-forth B≅C) ≈.refl)) ⟩
                   back A≅B ∘ id ∘ forth A≅B
-                ≈⟨ ∘-preserves-≈ ≈.refl id-identity-l ⟩
+                ≈⟨ ∘-resp ≈.refl id-l ⟩
                   back A≅B ∘ forth A≅B
                 ≈⟨ back-forth A≅B ⟩
                   id
@@ -91,11 +91,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
           ; forth-back
               = begin
                   (forth B≅C ∘ forth A≅B) ∘ back A≅B ∘ back B≅C
-                ≈⟨ ∘-assoc (forth B≅C) (forth A≅B) (back A≅B ∘ back B≅C) ⟩
+                ≈⟨ assoc (forth B≅C) (forth A≅B) (back A≅B ∘ back B≅C) ⟩
                   forth B≅C ∘ forth A≅B ∘ back A≅B ∘ back B≅C
-                ≈⟨ ∘-preserves-≈ ≈.refl (≈.trans (≈.sym (∘-assoc _ _ _)) (∘-preserves-≈ (forth-back A≅B) ≈.refl)) ⟩
+                ≈⟨ ∘-resp ≈.refl (≈.trans (≈.sym (assoc _ _ _)) (∘-resp (forth-back A≅B) ≈.refl)) ⟩
                   forth B≅C ∘ id ∘ back B≅C
-                ≈⟨ ∘-preserves-≈ ≈.refl id-identity-l ⟩
+                ≈⟨ ∘-resp ≈.refl id-l ⟩
                   forth B≅C ∘ back B≅C
                 ≈⟨ forth-back B≅C ⟩
                   id

@@ -45,7 +45,7 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       = record
       { dom = C.id
       ; cod = C.id
-      ; commute = ≈.trans C.id-identity-r (≈.sym C.id-identity-l)
+      ; commute = ≈.trans C.id-r (≈.sym C.id-l)
       }
 
 
@@ -59,15 +59,15 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       ; commute
           = begin
               arr H C.∘ F-dom C.∘ G-dom
-            ≈⟨ ≈.sym (C.∘-assoc _ _ _) ⟩
+            ≈⟨ ≈.sym (C.assoc _ _ _) ⟩
               (arr H C.∘ F-dom) C.∘ G-dom
-            ≈⟨ C.∘-preserves-≈ F-commute ≈.refl ⟩
+            ≈⟨ C.∘-resp F-commute ≈.refl ⟩
               (F-cod C.∘ arr G) C.∘ G-dom
-            ≈⟨ C.∘-assoc _ _ _ ⟩
+            ≈⟨ C.assoc _ _ _ ⟩
               F-cod C.∘ arr G C.∘ G-dom
-            ≈⟨ C.∘-preserves-≈ ≈.refl G-commute ⟩
+            ≈⟨ C.∘-resp ≈.refl G-commute ⟩
               F-cod C.∘ G-cod C.∘ arr F
-            ≈⟨ ≈.sym (C.∘-assoc _ _ _) ⟩
+            ≈⟨ ≈.sym (C.assoc _ _ _) ⟩
               (F-cod C.∘ G-cod) C.∘ arr F
             ∎
       }
@@ -75,8 +75,8 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       open C.≈-Reasoning
 
 
-  ≈-equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-  ≈-equiv = record
+  equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
+  equiv = record
       { refl = record { dom = ≈.refl ; cod = ≈.refl }
       ; sym = λ where
           record { dom = dom ; cod = cod } → record
@@ -92,35 +92,35 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       }
 
 
-  ∘-preserves-≈ : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-preserves-≈
+  ∘-resp : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
+  ∘-resp
     record { dom = dom-FG ; cod = cod-FG }
     record { dom = dom-HI ; cod = cod-HI }
       = record
-      { dom = C.∘-preserves-≈ dom-FG dom-HI
-      ; cod = C.∘-preserves-≈ cod-FG cod-HI
+      { dom = C.∘-resp dom-FG dom-HI
+      ; cod = C.∘-resp cod-FG cod-HI
       }
 
 
-  id-identity-r : ∀ {A B} {F : A ⇒ B} → F ∘ id ≈ F
-  id-identity-r = record
-      { dom = C.id-identity-r
-      ; cod = C.id-identity-r
+  id-r : ∀ {A B} {F : A ⇒ B} → F ∘ id ≈ F
+  id-r = record
+      { dom = C.id-r
+      ; cod = C.id-r
       }
 
 
-  id-identity-l : ∀ {A B} {F : A ⇒ B} → id ∘ F ≈ F
-  id-identity-l = record
-      { dom = C.id-identity-l
-      ; cod = C.id-identity-l
+  id-l : ∀ {A B} {F : A ⇒ B} → id ∘ F ≈ F
+  id-l = record
+      { dom = C.id-l
+      ; cod = C.id-l
       }
 
 
-  ∘-assoc : ∀ {A B C D} (F : C ⇒ D) (G : B ⇒ C) (H : A ⇒ B)
+  assoc : ∀ {A B C D} (F : C ⇒ D) (G : B ⇒ C) (H : A ⇒ B)
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
-  ∘-assoc _ _ _ = record
-      { dom = C.∘-assoc _ _ _
-      ; cod = C.∘-assoc _ _ _
+  assoc _ _ _ = record
+      { dom = C.assoc _ _ _
+      ; cod = C.assoc _ _ _
       }
 
 
@@ -131,9 +131,9 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; ≈-equiv = ≈-equiv
-      ; ∘-preserves-≈ = ∘-preserves-≈
-      ; id-identity-r = id-identity-r
-      ; id-identity-l = id-identity-l
-      ; ∘-assoc = ∘-assoc
+      ; equiv = equiv
+      ; ∘-resp = ∘-resp
+      ; id-r = id-r
+      ; id-l = id-l
+      ; assoc = assoc
       }

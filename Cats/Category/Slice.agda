@@ -47,7 +47,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
 
 
   id : ∀ {A} → A ⇒ A
-  id = record { dom = C.id ; commute = ≈.sym C.id-identity-r }
+  id = record { dom = C.id ; commute = ≈.sym C.id-r }
 
 
   _∘_ : ∀ {A B C} → (B ⇒ C) → (A ⇒ B) → (A ⇒ C)
@@ -61,9 +61,9 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
               arr F
             ≈⟨ G-commute ⟩
               arr G C.∘ G-dom
-            ≈⟨ C.∘-preserves-≈ F-commute ≈.refl ⟩
+            ≈⟨ C.∘-resp F-commute ≈.refl ⟩
               (arr H C.∘ F-dom) C.∘ G-dom
-            ≈⟨ C.∘-assoc _ _ _ ⟩
+            ≈⟨ C.assoc _ _ _ ⟩
               arr H C.∘ F-dom C.∘ G-dom
             ∎
       }
@@ -80,19 +80,19 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
 
 
   ∘-preserves-≈ : ∀ {A B C} → _∘_ {A} {B} {C} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-preserves-≈ (≈-i eq₁) (≈-i eq₂) = ≈-i (C.∘-preserves-≈ eq₁ eq₂)
+  ∘-preserves-≈ (≈-i eq₁) (≈-i eq₂) = ≈-i (C.∘-resp eq₁ eq₂)
 
 
   id-identity-r : ∀ {A B} {F : A ⇒ B} → F ∘ id ≈ F
-  id-identity-r = ≈-i C.id-identity-r
+  id-identity-r = ≈-i C.id-r
 
   id-identity-l : ∀ {A B} {F : A ⇒ B} → id ∘ F ≈ F
-  id-identity-l = ≈-i C.id-identity-l
+  id-identity-l = ≈-i C.id-l
 
 
   ∘-assoc : ∀ {A B C D} (F : C ⇒ D) (G : B ⇒ C) (H : A ⇒ B)
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
-  ∘-assoc _ _ _ = ≈-i (C.∘-assoc _ _ _)
+  ∘-assoc _ _ _ = ≈-i (C.assoc _ _ _)
 
 
   instance _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈
@@ -102,11 +102,11 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; ≈-equiv = ≈-equiv
-      ; ∘-preserves-≈ = ∘-preserves-≈
-      ; id-identity-r = id-identity-r
-      ; id-identity-l = id-identity-l
-      ; ∘-assoc = ∘-assoc
+      ; equiv = ≈-equiv
+      ; ∘-resp = ∘-preserves-≈
+      ; id-r = id-identity-r
+      ; id-l = id-identity-l
+      ; assoc = ∘-assoc
       }
 
 
@@ -119,8 +119,8 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       = F , F-Unique
     where
       F : Y ⇒ One
-      F = record { dom = f ; commute = C.≈.sym C.id-identity-l }
+      F = record { dom = f ; commute = C.≈.sym C.id-l }
 
       F-Unique : IsUnique F
       F-Unique record { dom = g ; commute = commute }
-          = ≈-i (≈.trans commute C.id-identity-l)
+          = ≈-i (≈.trans commute C.id-l)
