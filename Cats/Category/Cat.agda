@@ -1,10 +1,14 @@
 module Cats.Category.Cat where
 
+open import Data.Product using (_,_)
+open import Data.Unit using (⊤ ; tt)
 open import Level
 open import Relation.Binary using (IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 open import Cats.Category
+open import Cats.Category.Zero
+open import Cats.Category.One
 open import Cats.Functor
 open import Cats.Util.Assoc using (assoc!)
 
@@ -273,3 +277,47 @@ module _ lo la l≈ where
       ; id-identity-l = id-identity-l
       ; ∘-assoc = ∘-assoc
       }
+
+
+-- TODO more universe polymorphism for Zero and One
+Zero-Initial : IsInitial {{C = Cat zero zero zero}} Zero
+Zero-Initial X = f , f-Unique
+  where
+    f : Functor Zero X
+    f = record
+        { fobj = λ()
+        ; fmap = λ{}
+        ; fmap-preserves-≈ = λ{}
+        ; id-preservation = λ{}
+        ; ∘-commut = λ{}
+        }
+
+    f-Unique : IsUnique f
+    f-Unique f′ = record
+        { iso = λ{}
+        ; fmap-≈ = λ{}
+        }
+
+
+One-Terminal : IsTerminal {{C = Cat zero zero zero}} One
+One-Terminal X = f , f-Unique
+  where
+    f : Functor X One
+    f = record
+        { fobj = λ x → tt
+        ; fmap = λ _ → tt
+        ; fmap-preserves-≈ = λ _ → tt
+        ; id-preservation = tt
+        ; ∘-commut = λ _ _ → tt
+        }
+
+    f-Unique : IsUnique f
+    f-Unique f′ = record
+        { iso = record
+            { forth = tt
+            ; back = tt
+            ; back-forth = tt
+            ; forth-back = tt
+            }
+        ; fmap-≈ = λ _ → tt
+        }
