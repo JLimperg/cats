@@ -1,5 +1,8 @@
 module Cats.Category.Sets where
 
+open import Data.Empty using (⊥ ; ⊥-elim)
+open import Data.Product using (_,_ ; ∃-syntax)
+open import Data.Unit using (⊤ ; tt)
 open import Level
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
@@ -59,3 +62,11 @@ Sets l = record
     ; id-identity-l = id-identity-l
     ; ∘-assoc = ∘-assoc
     }
+
+
+⊥-Initial : IsInitial ⊥
+⊥-Initial X = (λ()) , λ _ x → ⊥-elim x
+
+
+⊤-Terminal : IsTerminal ⊤
+⊤-Terminal X = (λ _ → tt) , λ _ _ → ≡.refl
