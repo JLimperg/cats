@@ -1,5 +1,6 @@
 module Cats.Category.Constructions.Slice where
 
+open import Data.Product using (_,_ ; proj₁ ; proj₂)
 open import Level
 open import Relation.Binary using (IsEquivalence ; _Preserves₂_⟶_⟶_)
 
@@ -107,3 +108,19 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       ; id-identity-l = id-identity-l
       ; ∘-assoc = ∘-assoc
       }
+
+
+  One : Obj
+  One = mkObj C.id
+
+
+  One-Terminal : IsTerminal One
+  One-Terminal Y@(mkObj f)
+      = F , F-Unique
+    where
+      F : Y ⇒ One
+      F = record { dom = f ; commute = C.≈.sym C.id-identity-l }
+
+      F-Unique : IsUnique F
+      F-Unique record { dom = g ; commute = commute }
+          = ≈-i (≈.trans commute C.id-identity-l)
