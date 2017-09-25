@@ -1,13 +1,15 @@
 module Cats.Category.Sets where
 
-open import Cats.Category
 open import Level
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
+open import Cats.Category
+
 
 infixr 9 _∘_
 infixr 4 _≈_
+
 
 _∘_ : ∀ {l} {A B C : Set l} → (B → C) → (A → B) → A → C
 f ∘ g = λ x → f (g x)
@@ -44,7 +46,7 @@ id-identity-l _ = ≡.refl
 ∘-assoc _ _ _ _ = ≡.refl
 
 
-Sets : ∀ l → Category (suc l) l l
+instance Sets : ∀ l → Category (suc l) l l
 Sets l = record
     { Obj = Set l
     ; _⇒_ = λ A B → A → B
