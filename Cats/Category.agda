@@ -1,9 +1,11 @@
 module Cats.Category where
 
-open import Data.Product using (_,_ ; proj₁ ; proj₂ ; Σ-syntax)
 open import Level
 open import Relation.Binary using
   (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_ ; Setoid)
+
+open import Cats.Util.Logic.Constructive
+
 
 import Relation.Binary.EqReasoning as EqReasoning
 
@@ -134,5 +136,33 @@ module _ {lo la l≈} {{C : Category lo la l≈}} where
   IsInitial Zero = ∀ X → Σ[ f ∈ Zero ⇒ X ] (IsUnique f)
 
 
+  initial→id-unique : ∀ {A} → IsInitial A → IsUnique (id {A})
+  initial→id-unique {A} init id′ with init A
+  ... | id″ , id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
+
+
+  initial-unique : ∀ {A B} → IsInitial A → IsInitial B → A ≅ B
+  initial-unique {A} {B} A-init B-init = record
+      { forth = ∧-eliml (A-init B)
+      ; back = ∧-eliml (B-init A)
+      ; back-forth = ≈.sym (initial→id-unique A-init _)
+      ; forth-back = ≈.sym (initial→id-unique B-init _)
+      }
+
+
   IsTerminal : Obj → Set (lo ⊔ la ⊔ l≈)
   IsTerminal One = ∀ X → Σ[ f ∈ X ⇒ One ] (IsUnique f)
+
+
+  terminal→id-unique : ∀ {A} → IsTerminal A → IsUnique (id {A})
+  terminal→id-unique {A} term id′ with term A
+  ... | id″ , id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
+
+
+  terminal-unique : ∀ {A B} → IsTerminal A → IsTerminal B → A ≅ B
+  terminal-unique {A} {B} A-term B-term = record
+      { forth = ∧-eliml (B-term A)
+      ; back = ∧-eliml (A-term B)
+      ; back-forth = ≈.sym (terminal→id-unique A-term _)
+      ; forth-back = ≈.sym (terminal→id-unique B-term _)
+      }
