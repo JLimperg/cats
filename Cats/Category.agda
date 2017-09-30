@@ -133,8 +133,18 @@ module _ {lo la l≈} {{C : Category lo la l≈}} where
   IsEpi {A} {B} f = ∀ {C} {g h : B ⇒ C} → g ∘ f ≈ h ∘ f → g ≈ h
 
 
-  IsUnique : ∀ {A B} → A ⇒ B → Set _
+  IsUnique : ∀ {A B} → A ⇒ B → Set (l≈ ⊔ la)
   IsUnique {A} {B} f = ∀ (f′ : A ⇒ B) → f ≈ f′
+
+
+  -- Note: f unique and g unique does not, in general, imply g ∘ f unique. There
+  -- can be an h : A ⇒ C which is different from g′ ∘ f′ for any f′, g′.
+  ∘-unique : ∀ {A B C} {g : B ⇒ C} {f : A ⇒ B}
+    → IsUnique g
+    → IsUnique f
+    → ∀ {g′ : B ⇒ C} {f′ : A ⇒ B}
+    → g ∘ f ≈ g′ ∘ f′
+  ∘-unique uniq-g uniq-f = ∘-resp (uniq-g _) (uniq-f _)
 
 
   IsInitial : Obj → Set (lo ⊔ la ⊔ l≈)
