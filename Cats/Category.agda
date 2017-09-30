@@ -123,6 +123,7 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 module _ {lo la l≈} {{C : Category lo la l≈}} where
 
   open Category C
+  open ≈-Reasoning
 
 
   IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
@@ -181,3 +182,57 @@ module _ {lo la l≈} {{C : Category lo la l≈}} where
       ; back-forth = ≈.sym (terminal→id-unique A-term _)
       ; forth-back = ≈.sym (terminal→id-unique B-term _)
       }
+
+
+  record _×_ (A B : Obj) : Set (lo ⊔ la ⊔ l≈) where
+    field
+      prod : Obj
+      projl : prod ⇒ A
+      projr : prod ⇒ B
+      ump : ∀ {X} (x-l : X ⇒ A) (x-r : X ⇒ B)
+        → ∃![ u ] (x-l ≈ projl ∘ u ∧ x-r ≈ projr ∘ u)
+
+
+    proj-cancel : ∀ {X} {f g : X ⇒ prod}
+      → projl ∘ f ≈ projl ∘ g
+      → projr ∘ f ≈ projr ∘ g
+      → f ≈ g
+    proj-cancel {X} {f} {g} eq-l eq-r with ump (projl ∘ g) (projr ∘ g)
+    ... | v , _ , v-uniq
+        = begin
+            f
+          ≈⟨ ≈.sym (v-uniq (≈.sym eq-l , ≈.sym eq-r)) ⟩
+            v
+          ≈⟨ v-uniq (≈.refl , ≈.refl) ⟩
+            g
+          ∎
+
+  open _×_
+
+
+  ×-unique : ∀ {A B} (p q : A × B) → prod p ≅ prod q
+  ×-unique {A} {B} p q
+    with ump q (projl p) (projr p) | ump p (projl q) (projr q)
+  ... | u , (u-eq₁ , u-eq₂) , _ | v , (v-eq₁ , v-eq₂) , _ = record
+      { forth = u
+      ; back = v
+      ; back-forth = proj-cancel p (lemma u-eq₁ v-eq₁) (lemma u-eq₂ v-eq₂)
+      ; forth-back = proj-cancel q (lemma v-eq₁ u-eq₁) (lemma v-eq₂ u-eq₂)
+      }
+    where
+      lemma : ∀ {P Q A} {p-projl : P ⇒ A} {q-projl : Q ⇒ A} {v u}
+        → p-projl ≈ q-projl ∘ u
+        → q-projl ≈ p-projl ∘ v
+        → p-projl ∘ v ∘ u ≈ p-projl ∘ id
+      lemma {p-projl = p-projl} {q-projl} {v} {u} eq-u eq-v
+          = begin
+              p-projl ∘ v ∘ u
+            ≈⟨ ≈.sym (assoc _ _ _) ⟩
+              (p-projl ∘ v) ∘ u
+            ≈⟨ ∘-resp (≈.sym eq-v) ≈.refl ⟩
+              q-projl ∘ u
+            ≈⟨ ≈.sym (eq-u) ⟩
+              p-projl
+            ≈⟨ ≈.sym id-r ⟩
+              p-projl ∘ id
+            ∎
