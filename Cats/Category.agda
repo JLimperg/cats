@@ -6,7 +6,6 @@ open import Relation.Binary using
 
 open import Cats.Util.Logic.Constructive
 
-
 import Relation.Binary.EqReasoning as EqReasoning
 
 
@@ -113,6 +112,12 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
   module ≅ = IsEquivalence ≅-equiv
   module ≅-Reasoning = EqReasoning ≅-Setoid
+
+
+  ∃! : ∀ {lp} {A B} → (A ⇒ B → Set lp) → Set (la ⊔ l≈ ⊔ lp)
+  ∃! {A = A} {B} P = Σ[ f ∈ A ⇒ B ] (P f ∧ (∀ {g} → P g → f ≈ g))
+
+  syntax ∃! (λ f → P) = ∃![ f ] P
 
 
 module _ {lo la l≈} {{C : Category lo la l≈}} where
