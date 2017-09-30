@@ -110,6 +110,9 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       }
 
 
+  open Category _/_ using (IsTerminal ; IsUnique)
+
+
   One : Obj
   One = mkObj C.id
 

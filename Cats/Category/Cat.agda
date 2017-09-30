@@ -276,8 +276,11 @@ module _ lo la l≈ where
       }
 
 
+module Cat0 = Category (Cat zero zero zero)
+open Cat0
+
 -- TODO more universe polymorphism for Zero and One
-Zero-Initial : IsInitial {{C = Cat zero zero zero}} Zero
+Zero-Initial : IsInitial Zero
 Zero-Initial X = f , f-Unique
   where
     f : Functor Zero X
@@ -296,7 +299,7 @@ Zero-Initial X = f , f-Unique
         }
 
 
-One-Terminal : IsTerminal {{C = Cat zero zero zero}} One
+One-Terminal : IsTerminal One
 One-Terminal X = f , f-Unique
   where
     f : Functor X One

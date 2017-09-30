@@ -65,6 +65,8 @@ module _ (l : Level) where
 
 module _ {l} where
 
+  open Category (Sets l)
+
   Injective : ∀ {A B : Set l} → (A → B) → Set l
   Injective f = ∀ {a b} → f a ≡ f b → a ≡ b
 
@@ -89,6 +91,10 @@ module _ {l} where
 
   -- The proof that all epis are surjective is nonconstructive, so we omit it.
 
+
+module _ where
+
+  open Category (Sets zero)
 
   ⊥-Initial : IsInitial ⊥
   ⊥-Initial X = (λ()) , λ _ x → ⊥-elim x

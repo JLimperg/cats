@@ -41,6 +41,7 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
   module ≈ {A B} = IsEquivalence (equiv {A} {B})
   module ≈-Reasoning {A B} = EqReasoning (≈-Setoid A B)
+  open ≈-Reasoning
 
 
   record _≅_ (A B : Obj) : Set (lo ⊔ la ⊔ l≈) where
@@ -118,12 +119,6 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   ∃! {A = A} {B} P = Σ[ f ∈ A ⇒ B ] (P f ∧ (∀ {g} → P g → f ≈ g))
 
   syntax ∃! (λ f → P) = ∃![ f ] P
-
-
-module _ {lo la l≈} {{C : Category lo la l≈}} where
-
-  open Category C
-  open ≈-Reasoning
 
 
   IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
