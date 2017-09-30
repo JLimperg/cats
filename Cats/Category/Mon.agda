@@ -1,15 +1,18 @@
 module Cats.Category.Mon where
 
 open import Data.Unit using (⊤ ; tt)
-open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
-open import Level using (Level) renaming (zero to lzero ; suc to lsuc)
+open import Level using (Level ; zero ; suc)
 
 open import Cats.Category
+open import Cats.Util.Function as Fun using (_on_ ; on-isEquivalence)
+
+import Cats.Util.ExtensionalEquality.Propositional as Fun
+
 
 -- TODO hardcoding propositional equality here, but I can't be arsed
 -- TODO this cries for abstraction: A family of categories of structured sets?
-record Monoid l : Set (lsuc l) where
+record Monoid l : Set (suc l) where
   infixr 9 _⊕_
 
   field
@@ -28,11 +31,11 @@ module _ (l : Level) where
   infixr 4 _≈_
 
 
-  Obj : Set (lsuc l)
+  Obj : Set (suc l)
   Obj = Monoid l
 
 
-  record _⇒_ (M N : Obj) : Set (lsuc l) where
+  record _⇒_ (M N : Obj) : Set (suc l) where
     private
       module M = Monoid M
       module N = Monoid N
@@ -46,64 +49,37 @@ module _ (l : Level) where
 
 
   id : ∀ {M} → M ⇒ M
-  id = record { arr = λ x → x ; unit = ≡.refl ; lift = ≡.refl }
+  id = record { arr = Fun.id ; unit = ≡.refl ; lift = ≡.refl }
 
 
-  record _≈_ {M N} (f g : M ⇒ N) : Set l where
-    constructor ≈-i
-    field eq : ∀ {x} → arr f x ≡ arr g x
-
-
-  equiv : ∀ {M N} → IsEquivalence (_≈_ {M} {N})
-  equiv = record
-      { refl = ≈-i ≡.refl
-      ; sym = λ { (≈-i eq) → ≈-i (≡.sym eq) }
-      ; trans = λ { (≈-i eq₁) (≈-i eq₂) → ≈-i (≡.trans eq₁ eq₂) }
-      }
+  _≈_ : ∀ {M N} (f g : M ⇒ N) → Set l
+  _≈_ = Fun._≈_ on arr
 
 
   _∘_ : ∀ {M N O} → (N ⇒ O) → (M ⇒ N) → (M ⇒ O)
-  _∘_ f g = record
-    { arr = λ x → arr f (arr g x)
+  f ∘ g = record
+    { arr = arr f Fun.∘ arr g
     ; unit = ≡.trans (≡.cong (arr f) (unit g)) (unit f)
     ; lift = ≡.trans (≡.cong (arr f) (lift g)) (lift f)
     }
 
 
-  ∘-resp : ∀ {M N O} → _∘_ {M} {N} {O} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-resp {x = f} {g} {h} {i} (≈-i f≈g) (≈-i h≈i)
-      = ≈-i (≡.trans f≈g (≡.cong (arr g) h≈i))
-
-
-  id-r : ∀ {M N} {f : M ⇒ N} → f ∘ id ≈ f
-  id-r = ≈-i ≡.refl
-
-
-  id-l : ∀ {M N} {f : M ⇒ N} → id ∘ f ≈ f
-  id-l = ≈-i ≡.refl
-
-
-  assoc : ∀ {M N O P} (f : O ⇒ P) (g : N ⇒ O) (h : M ⇒ N)
-    → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  assoc _ _ _ = ≈-i ≡.refl
-
-
-  Mon : Category (lsuc l) (lsuc l) l
+  Mon : Category (suc l) (suc l) l
   Mon = record
       { Obj = Obj
       ; _⇒_ = _⇒_
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; equiv = equiv
-      ; ∘-resp = ∘-resp
-      ; id-r = id-r
-      ; id-l = id-l
-      ; assoc = assoc
+      ; equiv = on-isEquivalence arr Fun.isEquivalence
+      ; ∘-resp = Fun.∘-resp
+      ; id-r = Fun.∘-id-r
+      ; id-l = Fun.∘-id-l
+      ; assoc = λ h g f x → Fun.∘-assoc (arr h) (arr g) (arr f) x
       }
 
 
-monoidAsCategory : ∀ {l} → Monoid l → Category lzero l l
+monoidAsCategory : ∀ {l} → Monoid l → Category zero l l
 monoidAsCategory M = record
     { Obj = ⊤
     ; _⇒_ = λ _ _ → M.Carrier

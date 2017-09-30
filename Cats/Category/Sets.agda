@@ -5,67 +5,31 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 open import Cats.Category
+open import Cats.Util.ExtensionalEquality.Propositional
+  using (_≈_ ; isEquivalence)
+open import Cats.Util.Function
 open import Cats.Util.Logic.Constructive
 
 
-module _ (l : Level) where
-
-  infixr 9 _∘_
-  infixr 4 _≈_
-
-
-  _∘_ : ∀ {A B C : Set l} → (B → C) → (A → B) → A → C
-  f ∘ g = λ x → f (g x)
-
-  id : ∀ {A : Set l} → A → A
-  id x = x
-
-  -- We could generalise this to an arbitrary underlying equivalence relation in
-  -- place of _≡_.
-  _≈_ : ∀ {A B : Set l} → Rel (A → B) l
-  f ≈ g = ∀ x → f x ≡ g x
-
-  equiv : ∀ {A B : Set l} → IsEquivalence (_≈_ {A = A} {B})
-  equiv = record
-      { refl = λ _ → ≡.refl
-      ; sym = λ eq x → ≡.sym (eq x)
-      ; trans = λ eq₁ eq₂ x → ≡.trans (eq₁ x) (eq₂ x)
-      }
-
-  ∘-resp : ∀ {A B C : Set l}
-    → (_∘_ {A = A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-resp {x = f} {g} {h} {i} f≈g h≈i x
-      = ≡.trans (≡.cong f (h≈i x)) (f≈g (i x))
-
-  id-r : ∀ {A B : Set l} {f : A → B} → f ∘ id ≈ f
-  id-r _ = ≡.refl
-
-  id-l : ∀ {A B : Set l} {f : A → B} → id ∘ f ≈ f
-  id-l _ = ≡.refl
-
-  assoc : ∀ {A B C D : Set l} (f : C → D) (g : B → C) (h : A → B)
-    → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  assoc _ _ _ _ = ≡.refl
-
-
-  instance Sets : Category (suc l) l l
-  Sets = record
-      { Obj = Set l
-      ; _⇒_ = λ A B → A → B
-      ; _≈_ = _≈_
-      ; id = id
-      ; _∘_ = _∘_
-      ; equiv = equiv
-      ; ∘-resp = ∘-resp
-      ; id-r = id-r
-      ; id-l = id-l
-      ; assoc = assoc
-      }
+instance Sets : ∀ l → Category (suc l) l l
+Sets l = record
+    { Obj = Set l
+    ; _⇒_ = λ A B → A → B
+    ; _≈_ = _≈_
+    ; id = id
+    ; _∘_ = _∘_
+    ; equiv = isEquivalence
+    ; ∘-resp = ∘-resp
+    ; id-r = ∘-id-r
+    ; id-l = ∘-id-l
+    ; assoc = ∘-assoc
+    }
 
 
 module _ {l} where
 
   open Category (Sets l)
+
 
   Injective : ∀ {A B : Set l} → (A → B) → Set l
   Injective f = ∀ {a b} → f a ≡ f b → a ≡ b
@@ -94,10 +58,12 @@ module _ {l} where
 
 module _ where
 
+  -- TODO generalise to universe-polymorphic ⊤ and ⊥
   open Category (Sets zero)
 
+
   ⊥-Initial : IsInitial ⊥
-  ⊥-Initial X = (λ()) , λ _ x → ⊥-elim x
+  ⊥-Initial X = (λ()) , λ _ ()
 
 
   ⊤-Terminal : IsTerminal ⊤
