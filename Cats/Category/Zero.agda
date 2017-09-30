@@ -6,9 +6,9 @@ open import Level
 open import Cats.Category
 
 
-Zero : Category zero zero zero
-Zero = record
-    { Obj = ⊥
+Zero : ∀ lo la l≈ → Category lo la l≈
+Zero lo la l≈ = record
+    { Obj = Lift ⊥
     ; _⇒_ = λ()
     ; _≈_ = λ {}
     ; id = λ{}

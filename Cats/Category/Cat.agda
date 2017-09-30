@@ -276,48 +276,49 @@ module _ lo la l≈ where
       }
 
 
-module Cat0 = Category (Cat zero zero zero)
-open Cat0
+module _ {lo la l≈} where
 
--- TODO more universe polymorphism for Zero and One
-Zero-Initial : IsInitial Zero
-Zero-Initial X = f , f-Unique
-  where
-    f : Functor Zero X
-    f = record
-        { fobj = λ()
-        ; fmap = λ{}
-        ; fmap-resp = λ{}
-        ; fmap-id = λ{}
-        ; fmap-∘ = λ{}
-        }
-
-    f-Unique : IsUnique f
-    f-Unique f′ = record
-        { iso = λ{}
-        ; fmap-≈ = λ{}
-        }
+  open Category (Cat lo la l≈)
 
 
-One-Terminal : IsTerminal One
-One-Terminal X = f , f-Unique
-  where
-    f : Functor X One
-    f = record
-        { fobj = λ x → tt
-        ; fmap = λ _ → tt
-        ; fmap-resp = λ _ → tt
-        ; fmap-id = tt
-        ; fmap-∘ = λ _ _ → tt
-        }
+  Zero-Initial : IsInitial (Zero lo la l≈)
+  Zero-Initial X = f , f-Unique
+    where
+      f : Functor (Zero lo la l≈) X
+      f = record
+          { fobj = λ()
+          ; fmap = λ{}
+          ; fmap-resp = λ{}
+          ; fmap-id = λ{}
+          ; fmap-∘ = λ{}
+          }
 
-    f-Unique : IsUnique f
-    f-Unique f′ = record
-        { iso = record
-            { forth = tt
-            ; back = tt
-            ; back-forth = tt
-            ; forth-back = tt
-            }
-        ; fmap-≈ = λ _ → tt
-        }
+      f-Unique : IsUnique f
+      f-Unique f′ = record
+          { iso = λ{}
+          ; fmap-≈ = λ{}
+          }
+
+
+  One-Terminal : IsTerminal (One lo la l≈)
+  One-Terminal X = f , f-Unique
+    where
+      f : Functor X (One lo la l≈)
+      f = record
+          { fobj = λ x → lift tt
+          ; fmap = λ _ → lift tt
+          ; fmap-resp = λ _ → lift tt
+          ; fmap-id = lift tt
+          ; fmap-∘ = λ _ _ → lift tt
+          }
+
+      f-Unique : IsUnique f
+      f-Unique f′ = record
+          { iso = record
+              { forth = lift tt
+              ; back = lift tt
+              ; back-forth = lift tt
+              ; forth-back = lift tt
+              }
+          ; fmap-≈ = λ _ → lift tt
+          }
