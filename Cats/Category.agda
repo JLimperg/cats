@@ -56,8 +56,6 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   ≅-equiv : IsEquivalence _≅_
   ≅-equiv = record { refl = refl ; sym = sym ; trans = trans }
     where
-      open ≈-Reasoning
-
       refl : ∀ {A} → A ≅ A
       refl {A} = record
           { forth = id
@@ -127,6 +125,48 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
   IsEpi : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
   IsEpi {A} {B} f = ∀ {C} {g h : B ⇒ C} → g ∘ f ≈ h ∘ f → g ≈ h
+
+
+  iso-mono : ∀ {A B} (iso : A ≅ B) → IsMono (forth iso)
+  iso-mono iso {g = g} {h} iso∘g≈iso∘h
+      = begin
+          g
+        ≈⟨ ≈.sym id-l ⟩
+          id ∘ g
+        ≈⟨ ∘-resp (≈.sym (back-forth iso)) ≈.refl ⟩
+          (back iso ∘ forth iso) ∘ g
+        ≈⟨ assoc _ _ _ ⟩
+          back iso ∘ forth iso ∘ g
+        ≈⟨ ∘-resp ≈.refl iso∘g≈iso∘h ⟩
+          back iso ∘ forth iso ∘ h
+        ≈⟨ ≈.sym (assoc _ _ _) ⟩
+          (back iso ∘ forth iso) ∘ h
+        ≈⟨ ∘-resp (back-forth iso) ≈.refl ⟩
+          id ∘ h
+        ≈⟨ id-l ⟩
+          h
+        ∎
+
+
+  iso-epi : ∀ {A B} (iso : A ≅ B) → IsEpi (forth iso)
+  iso-epi iso {g = g} {h} g∘iso≈h∘iso
+      = begin
+          g
+        ≈⟨ ≈.sym id-r ⟩
+          g ∘ id
+        ≈⟨ ∘-resp ≈.refl (≈.sym (forth-back iso)) ⟩
+          g ∘ forth iso ∘ back iso
+        ≈⟨ ≈.sym (assoc _ _ _) ⟩
+          (g ∘ forth iso) ∘ back iso
+        ≈⟨ ∘-resp g∘iso≈h∘iso ≈.refl ⟩
+          (h ∘ forth iso) ∘ back iso
+        ≈⟨ assoc _ _ _ ⟩
+          h ∘ forth iso ∘ back iso
+        ≈⟨ ∘-resp ≈.refl (forth-back iso) ⟩
+          h ∘ id
+        ≈⟨ id-r ⟩
+          h
+        ∎
 
 
   IsUnique : ∀ {A B} → A ⇒ B → Set (l≈ ⊔ la)
