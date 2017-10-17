@@ -202,6 +202,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
       }
 
 
+  Initial⇒X-unique : ∀ {Zero} → IsInitial Zero → ∀ {X} {f g : Zero ⇒ X} → f ≈ g
+  Initial⇒X-unique init {X} {f} {g} with init X
+  ... | x , x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
+
+
   IsTerminal : Obj → Set (lo ⊔ la ⊔ l≈)
   IsTerminal One = ∀ X → Σ[ f ∈ X ⇒ One ] (IsUnique f)
 
@@ -218,6 +223,11 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
       ; back-forth = ≈.sym (terminal→id-unique A-term _)
       ; forth-back = ≈.sym (terminal→id-unique B-term _)
       }
+
+
+  X⇒Terminal-unique : ∀ {One} → IsTerminal One → ∀ {X} {f g : X ⇒ One} → f ≈ g
+  X⇒Terminal-unique term {X} {f} {g} with term X
+  ... | x , x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
 
 
   IsProduct : ∀ {li} {I : Set li} (O : I → Obj) P → (∀ i → P ⇒ O i)
