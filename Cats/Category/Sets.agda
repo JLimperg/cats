@@ -28,7 +28,7 @@ Sets l = record
 
 module _ {l} where
 
-  open Category (Sets l)
+  open Category (Sets l) hiding (_≈_ ; id ; _∘_)
 
 
   Injective : ∀ {A B : Set l} → (A → B) → Set l
@@ -54,6 +54,18 @@ module _ {l} where
 
 
   -- The proof that all epis are surjective is nonconstructive, so we omit it.
+
+
+  exponentialIsProduct : ∀ {I A : Obj} → IsProduct {I = I} (λ _ → A) (I → A) (λ i f → f i)
+  exponentialIsProduct projX
+      = (λ x i → projX i x)
+      , (λ _ _ → ≡.refl)
+      , λ eq x → funext λ i → eq i x
+    where
+      postulate
+        funext : ∀ {a b} {A : Set a} {B : A → Set b} {f g : (a : A) → B a}
+          → (∀ x → f x ≡ g x)
+          → f ≡ g
 
 
 module _ where
