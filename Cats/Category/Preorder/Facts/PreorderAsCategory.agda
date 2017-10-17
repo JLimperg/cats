@@ -43,19 +43,22 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
   terminal max y = (max y) , _
 
 
-  product : ∀ {glb x y} → (glb ≈ x ⊓ y) → x × y
-  product {glb} {x} {y} (glb∼x , glb∼y , ∨-introl x∼glb) = record
-      { prod = glb
-      ; projl = glb∼x
-      ; projr = glb∼y
-      ; ump = λ {z} z∼x z∼y → P.trans z∼x x∼glb , _
-      }
-  product {glb} {x} {y} (glb∼x , glb∼y , ∨-intror y∼glb) = record
-      { prod = glb
-      ; projl = glb∼x
-      ; projr = glb∼y
-      ; ump = λ {z} z∼x z∼y → P.trans z∼y y∼glb , _
-      }
+  ⊓-isBinaryProduct : ∀ {glb x y}
+    → (pl : glb ∼ x)
+    → (pr : glb ∼ y)
+    → (x ∼ glb ∨ y ∼ glb)
+    → IsBinaryProduct glb pl pr
+  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = x∼glb ∘ xl , _ , _
+  ⊓-isBinaryProduct pl pr (∨-intror y∼glb) xl xr = y∼glb ∘ xr , _ , _
+
+
+  ⊓-to-BinaryProduct : ∀ {glb x y} → glb ≈ x ⊓ y → BinaryProduct x y
+  ⊓-to-BinaryProduct {glb} (pl , pr , maximal) = record
+    { prod = glb
+    ; projl = pl
+    ; projr = pr
+    ; isBinaryProduct = ⊓-isBinaryProduct pl pr maximal
+    }
 
 
   mono : ∀ {x y} (f : x ⇒ y) → IsMono f
