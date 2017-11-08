@@ -5,10 +5,10 @@ open import Level
 open import Relation.Binary using (_Preserves_⟶_)
 
 
-record Functor {lo la l≈}
+record Functor {lo la l≈ lo′ la′ l≈′}
   (C : Category lo la l≈)
-  (D : Category lo la l≈)
-  : Set (lo ⊔ la ⊔ l≈) where
+  (D : Category lo′ la′ l≈′)
+  : Set (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′) where
   private
     module C = Category C
     module D = Category D
@@ -18,7 +18,7 @@ record Functor {lo la l≈}
     fmap : ∀ {A B} → A C.⇒ B → fobj A D.⇒ fobj B
     fmap-resp : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ D._≈_
     fmap-id : ∀ {A} → fmap (C.id {A}) D.≈ D.id
-    fmap-∘ : ∀ {a b c} (f : b C.⇒ c) (g : a C.⇒ b)
+    fmap-∘ : ∀ {A B C} (f : B C.⇒ C) (g : A C.⇒ B)
       → fmap (f C.∘ g) D.≈ fmap f D.∘ fmap g
 
 
