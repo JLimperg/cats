@@ -32,8 +32,8 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   f ∘ʳ g = g ∘ f
 
 
-  ≈-Setoid : (A B : Obj) → Setoid la l≈
-  ≈-Setoid A B = record
+  Hom : (A B : Obj) → Setoid la l≈
+  Hom A B = record
       { Carrier = A ⇒ B
       ; _≈_ = _≈_
       ; isEquivalence = equiv
@@ -41,7 +41,7 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
 
   module ≈ {A B} = IsEquivalence (equiv {A} {B})
-  module ≈-Reasoning {A B} = EqReasoning (≈-Setoid A B)
+  module ≈-Reasoning {A B} = EqReasoning (Hom A B)
   open ≈-Reasoning
 
 
