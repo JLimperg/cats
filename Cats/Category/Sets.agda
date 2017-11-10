@@ -1,5 +1,6 @@
 module Cats.Category.Sets where
 
+open import Data.Product using (Σ ; _×_ ; proj₁ ; proj₂)
 open import Level
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
@@ -66,6 +67,47 @@ module _ {l} where
         funext : ∀ {a b} {A : Set a} {B : A → Set b} {f g : (a : A) → B a}
           → (∀ x → f x ≡ g x)
           → f ≡ g
+
+
+  Equ : ∀ {A B} (f g : A ⇒ B) → Set l
+  Equ f g = ∃[ x ] (f x ≡ g x)
+
+
+  -- TODO Move to a better location.
+  cast : ∀ {a} {A B : Set a} → A ≡ B → A → B
+  cast ≡.refl x = x
+
+
+  -- TODO Move to a better location; rename.
+  prod-eq-proj : ∀ {a b} {A : Set a} {B : A → Set b} {p q : Σ A B}
+    → (eq₁ : proj₁ p ≡ proj₁ q)
+    → cast (≡.cong B eq₁) (proj₂ p) ≡ proj₂ q
+    → p ≡ q
+  prod-eq-proj {p = p} {q} eq₁ eq₂ with p | q
+  ... | p₁ , p₂ | q₁ , q₂ rewrite eq₁ | eq₂ = ≡.refl
+
+
+  equalizer : ∀ {A B} (f g : A ⇒ B) → Equalizer f g
+  equalizer {A} {B} f g = record
+      { E = Equ f g
+      ; e = proj₁
+      ; isEqualizer = record
+          { equalizes = λ x → proj₂ x
+          ; universal = universal
+          }
+      }
+    where
+      universal : ∀ {Z} (z : Z ⇒ A) → f ∘ z ≈ g ∘ z → ∃![ u ] (proj₁ ∘ u ≈ z)
+      universal {Z} z f∘z≈g∘z
+          = arr
+          , (λ x → ≡.refl)
+          , unique
+        where
+          arr : Z ⇒ Equ f g
+          arr x = z x , f∘z≈g∘z x
+
+          unique : ∀ {h : Z ⇒ Equ f g} → proj₁ ∘ h ≈ z → arr ≈ h
+          unique eq a = prod-eq-proj (≡.sym (eq a)) (≡.proof-irrelevance _ _)
 
 
 module _ where
