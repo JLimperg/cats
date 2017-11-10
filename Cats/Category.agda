@@ -120,6 +120,16 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   syntax ∃! (λ f → P) = ∃![ f ] P
 
 
+  ∃!→unique : ∀ {lp} {A B} {P : A ⇒ B → Set lp}
+    → ∃! P
+    → {f g : A ⇒ B}
+    → P f
+    → P g
+    → f ≈ g
+  ∃!→unique (u , pu , u-unique) pf pg
+      = ≈.trans (≈.sym (u-unique pf)) (u-unique pg)
+
+
   IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
   IsMono {A} f = ∀ {C} {g h : C ⇒ A} → f ∘ g ≈ f ∘ h → g ≈ h
 
@@ -184,6 +194,7 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   ∘-unique uniq-g uniq-f = ∘-resp (uniq-g _) (uniq-f _)
 
 
+  -- TODO reformulate initiality and terminality in terms of ∃!
   IsInitial : Obj → Set (lo ⊔ la ⊔ l≈)
   IsInitial Zero = ∀ X → Σ[ f ∈ Zero ⇒ X ] (IsUnique f)
 
@@ -402,3 +413,42 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
           (λ { {true} → id ; {false} → id})
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
+
+
+  record IsEqualizer {A B} (f g : A ⇒ B) {E} (e : E ⇒ A)
+    : Set (lo ⊔ la ⊔ l≈) where
+    field
+      equalizes : f ∘ e ≈ g ∘ e
+      universal : ∀ {Z} (z : Z ⇒ A)
+        → f ∘ z ≈ g ∘ z
+        → ∃![ u ] (e ∘ u ≈ z)
+
+
+  record Equalizer {A B} (f g : A ⇒ B) : Set (lo ⊔ la ⊔ l≈) where
+    field
+      {E} : Obj
+      e : E ⇒ A
+      isEqualizer : IsEqualizer f g e
+
+    open IsEqualizer isEqualizer public
+
+
+  equalizer→mono : ∀ {A B} {f g : A ⇒ B} {E} {e : E ⇒ A}
+    → IsEqualizer f g e
+    → IsMono e
+  equalizer→mono {f = f} {g} {E} {e} eql {Z} {i} {j} e∘i≈e∘j
+      = ∃!→unique (universal (e ∘ j) lemma) e∘i≈e∘j ≈.refl
+    where
+      open module E = IsEqualizer eql
+
+      lemma : f ∘ e ∘ j ≈ g ∘ e ∘ j
+      lemma
+          = begin
+            f ∘ e ∘ j
+          ≈⟨ ≈.sym (assoc _ _ _) ⟩
+            (f ∘ e) ∘ j
+          ≈⟨ ∘-resp equalizes ≈.refl ⟩
+            (g ∘ e) ∘ j
+          ≈⟨ assoc _ _ _ ⟩
+            g ∘ e ∘ j
+          ∎
