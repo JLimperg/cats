@@ -27,15 +27,18 @@ module _ (l l≈ : Level) where
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) (l ⊔ l≈)
-  _≈_ {A} {B} f g = ∀ {x y} → eq A x y → eq B (arr f x) (arr f y)
+  _≈_ {A} {B} f g = ∀ {x y} → eq A x y → eq B (arr f x) (arr g y)
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
   equiv {A} {B} = record
       { refl = λ {f} → resp f
-      ; sym = λ {f} {g} _ → resp g
-      ; trans = λ {f} _ _ → resp f
+      ; sym = λ {f} {g} eq x≈y → B.sym (eq (A.sym x≈y))
+      ; trans = λ {f} eq₁ eq₂ x≈y → B.trans (eq₁ x≈y) (eq₂ A.refl)
       }
+    where
+      module A = Setoid A
+      module B = Setoid B
 
 
   id : ∀ {A} → A ⇒ A
@@ -62,9 +65,9 @@ module _ (l l≈ : Level) where
       ; id = id
       ; _∘_ = _∘_
       ; equiv = equiv
-      ; ∘-resp = λ {A} {B} {C} {f} {g} {h} {i} _ _ eqA → resp f (resp h eqA) -- [1]
-      ; id-r = λ {A} {B} {f} eq → sym B (resp f (sym A eq)) -- [1]
-      ; id-l = λ {A} {B} {f} → resp f -- [1]
+      ; ∘-resp = λ f≈g h≈i x≈y → f≈g (h≈i x≈y)
+      ; id-r = λ {A} {B} {f} → resp f
+      ; id-l = λ {A} {B} {f} → resp f
       ; assoc = assoc
       }
 

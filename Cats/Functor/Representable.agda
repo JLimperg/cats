@@ -3,23 +3,37 @@ module Cats.Functor.Representable where
 open import Relation.Binary using (Setoid)
 
 open import Cats.Category
-open import Cats.Category.Setoids using (Setoids)
+open import Cats.Category.Setoids as Setoids using (Setoids)
 open import Cats.Functor
 
 
 module _ {lo la l≈} {C : Category lo la l≈} where
 
-  open module C = Category C renaming (Hom to Homset)
+  private
+    open module C = Category C renaming (Hom to Homset)
+    open Category (Setoids la l≈) using () renaming (_⇒_ to _⇒′_)
 
 
   Hom : Obj → Functor C (Setoids la l≈)
   Hom X = record
-      { fobj = λ A → Homset X A
-      ; fmap = λ f → record
+      { fobj = fobj
+      ; fmap = fmap
+      ; fmap-resp = λ f≈g h≈i → ∘-resp f≈g h≈i
+      ; fmap-id = trans id-l
+      ; fmap-∘ = λ f g x≈y
+          → trans (assoc _ _ _) (resp (fmap f) (resp (fmap g) x≈y))
+      }
+    module Hom where
+      open Setoids._⇒_ using (resp)
+
+      fobj : Obj → Setoid la l≈
+      fobj A = Homset X A
+
+      private
+        open module S {A} = Setoid (fobj A) using (trans)
+
+      fmap : ∀ {A B} → A ⇒ B → fobj A ⇒′ fobj B
+      fmap f = record
           { arr = λ g → f ∘ g
           ; resp = ∘-resp C.≈.refl
           }
-      ; fmap-resp = λ _ → ∘-resp C.≈.refl
-      ; fmap-id = ∘-resp C.≈.refl
-      ; fmap-∘ = λ _ _ → ∘-resp C.≈.refl
-      }
