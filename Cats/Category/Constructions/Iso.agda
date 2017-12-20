@@ -7,11 +7,16 @@ open import Cats.Category.Base
 
 import Relation.Binary.EqReasoning as EqReasoning
 
+import Cats.Category.Constructions.Epi as Epi
+import Cats.Category.Constructions.Mono as Mono
+
 
 module Build {lo la l≈} (Cat : Category lo la l≈) where
 
   private open module Cat = Category Cat
   open Cat.≈-Reasoning
+  open Epi.Build Cat
+  open Mono.Build Cat
 
 
   record _≅_ (A B : Obj) : Set (lo ⊔ la ⊔ l≈) where
@@ -84,3 +89,45 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
   module ≅ = IsEquivalence ≅-equiv
   module ≅-Reasoning = EqReasoning ≅-Setoid
+
+
+  iso-mono : ∀ {A B} (iso : A ≅ B) → IsMono (forth iso)
+  iso-mono iso {g = g} {h} iso∘g≈iso∘h
+      = begin
+          g
+        ≈⟨ ≈.sym id-l ⟩
+          id ∘ g
+        ≈⟨ ∘-resp (≈.sym (back-forth iso)) ≈.refl ⟩
+          (back iso ∘ forth iso) ∘ g
+        ≈⟨ assoc _ _ _ ⟩
+          back iso ∘ forth iso ∘ g
+        ≈⟨ ∘-resp ≈.refl iso∘g≈iso∘h ⟩
+          back iso ∘ forth iso ∘ h
+        ≈⟨ ≈.sym (assoc _ _ _) ⟩
+          (back iso ∘ forth iso) ∘ h
+        ≈⟨ ∘-resp (back-forth iso) ≈.refl ⟩
+          id ∘ h
+        ≈⟨ id-l ⟩
+          h
+        ∎
+
+
+  iso-epi : ∀ {A B} (iso : A ≅ B) → IsEpi (forth iso)
+  iso-epi iso {g = g} {h} g∘iso≈h∘iso
+      = begin
+          g
+        ≈⟨ ≈.sym id-r ⟩
+          g ∘ id
+        ≈⟨ ∘-resp ≈.refl (≈.sym (forth-back iso)) ⟩
+          g ∘ forth iso ∘ back iso
+        ≈⟨ ≈.sym (assoc _ _ _) ⟩
+          (g ∘ forth iso) ∘ back iso
+        ≈⟨ ∘-resp g∘iso≈h∘iso ≈.refl ⟩
+          (h ∘ forth iso) ∘ back iso
+        ≈⟨ assoc _ _ _ ⟩
+          h ∘ forth iso ∘ back iso
+        ≈⟨ ∘-resp ≈.refl (forth-back iso) ⟩
+          h ∘ id
+        ≈⟨ id-r ⟩
+          h
+        ∎

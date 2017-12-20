@@ -10,8 +10,10 @@ open import Cats.Util.Logic.Constructive
 import Relation.Binary.EqReasoning as EqReasoning
 
 import Cats.Category.Base as Base
-import Cats.Category.Constructions.Unique as Unique
+import Cats.Category.Constructions.Epi as Epi
 import Cats.Category.Constructions.Iso as Iso
+import Cats.Category.Constructions.Mono as Mono
+import Cats.Category.Constructions.Unique as Unique
 
 
 Category : ∀ lo la l≈ → Set (suc (lo ⊔ la ⊔ l≈))
@@ -22,63 +24,15 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 
   private open module Cat = Base.Category Cat public
   open Cat.≈-Reasoning
-  open Unique.Build Cat public
+  open Epi.Build Cat public
   open Iso.Build Cat public
+  open Mono.Build Cat public
+  open Unique.Build Cat public
   open _≅_
 
 
   _∘ʳ_ : ∀ {A B C} → A ⇒ B → B ⇒ C → A ⇒ C
   f ∘ʳ g = g ∘ f
-
-
-  IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
-  IsMono {A} f = ∀ {C} {g h : C ⇒ A} → f ∘ g ≈ f ∘ h → g ≈ h
-
-
-  IsEpi : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
-  IsEpi {A} {B} f = ∀ {C} {g h : B ⇒ C} → g ∘ f ≈ h ∘ f → g ≈ h
-
-
-  iso-mono : ∀ {A B} (iso : A ≅ B) → IsMono (forth iso)
-  iso-mono iso {g = g} {h} iso∘g≈iso∘h
-      = begin
-          g
-        ≈⟨ ≈.sym id-l ⟩
-          id ∘ g
-        ≈⟨ ∘-resp (≈.sym (back-forth iso)) ≈.refl ⟩
-          (back iso ∘ forth iso) ∘ g
-        ≈⟨ assoc _ _ _ ⟩
-          back iso ∘ forth iso ∘ g
-        ≈⟨ ∘-resp ≈.refl iso∘g≈iso∘h ⟩
-          back iso ∘ forth iso ∘ h
-        ≈⟨ ≈.sym (assoc _ _ _) ⟩
-          (back iso ∘ forth iso) ∘ h
-        ≈⟨ ∘-resp (back-forth iso) ≈.refl ⟩
-          id ∘ h
-        ≈⟨ id-l ⟩
-          h
-        ∎
-
-
-  iso-epi : ∀ {A B} (iso : A ≅ B) → IsEpi (forth iso)
-  iso-epi iso {g = g} {h} g∘iso≈h∘iso
-      = begin
-          g
-        ≈⟨ ≈.sym id-r ⟩
-          g ∘ id
-        ≈⟨ ∘-resp ≈.refl (≈.sym (forth-back iso)) ⟩
-          g ∘ forth iso ∘ back iso
-        ≈⟨ ≈.sym (assoc _ _ _) ⟩
-          (g ∘ forth iso) ∘ back iso
-        ≈⟨ ∘-resp g∘iso≈h∘iso ≈.refl ⟩
-          (h ∘ forth iso) ∘ back iso
-        ≈⟨ assoc _ _ _ ⟩
-          h ∘ forth iso ∘ back iso
-        ≈⟨ ∘-resp ≈.refl (forth-back iso) ⟩
-          h ∘ id
-        ≈⟨ id-r ⟩
-          h
-        ∎
 
 
   -- Note: f unique and g unique does not, in general, imply g ∘ f unique. There
