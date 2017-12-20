@@ -125,5 +125,5 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       F = record { dom = f ; commute = C.≈.sym C.id-l }
 
       F-Unique : IsUnique F
-      F-Unique record { dom = g ; commute = commute }
+      F-Unique {record { dom = g ; commute = commute }} _
           = ≈-i (≈.trans commute C.id-l)

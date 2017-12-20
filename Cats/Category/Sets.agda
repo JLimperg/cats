@@ -59,9 +59,10 @@ module _ {l} where
 
   exponentialIsProduct : ∀ {I A : Obj} → IsProduct {I = I} (λ _ → A) (I → A) (λ i f → f i)
   exponentialIsProduct projX
-      = (λ x i → projX i x)
-      , (λ _ _ → ≡.refl)
-      , λ eq x → funext λ i → eq i x
+      = ∃!-intro
+          (λ x i → projX i x)
+          (λ _ _ → ≡.refl)
+          (λ eq x → funext λ i → eq i x)
     where
       postulate
         funext : ∀ {a b} {A : Set a} {B : A → Set b} {f g : (a : A) → B a}
@@ -99,9 +100,7 @@ module _ {l} where
     where
       universal : ∀ {Z} (z : Z ⇒ A) → f ∘ z ≈ g ∘ z → ∃![ u ] (proj₁ ∘ u ≈ z)
       universal {Z} z f∘z≈g∘z
-          = arr
-          , (λ x → ≡.refl)
-          , unique
+          = ∃!-intro arr (λ _ → ≡.refl) unique
         where
           arr : Z ⇒ Equ f g
           arr x = z x , f∘z≈g∘z x

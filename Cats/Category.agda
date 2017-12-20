@@ -10,6 +10,7 @@ open import Cats.Util.Logic.Constructive
 import Relation.Binary.EqReasoning as EqReasoning
 
 import Cats.Category.Base as Base
+import Cats.Category.Constructions.Unique as Unique
 
 
 Category : ∀ lo la l≈ → Set (suc (lo ⊔ la ⊔ l≈))
@@ -18,8 +19,10 @@ Category = Base.Category
 
 module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 
-  open module Cat = Base.Category Cat public
+  private open module Cat = Base.Category Cat public
   open Cat.≈-Reasoning
+
+  open Unique.Build Cat public
 
 
   _∘ʳ_ : ∀ {A B C} → A ⇒ B → B ⇒ C → A ⇒ C
@@ -95,22 +98,6 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   module ≅-Reasoning = EqReasoning ≅-Setoid
 
 
-  ∃! : ∀ {lp} {A B} → (A ⇒ B → Set lp) → Set (la ⊔ l≈ ⊔ lp)
-  ∃! {A = A} {B} P = Σ[ f ∈ A ⇒ B ] (P f ∧ (∀ {g} → P g → f ≈ g))
-
-  syntax ∃! (λ f → P) = ∃![ f ] P
-
-
-  ∃!→unique : ∀ {lp} {A B} {P : A ⇒ B → Set lp}
-    → ∃! P
-    → {f g : A ⇒ B}
-    → P f
-    → P g
-    → f ≈ g
-  ∃!→unique (u , pu , u-unique) pf pg
-      = ≈.trans (≈.sym (u-unique pf)) (u-unique pg)
-
-
   IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
   IsMono {A} f = ∀ {C} {g h : C ⇒ A} → f ∘ g ≈ f ∘ h → g ≈ h
 
@@ -159,10 +146,6 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
         ≈⟨ id-r ⟩
           h
         ∎
-
-
-  IsUnique : ∀ {A B} → A ⇒ B → Set (l≈ ⊔ la)
-  IsUnique {A} {B} f = ∀ (f′ : A ⇒ B) → f ≈ f′
 
 
   -- Note: f unique and g unique does not, in general, imply g ∘ f unique. There
@@ -257,18 +240,22 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
     → IsProduct (Bool-elim A B) P proj
     → IsBinaryProduct P (proj true) (proj false)
   IsProduct→IsBinaryProduct prod xl xr with prod (Bool-elim xl xr)
-  ... | u , u-eq , u-uniq
-      = u
-      , (u-eq true , u-eq false)
-      , λ { (h₁ , h₂) → u-uniq (Bool-elim h₁ h₂) }
+  ... | ∃!-intro u u-eq u-uniq
+      = ∃!-intro
+          u
+          (u-eq true , u-eq false)
+          (λ { (h₁ , h₂) → u-uniq (Bool-elim h₁ h₂) })
 
 
   IsBinaryProduct→IsProduct : ∀ {A B P projl projr}
     → IsBinaryProduct P projl projr
     → IsProduct (Bool-elim A B) P (Bool-elim projl projr)
   IsBinaryProduct→IsProduct prod proj with prod (proj true) (proj false)
-  ... | u , (u-eq₁ , u-eq₂) , u-uniq
-      = u , Bool-elim u-eq₁ u-eq₂ , λ eq → u-uniq (eq true , eq false)
+  ... | ∃!-intro u (u-eq₁ , u-eq₂) u-uniq
+      = ∃!-intro
+          u
+          (Bool-elim u-eq₁ u-eq₂)
+          (λ eq → u-uniq (eq true , eq false))
 
 
   proj-cancel : ∀ {li} {I : Set li} {O : I → Obj} {P proj}
@@ -277,7 +264,7 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
     → (∀ i → proj i ∘ f ≈ proj i ∘ g)
     → f ≈ g
   proj-cancel {proj = proj} prod {f = f} {g} eq with prod (λ i → proj i ∘ g)
-  ... | u , _ , u-uniq
+  ... | ∃!-intro u _ u-uniq
       = begin
           f
         ≈⟨ ≈.sym (u-uniq (λ i → ≈.sym (eq i))) ⟩
@@ -294,7 +281,7 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
     → P ≅ P′
   Product-unique {P = P} {proj} prod {P′} {proj′} prod′
     with prod′ proj | prod proj′
-  ... | u , u-eq , _ | v , v-eq , _ = record
+  ... | ∃!-intro u u-eq _ | ∃!-intro v v-eq _ = record
       { forth = u
       ; back = v
       ; back-forth = proj-cancel prod (lemma u-eq v-eq)
@@ -336,7 +323,7 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   Product-permute perm {O} {P} {proj} prod {O′} {P′} {proj′} prod′ f₁ f₂ eq₁ eq₂
     with prod′ {P} (λ i → f₁ ∘ proj (perm i))
        | prod {P′} (λ i → f₂ ∘ proj′ (perm i))
-  ... | u , u-eq , _ | v , v-eq , _
+  ... | ∃!-intro u u-eq _ | ∃!-intro v v-eq _
       = record
       { forth = u
       ; back = v
@@ -418,7 +405,7 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
     → IsEqualizer f g e
     → IsMono e
   equalizer→mono {f = f} {g} {E} {e} eql {Z} {i} {j} e∘i≈e∘j
-      = ∃!→unique (universal (e ∘ j) lemma) e∘i≈e∘j ≈.refl
+      = ∃!→≈ (universal (e ∘ j) lemma) e∘i≈e∘j ≈.refl
     where
       open module E = IsEqualizer eql
 

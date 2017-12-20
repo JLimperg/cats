@@ -48,8 +48,8 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
     → (pr : glb ∼ y)
     → (x ∼ glb ∨ y ∼ glb)
     → IsBinaryProduct glb pl pr
-  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = x∼glb ∘ xl , _ , _
-  ⊓-isBinaryProduct pl pr (∨-intror y∼glb) xl xr = y∼glb ∘ xr , _ , _
+  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = ∃!-intro (x∼glb ∘ xl) _  _
+  ⊓-isBinaryProduct pl pr (∨-intror y∼glb) xl xr = ∃!-intro (y∼glb ∘ xr) _ _
 
 
   ⊓-to-BinaryProduct : ∀ {glb x y} → glb ≈ x ⊓ y → BinaryProduct x y
