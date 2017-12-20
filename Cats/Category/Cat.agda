@@ -140,7 +140,6 @@ module _ lo la l≈ where
                 ∎
               )
             where
-              module F≅G {x} = Category._≅_ (F≅G {x})
               lem : forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G D.≈
                     (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
               lem = assoc! D
