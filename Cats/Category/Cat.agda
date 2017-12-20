@@ -281,7 +281,7 @@ module _ {lo la l≈} where
 
 
   Zero-Initial : IsInitial (Zero lo la l≈)
-  Zero-Initial X = f , f-Unique
+  Zero-Initial X = ∃!-intro f _ f-Unique
     where
       f : Functor (Zero lo la l≈) X
       f = record
@@ -300,7 +300,7 @@ module _ {lo la l≈} where
 
 
   One-Terminal : IsTerminal (One lo la l≈)
-  One-Terminal X = f , f-Unique
+  One-Terminal X = ∃!-intro f _ f-Unique
     where
       f : Functor X (One lo la l≈)
       f = record

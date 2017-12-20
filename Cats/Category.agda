@@ -12,7 +12,9 @@ import Relation.Binary.EqReasoning as EqReasoning
 import Cats.Category.Base as Base
 import Cats.Category.Constructions.Epi as Epi
 import Cats.Category.Constructions.Iso as Iso
+import Cats.Category.Constructions.Initial as Initial
 import Cats.Category.Constructions.Mono as Mono
+import Cats.Category.Constructions.Terminal as Terminal
 import Cats.Category.Constructions.Unique as Unique
 
 
@@ -25,8 +27,10 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   private open module Cat = Base.Category Cat public
   open Cat.≈-Reasoning
   open Epi.Build Cat public
+  open Initial.Build Cat public
   open Iso.Build Cat public
   open Mono.Build Cat public
+  open Terminal.Build Cat public
   open Unique.Build Cat public
   open _≅_
 
@@ -43,53 +47,6 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
     → ∀ {g′ : B ⇒ C} {f′ : A ⇒ B}
     → g ∘ f ≈ g′ ∘ f′
   ∘-unique uniq-g uniq-f = ∘-resp (uniq-g _) (uniq-f _)
-
-
-  -- TODO reformulate initiality and terminality in terms of ∃!
-  IsInitial : Obj → Set (lo ⊔ la ⊔ l≈)
-  IsInitial Zero = ∀ X → Σ[ f ∈ Zero ⇒ X ] (IsUnique f)
-
-
-  initial→id-unique : ∀ {A} → IsInitial A → IsUnique (id {A})
-  initial→id-unique {A} init id′ with init A
-  ... | id″ , id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
-
-
-  initial-unique : ∀ {A B} → IsInitial A → IsInitial B → A ≅ B
-  initial-unique {A} {B} A-init B-init = record
-      { forth = ∧-eliml (A-init B)
-      ; back = ∧-eliml (B-init A)
-      ; back-forth = ≈.sym (initial→id-unique A-init _)
-      ; forth-back = ≈.sym (initial→id-unique B-init _)
-      }
-
-
-  Initial⇒X-unique : ∀ {Zero} → IsInitial Zero → ∀ {X} {f g : Zero ⇒ X} → f ≈ g
-  Initial⇒X-unique init {X} {f} {g} with init X
-  ... | x , x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
-
-
-  IsTerminal : Obj → Set (lo ⊔ la ⊔ l≈)
-  IsTerminal One = ∀ X → Σ[ f ∈ X ⇒ One ] (IsUnique f)
-
-
-  terminal→id-unique : ∀ {A} → IsTerminal A → IsUnique (id {A})
-  terminal→id-unique {A} term id′ with term A
-  ... | id″ , id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
-
-
-  terminal-unique : ∀ {A B} → IsTerminal A → IsTerminal B → A ≅ B
-  terminal-unique {A} {B} A-term B-term = record
-      { forth = ∧-eliml (B-term A)
-      ; back = ∧-eliml (A-term B)
-      ; back-forth = ≈.sym (terminal→id-unique A-term _)
-      ; forth-back = ≈.sym (terminal→id-unique B-term _)
-      }
-
-
-  X⇒Terminal-unique : ∀ {One} → IsTerminal One → ∀ {X} {f g : X ⇒ One} → f ≈ g
-  X⇒Terminal-unique term {X} {f} {g} with term X
-  ... | x , x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
 
 
   IsProduct : ∀ {li} {I : Set li} (O : I → Obj) P → (∀ i → P ⇒ O i)

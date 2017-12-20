@@ -110,7 +110,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
       }
 
 
-  open Category _/_ using (IsTerminal ; IsUnique)
+  open Category _/_ using (IsTerminal ; IsUnique ; ∃!-intro)
 
 
   One : Obj
@@ -119,7 +119,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
 
   One-Terminal : IsTerminal One
   One-Terminal Y@(mkObj f)
-      = F , F-Unique
+      = ∃!-intro F _ F-Unique
     where
       F : Y ⇒ One
       F = record { dom = f ; commute = C.≈.sym C.id-l }

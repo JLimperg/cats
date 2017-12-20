@@ -36,11 +36,11 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
 
 
   initial : ∀ {x} → IsMinimum x → IsInitial x
-  initial min y = (min y) , _
+  initial min y = ∃!-intro (min y) _ _
 
 
   terminal : ∀ {x} → IsMaximum x → IsTerminal x
-  terminal max y = (max y) , _
+  terminal max y = ∃!-intro (max y) _ _
 
 
   ⊓-isBinaryProduct : ∀ {glb x y}

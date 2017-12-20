@@ -116,8 +116,8 @@ module _ where
 
 
   ⊥-Initial : IsInitial ⊥
-  ⊥-Initial X = (λ()) , λ _ ()
+  ⊥-Initial X = ∃!-intro (λ()) _ (λ _ ())
 
 
   ⊤-Terminal : IsTerminal ⊤
-  ⊤-Terminal X = (λ _ → ⊤-intro) , λ _ _ → ≡.refl
+  ⊤-Terminal X = ∃!-intro (λ _ → ⊤-intro) _ (λ _ _ → ≡.refl)
