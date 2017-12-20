@@ -14,7 +14,7 @@ open import Data.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Data.String using (String)
 open import Reflection
 
-open import Cats.Category using (Category)
+open import Cats.Category.Base using (Category)
 
 open RawMonad {{...}}
 
