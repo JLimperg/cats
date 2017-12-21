@@ -26,8 +26,7 @@ Category = Base.Category
 
 module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 
-  private open module Cat = Base.Category Cat public
-  open Cat.≈-Reasoning
+  open Base.Category Cat public
   open Epi.Build Cat public
   open Equalizer.Build Cat public
   open Initial.Build Cat public
@@ -36,18 +35,3 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   open Product.Build Cat public
   open Terminal.Build Cat public
   open Unique.Build Cat public
-  open _≅_
-
-
-  _∘ʳ_ : ∀ {A B C} → A ⇒ B → B ⇒ C → A ⇒ C
-  f ∘ʳ g = g ∘ f
-
-
-  -- Note: f unique and g unique does not, in general, imply g ∘ f unique. There
-  -- can be an h : A ⇒ C which is different from g′ ∘ f′ for any f′, g′.
-  ∘-unique : ∀ {A B C} {g : B ⇒ C} {f : A ⇒ B}
-    → IsUnique g
-    → IsUnique f
-    → ∀ {g′ : B ⇒ C} {f′ : A ⇒ B}
-    → g ∘ f ≈ g′ ∘ f′
-  ∘-unique uniq-g uniq-f = ∘-resp (uniq-g _) (uniq-f _)
