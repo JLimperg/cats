@@ -37,7 +37,7 @@ module _  {lo la l≈} (C : Category lo la l≈) where
 
   assoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
     → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  assoc = ≈.sym C.assoc
+  assoc = C.unassoc
 
   _ᵒᵖ : Category lo la l≈
   _ᵒᵖ = record

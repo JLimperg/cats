@@ -59,15 +59,15 @@ module _ {lo la l≈} (C : Category lo la l≈) where
       ; commute
           = begin
               arr H C.∘ F-dom C.∘ G-dom
-            ≈⟨ ≈.sym C.assoc ⟩
+            ≈⟨ C.unassoc ⟩
               (arr H C.∘ F-dom) C.∘ G-dom
-            ≈⟨ C.∘-resp F-commute ≈.refl ⟩
+            ≈⟨ C.∘-resp-l F-commute ⟩
               (F-cod C.∘ arr G) C.∘ G-dom
             ≈⟨ C.assoc ⟩
               F-cod C.∘ arr G C.∘ G-dom
-            ≈⟨ C.∘-resp ≈.refl G-commute ⟩
+            ≈⟨ C.∘-resp-r G-commute ⟩
               F-cod C.∘ G-cod C.∘ arr F
-            ≈⟨ ≈.sym C.assoc ⟩
+            ≈⟨ C.unassoc ⟩
               (F-cod C.∘ G-cod) C.∘ arr F
             ∎
       }

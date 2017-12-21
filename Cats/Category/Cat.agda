@@ -125,15 +125,15 @@ module _ lo la l≈ where
               = ≈.sym
               ( begin
                   back iso D.∘ F.fmap f D.∘ forth iso
-                ≈⟨ D.∘-resp ≈.refl (D.∘-resp (fmap-≈-FG f) ≈.refl) ⟩
+                ≈⟨ D.∘-resp-r (D.∘-resp-l (fmap-≈-FG f)) ⟩
                   forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G
                 ≈⟨ lem ⟩
                   (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                ≈⟨ D.∘-resp (forth-back F≅G) ≈.refl ⟩
+                ≈⟨ D.∘-resp-l (forth-back F≅G) ⟩
                   D.id D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
                 ≈⟨ D.id-l ⟩
                   G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                ≈⟨ D.∘-resp ≈.refl (forth-back F≅G) ⟩
+                ≈⟨ D.∘-resp-r (forth-back F≅G) ⟩
                   G.fmap f D.∘ D.id
                 ≈⟨ D.id-r ⟩
                   G.fmap f
@@ -172,7 +172,7 @@ module _ lo la l≈ where
                   (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G
                 ≈⟨ lem ⟩
                   back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
-                ≈⟨ D.∘-resp ≈.refl (D.∘-resp (≈.sym (fmap-≈-GH f)) ≈.refl) ⟩
+                ≈⟨ D.∘-resp-r (D.∘-resp-l (≈.sym (fmap-≈-GH f))) ⟩
                   back F≅G D.∘ G.fmap f D.∘ forth F≅G
                 ≈⟨ ≈.sym (fmap-≈-FG f) ⟩
                   F.fmap f
@@ -219,9 +219,9 @@ module _ lo la l≈ where
               (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
             ≈⟨ lem ⟩
               back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
-            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (≈.trans (E.∘-resp ≈.refl (≈.sym (G.fmap-∘ _ _))) (≈.sym (G.fmap-∘ _ _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp-r (E.∘-resp-l (≈.trans (E.∘-resp-r (≈.sym (G.fmap-∘ _ _))) (≈.sym (G.fmap-∘ _ _)))) ⟩
               back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
-            ≈⟨ E.∘-resp ≈.refl (E.∘-resp (G.fmap-resp (D.≈.sym (fmap-≈-HI _))) ≈.refl) ⟩
+            ≈⟨ E.∘-resp-r (E.∘-resp-l (G.fmap-resp (D.≈.sym (fmap-≈-HI _)))) ⟩
               back F≅G E.∘ G.fmap (H.fmap f) E.∘ forth F≅G
             ≈⟨ ≈.sym (fmap-≈-FG _) ⟩
               F.fmap (H.fmap f)

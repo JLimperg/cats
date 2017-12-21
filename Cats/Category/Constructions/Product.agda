@@ -112,7 +112,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
               proj i ∘ v ∘ u
             ≈⟨ ≈.sym assoc ⟩
               (proj i ∘ v) ∘ u
-            ≈⟨ ∘-resp (≈.sym (v-eq _)) ≈.refl ⟩
+            ≈⟨ ∘-resp-l (≈.sym (v-eq _)) ⟩
               proj′ i ∘ u
             ≈⟨ ≈.sym (u-eq _) ⟩
               proj i
@@ -148,13 +148,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lem₁ i
           = begin
               proj i ∘ v ∘ u
-            ≈⟨ ≈.sym assoc ⟩
+            ≈⟨ unassoc ⟩
               (proj i ∘ v) ∘ u
-            ≈⟨ ∘-resp (≈.sym (v-eq _)) ≈.refl ⟩
+            ≈⟨ ∘-resp-l (≈.sym (v-eq _)) ⟩
               (f₂ ∘ proj′ (perm i)) ∘ u
             ≈⟨ assoc ⟩
               f₂ ∘ proj′ (perm i) ∘ u
-            ≈⟨ ∘-resp ≈.refl (≈.sym (u-eq _)) ⟩
+            ≈⟨ ∘-resp-r (≈.sym (u-eq _)) ⟩
               f₂ ∘ f₁ ∘ proj (perm (perm i))
             ≈⟨ eq₁ ⟩
               proj i
@@ -166,13 +166,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lem₂ i
           = begin
               proj′ i ∘ u ∘ v
-            ≈⟨ ≈.sym assoc ⟩
+            ≈⟨ unassoc ⟩
               (proj′ i ∘ u) ∘ v
-            ≈⟨ ∘-resp (≈.sym (u-eq _)) ≈.refl ⟩
+            ≈⟨ ∘-resp-l (≈.sym (u-eq _)) ⟩
               (f₁ ∘ proj (perm i)) ∘ v
             ≈⟨ assoc ⟩
               f₁ ∘ proj (perm i) ∘ v
-            ≈⟨ ∘-resp ≈.refl (≈.sym (v-eq _)) ⟩
+            ≈⟨ ∘-resp-r (≈.sym (v-eq _)) ⟩
               f₁ ∘ f₂ ∘ proj′ (perm (perm i))
             ≈⟨ eq₂ ⟩
               proj′ i

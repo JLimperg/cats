@@ -2,7 +2,7 @@ module Cats.Category.Base where
 
 open import Level
 open import Relation.Binary using
-  (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_ ; Setoid)
+  (Rel ; IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_ ; Setoid)
 open import Relation.Binary.EqReasoning as EqReasoning
 
 
@@ -35,4 +35,16 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
   module ≈ {A B} = IsEquivalence (equiv {A} {B})
   module ≈-Reasoning {A B} = EqReasoning (Hom A B)
-  open ≈-Reasoning
+
+
+  unassoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
+    → f ∘ (g ∘ h) ≈ (f ∘ g) ∘ h
+  unassoc = ≈.sym assoc
+
+
+  ∘-resp-r : ∀ {A B C} {f : B ⇒ C} → (_∘_ {A} f) Preserves _≈_ ⟶ _≈_
+  ∘-resp-r eq = ∘-resp ≈.refl eq
+
+
+  ∘-resp-l :  ∀ {A B C} {g : A ⇒ B} → (λ f → _∘_ {C = C} f g) Preserves _≈_ ⟶ _≈_
+  ∘-resp-l eq = ∘-resp eq ≈.refl

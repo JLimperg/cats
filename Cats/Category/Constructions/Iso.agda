@@ -57,9 +57,9 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
                   (back A≅B ∘ back B≅C) ∘ forth B≅C ∘ forth A≅B
                 ≈⟨ assoc ⟩
                   back A≅B ∘ back B≅C ∘ forth B≅C ∘ forth A≅B
-                ≈⟨ ∘-resp ≈.refl (≈.trans (≈.sym assoc) (∘-resp (back-forth B≅C) ≈.refl)) ⟩
+                ≈⟨ ∘-resp-r (≈.trans unassoc (∘-resp-l (back-forth B≅C))) ⟩
                   back A≅B ∘ id ∘ forth A≅B
-                ≈⟨ ∘-resp ≈.refl id-l ⟩
+                ≈⟨ ∘-resp-r id-l ⟩
                   back A≅B ∘ forth A≅B
                 ≈⟨ back-forth A≅B ⟩
                   id
@@ -69,9 +69,9 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
                   (forth B≅C ∘ forth A≅B) ∘ back A≅B ∘ back B≅C
                 ≈⟨ assoc ⟩
                   forth B≅C ∘ forth A≅B ∘ back A≅B ∘ back B≅C
-                ≈⟨ ∘-resp ≈.refl (≈.trans (≈.sym assoc) (∘-resp (forth-back A≅B) ≈.refl)) ⟩
+                ≈⟨ ∘-resp-r (≈.trans unassoc (∘-resp-l (forth-back A≅B))) ⟩
                   forth B≅C ∘ id ∘ back B≅C
-                ≈⟨ ∘-resp ≈.refl id-l ⟩
+                ≈⟨ ∘-resp-r id-l ⟩
                   forth B≅C ∘ back B≅C
                 ≈⟨ forth-back B≅C ⟩
                   id
@@ -97,15 +97,15 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
           g
         ≈⟨ ≈.sym id-l ⟩
           id ∘ g
-        ≈⟨ ∘-resp (≈.sym (back-forth iso)) ≈.refl ⟩
+        ≈⟨ ∘-resp-l (≈.sym (back-forth iso)) ⟩
           (back iso ∘ forth iso) ∘ g
         ≈⟨ assoc ⟩
           back iso ∘ forth iso ∘ g
-        ≈⟨ ∘-resp ≈.refl iso∘g≈iso∘h ⟩
+        ≈⟨ ∘-resp-r iso∘g≈iso∘h ⟩
           back iso ∘ forth iso ∘ h
-        ≈⟨ ≈.sym assoc ⟩
+        ≈⟨ unassoc ⟩
           (back iso ∘ forth iso) ∘ h
-        ≈⟨ ∘-resp (back-forth iso) ≈.refl ⟩
+        ≈⟨ ∘-resp-l (back-forth iso) ⟩
           id ∘ h
         ≈⟨ id-l ⟩
           h
@@ -118,15 +118,15 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
           g
         ≈⟨ ≈.sym id-r ⟩
           g ∘ id
-        ≈⟨ ∘-resp ≈.refl (≈.sym (forth-back iso)) ⟩
+        ≈⟨ ∘-resp-r (≈.sym (forth-back iso)) ⟩
           g ∘ forth iso ∘ back iso
-        ≈⟨ ≈.sym assoc ⟩
+        ≈⟨ unassoc ⟩
           (g ∘ forth iso) ∘ back iso
-        ≈⟨ ∘-resp g∘iso≈h∘iso ≈.refl ⟩
+        ≈⟨ ∘-resp-l g∘iso≈h∘iso ⟩
           (h ∘ forth iso) ∘ back iso
         ≈⟨ assoc ⟩
           h ∘ forth iso ∘ back iso
-        ≈⟨ ∘-resp ≈.refl (forth-back iso) ⟩
+        ≈⟨ ∘-resp-r (forth-back iso) ⟩
           h ∘ id
         ≈⟨ id-r ⟩
           h

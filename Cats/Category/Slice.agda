@@ -61,7 +61,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
               arr F
             ≈⟨ G-commute ⟩
               arr G C.∘ G-dom
-            ≈⟨ C.∘-resp F-commute ≈.refl ⟩
+            ≈⟨ C.∘-resp-l F-commute ⟩
               (arr H C.∘ F-dom) C.∘ G-dom
             ≈⟨ C.assoc ⟩
               arr H C.∘ F-dom C.∘ G-dom
