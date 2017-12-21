@@ -21,7 +21,7 @@ record Monoid l l≈ : Set (suc (l ⊔ l≈)) where
     unit : Carrier
 
     ⊕-resp : _⊕_ Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-    assoc : ∀ a b c → (a ⊕ b) ⊕ c ≈ a ⊕ (b ⊕ c)
+    assoc : ∀ {a b c} → (a ⊕ b) ⊕ c ≈ a ⊕ (b ⊕ c)
     id-l : ∀ {a} → unit ⊕ a ≈ a
     id-r : ∀ {a} → a ⊕ unit ≈ a
 
@@ -103,7 +103,7 @@ module _ (l l≈ : Level) where
       ; ∘-resp = λ f≈g h≈i → f≈g Fun.∘ h≈i
       ; id-r = λ {M} {N} {f} → resp f
       ; id-l = λ {M} {N} {f} → resp f
-      ; assoc = λ h g f x≈y → resp h (resp g (resp f x≈y))
+      ; assoc = λ {_} {_} {_} {_} {f} {g} {h} x≈y → resp f (resp g (resp h x≈y))
       }
 
 

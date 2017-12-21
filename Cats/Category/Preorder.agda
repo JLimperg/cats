@@ -84,7 +84,7 @@ module _ lc l≈ l≤ where
       ; ∘-resp = λ {_} {_} {_} {f} {g} {h} {i} → ∘-resp {x = f} {g} {h} {i}
       ; id-r = λ {_} {_} {f} → resp f
       ; id-l = λ {_} {_} {f} → resp f
-      ; assoc = λ f g h → resp (f ∘ g ∘ h)
+      ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → resp (f ∘ g ∘ h)
       }
 
 
@@ -99,7 +99,7 @@ preorderAsCategory P = record
     ; ∘-resp = λ _ _ → tt
     ; id-r = tt
     ; id-l = tt
-    ; assoc = λ _ _ _ → tt
+    ; assoc = tt
     }
   where
     module P = Rel.Preorder P

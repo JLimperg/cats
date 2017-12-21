@@ -60,7 +60,7 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
       ; commute = λ j →
           begin
             arr C j Z.∘ θ f Z.∘ θ g
-          ≈⟨ sym (Z.assoc _ _ _) ⟩
+          ≈⟨ sym Z.assoc ⟩
             (arr C j Z.∘ θ f) Z.∘ θ g
           ≈⟨ Z.∘-resp (commute f j) refl ⟩
             arr B j Z.∘ θ g
@@ -83,5 +83,5 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
       ; ∘-resp = Z.∘-resp
       ; id-r = Z.id-r
       ; id-l = Z.id-l
-      ; assoc = λ _ _ _ → Z.assoc _ _ _
+      ; assoc = Z.assoc
       }

@@ -68,8 +68,5 @@ module _ (l l≈ : Level) where
       ; ∘-resp = λ f≈g h≈i x≈y → f≈g (h≈i x≈y)
       ; id-r = λ {A} {B} {f} → resp f
       ; id-l = λ {A} {B} {f} → resp f
-      ; assoc = assoc
+      ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → assoc f g h
       }
-
-  -- [1] Splitting these definitions off into lemmas confuses type inference. I
-  -- don't know why.

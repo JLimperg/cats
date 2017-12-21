@@ -252,7 +252,7 @@ module _ lo la l≈ where
 
   assoc : ∀ {B C D E} (F : D ⇒ E) (G : C ⇒ D) (H : B ⇒ C)
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
-  assoc {B} {C} {D} {E} F G H = record
+  assoc {B} {C} {D} {E} _ _ _ = record
       { iso = E.≅.refl
       ; fmap-≈ = λ _ → E.≈.sym (E.≈.trans E.id-l E.id-r)
       }
@@ -271,7 +271,7 @@ module _ lo la l≈ where
       ; ∘-resp = ∘-resp
       ; id-r = id-r
       ; id-l = id-l
-      ; assoc = assoc
+      ; assoc = λ {_} {_} {_} {_} {F} {G} {H} → assoc F G H
       }
 
 

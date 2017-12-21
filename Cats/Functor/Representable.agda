@@ -21,7 +21,7 @@ module _ {lo la l≈} {C : Category lo la l≈} where
       ; fmap-resp = λ f≈g h≈i → ∘-resp f≈g h≈i
       ; fmap-id = trans id-l
       ; fmap-∘ = λ f g x≈y
-          → trans (assoc _ _ _) (resp (fmap f) (resp (fmap g) x≈y))
+          → trans assoc (resp (fmap f) (resp (fmap g) x≈y))
       }
     module Hom where
       open Setoids._⇒_ using (resp)

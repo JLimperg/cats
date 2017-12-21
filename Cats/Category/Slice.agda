@@ -63,7 +63,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
               arr G C.∘ G-dom
             ≈⟨ C.∘-resp F-commute ≈.refl ⟩
               (arr H C.∘ F-dom) C.∘ G-dom
-            ≈⟨ C.assoc _ _ _ ⟩
+            ≈⟨ C.assoc ⟩
               arr H C.∘ F-dom C.∘ G-dom
             ∎
       }
@@ -90,9 +90,9 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
   id-identity-l = ≈-i C.id-l
 
 
-  ∘-assoc : ∀ {A B C D} (F : C ⇒ D) (G : B ⇒ C) (H : A ⇒ B)
+  ∘-assoc : ∀ {A B C D} {F : C ⇒ D} {G : B ⇒ C} {H : A ⇒ B}
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
-  ∘-assoc _ _ _ = ≈-i (C.assoc _ _ _)
+  ∘-assoc = ≈-i C.assoc
 
 
   instance _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈

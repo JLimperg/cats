@@ -110,7 +110,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lemma {P = P} {P′} {proj} {proj′} {u} {v} u-eq v-eq i
           = begin
               proj i ∘ v ∘ u
-            ≈⟨ ≈.sym (assoc _ _ _)  ⟩
+            ≈⟨ ≈.sym assoc ⟩
               (proj i ∘ v) ∘ u
             ≈⟨ ∘-resp (≈.sym (v-eq _)) ≈.refl ⟩
               proj′ i ∘ u
@@ -148,11 +148,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lem₁ i
           = begin
               proj i ∘ v ∘ u
-            ≈⟨ ≈.sym (assoc _ _ _) ⟩
+            ≈⟨ ≈.sym assoc ⟩
               (proj i ∘ v) ∘ u
             ≈⟨ ∘-resp (≈.sym (v-eq _)) ≈.refl ⟩
               (f₂ ∘ proj′ (perm i)) ∘ u
-            ≈⟨ assoc _ _ _ ⟩
+            ≈⟨ assoc ⟩
               f₂ ∘ proj′ (perm i) ∘ u
             ≈⟨ ∘-resp ≈.refl (≈.sym (u-eq _)) ⟩
               f₂ ∘ f₁ ∘ proj (perm (perm i))
@@ -166,11 +166,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lem₂ i
           = begin
               proj′ i ∘ u ∘ v
-            ≈⟨ ≈.sym (assoc _ _ _) ⟩
+            ≈⟨ ≈.sym assoc ⟩
               (proj′ i ∘ u) ∘ v
             ≈⟨ ∘-resp (≈.sym (u-eq _)) ≈.refl ⟩
               (f₁ ∘ proj (perm i)) ∘ v
-            ≈⟨ assoc _ _ _ ⟩
+            ≈⟨ assoc ⟩
               f₁ ∘ proj (perm i) ∘ v
             ≈⟨ ∘-resp ≈.refl (≈.sym (v-eq _)) ⟩
               f₁ ∘ f₂ ∘ proj′ (perm (perm i))

@@ -35,9 +35,9 @@ module _  {lo la l≈} (C : Category lo la l≈) where
   ∘-resp : ∀ {A B C} → _∘_ {A} {B} {C} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
   ∘-resp {x = f} {g} {h} {i} f≈g h≈i = C.∘-resp h≈i f≈g
 
-  assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
+  assoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
     → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-  assoc f g h = ≈.sym (C.assoc h g f)
+  assoc = ≈.sym C.assoc
 
   _ᵒᵖ : Category lo la l≈
   _ᵒᵖ = record

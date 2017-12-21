@@ -23,7 +23,7 @@ Sets l = record
     ; ∘-resp = ∘-resp
     ; id-r = ∘-id-r
     ; id-l = ∘-id-l
-    ; assoc = ∘-assoc
+    ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → ∘-assoc {f = f} {g} {h}
     }
 
 

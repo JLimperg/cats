@@ -21,7 +21,7 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
     ∘-resp : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
     id-r : ∀ {A B} {f : A ⇒ B} → f ∘ id ≈ f
     id-l : ∀ {A B} {f : A ⇒ B} → id ∘ f ≈ f
-    assoc : ∀ {A B C D} (f : C ⇒ D) (g : B ⇒ C) (h : A ⇒ B)
+    assoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
       → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
 
 

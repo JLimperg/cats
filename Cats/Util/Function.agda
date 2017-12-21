@@ -25,9 +25,9 @@ module _ {a b} {A : Set a} {B : Set b} {f : A → B} where
 
 
 ∘-assoc : ∀ {a b c d} {A : Set a} {B : Set b} {C : Set c} {D : Set d}
-  → (h : C → D) (g : B → C) (f : A → B)
-  → (h ∘ g) ∘ f ≈ h ∘ (g ∘ f)
-∘-assoc _ _ _ _ = ≡.refl
+  → {f : C → D} {g : B → C} {h : A → B}
+  → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
+∘-assoc _ = ≡.refl
 
 
 ∘-resp : ∀ {l} {A B C : Set l}

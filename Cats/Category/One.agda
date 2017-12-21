@@ -22,5 +22,5 @@ One lo la l≈ = record
     ; ∘-resp = λ _ _ → lift tt
     ; id-r = lift tt
     ; id-l = lift tt
-    ; assoc = λ _ _ _ → lift tt
+    ; assoc = lift tt
     }

@@ -47,10 +47,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       lemma
           = begin
               f ∘ e ∘ j
-            ≈⟨ ≈.sym (assoc _ _ _) ⟩
+            ≈⟨ ≈.sym assoc ⟩
               (f ∘ e) ∘ j
             ≈⟨ ∘-resp equalizes ≈.refl ⟩
               (g ∘ e) ∘ j
-            ≈⟨ assoc _ _ _ ⟩
+            ≈⟨ assoc ⟩
               g ∘ e ∘ j
             ∎
