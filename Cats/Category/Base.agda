@@ -9,7 +9,7 @@ open import Relation.Binary.EqReasoning as EqReasoning
 record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   infixr  9 _∘_
   infix   4 _≈_
-  infixr 90 _⇒_
+  infixr  -1 _⇒_
 
   field
     Obj : Set lo
