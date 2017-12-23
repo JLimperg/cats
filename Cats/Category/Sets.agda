@@ -57,6 +57,26 @@ module _ {l} where
   -- The proof that all epis are surjective is nonconstructive, so we omit it.
 
 
+  instance hasBinaryProducts : HasBinaryProducts (Sets l)
+  hasBinaryProducts = record
+      { _×′_ = λ A B → record
+            { prod = A × B
+            ; projl = proj₁
+            ; projr = proj₂
+            ; isBinaryProduct = λ xl xr → ∃!-intro
+                (λ x → xl x , xr x)
+                ((λ _ → ≡.refl) , (λ _ → ≡.refl))
+                λ { (eq₁ , eq₂) x → ×-≡ (eq₁ x) (eq₂ x) }
+            }
+      }
+    where
+      ×-≡ : ∀ {a b} {A : Set a} {B : Set b} {x : A} {y : B} {z}
+        → x ≡ proj₁ z
+        → y ≡ proj₂ z
+        → (x , y) ≡ z
+      ×-≡ {z = z₁ , z₂} eq₁ eq₂ = ≡.cong₂ _,_ eq₁ eq₂
+
+
   exponentialIsProduct : ∀ {I A : Obj} → IsProduct {I = I} (λ _ → A) (I → A) (λ i f → f i)
   exponentialIsProduct projX
       = ∃!-intro

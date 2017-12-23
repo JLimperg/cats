@@ -339,3 +339,77 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
 
+
+record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
+  : Set (lo ⊔ la ⊔ l≈)
+  where
+  private open module Bld = Build C using (BinaryProduct)
+  open Category C
+
+  infixr 2 _×_ _×′_ ⟨_×_⟩ ⟨_,_⟩
+
+  field
+    _×′_ : ∀ A B → BinaryProduct A B
+
+
+  _×_ : Obj → Obj → Obj
+  A × B = (A ×′ B) ↓
+
+
+  projl : ∀ {A B} → A × B ⇒ A
+  projl {A} {B} = BinaryProduct.projl (A ×′ B)
+
+
+  projr : ∀ {A B} → A × B ⇒ B
+  projr {A} {B} = BinaryProduct.projr (A ×′ B)
+
+
+  ⟨_,_⟩ : ∀ {A B Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A × B
+  ⟨_,_⟩ {A} {B} = Bld.[ A ×′ B ]⟨_,_⟩
+
+
+  ⟨_×_⟩ : ∀ {A B A′ B′} → A ⇒ A′ → B ⇒ B′ → A × B ⇒ A′ × B′
+  ⟨_×_⟩ {A} {B} {A′} {B′} = Bld.[ A ×′ B ][ A′ ×′ B′ ]⟨_×_⟩
+
+
+  ⟨,⟩-resp : ∀ {A B Z} {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
+    → f ≈ f′
+    → g ≈ g′
+    → ⟨ f , g ⟩ ≈ ⟨ f′ , g′ ⟩
+  ⟨,⟩-resp {A} {B} = Bld.⟨,⟩-resp (A ×′ B)
+
+
+  ⟨,⟩-projl : ∀ {A B Z} {f : Z ⇒ A} {g : Z ⇒ B} → projl ∘ ⟨ f , g ⟩ ≈ f
+  ⟨,⟩-projl {A} {B} = Bld.⟨,⟩-projl (A ×′ B)
+
+
+  ⟨,⟩-projr : ∀ {A B Z} {f : Z ⇒ A} {g : Z ⇒ B} → projr ∘ ⟨ f , g ⟩ ≈ g
+  ⟨,⟩-projr {A} {B} = Bld.⟨,⟩-projr (A ×′ B)
+
+
+  ⟨,⟩-∘ : ∀ {A B Y Z} {f : Y ⇒ Z} {g : Z ⇒ A} {h : Z ⇒ B}
+    → ⟨ g , h ⟩ ∘ f ≈ ⟨ g ∘ f , h ∘ f ⟩
+  ⟨,⟩-∘ {A} {B} = Bld.⟨,⟩-∘ (A ×′ B)
+
+
+  ⟨×⟩-resp : ∀ {A A′ B B′} {f f′ : A ⇒ A′} {g g′ : B ⇒ B′}
+    → f ≈ f′
+    → g ≈ g′
+    → ⟨ f × g ⟩ ≈ ⟨ f′ × g′ ⟩
+  ⟨×⟩-resp {A} {A′} {B} {B′} = Bld.⟨×⟩-resp (A ×′ B) (A′ ×′ B′)
+
+
+  ⟨×⟩-projl : ∀ {A A′ B B′} {f : A ⇒ A′} {g : B ⇒ B′}
+    → projl ∘ ⟨ f × g ⟩ ≈ f ∘ projl
+  ⟨×⟩-projl {A} {A′} {B} {B′} = Bld.⟨×⟩-projl (A ×′ B) (A′ ×′ B′)
+
+
+  ⟨×⟩-projr : ∀ {A A′ B B′} {f : A ⇒ A′} {g : B ⇒ B′}
+    → projr ∘ ⟨ f × g ⟩ ≈ g ∘ projr
+  ⟨×⟩-projr {A} {A′} {B} {B′} = Bld.⟨×⟩-projr (A ×′ B) (A′ ×′ B′)
+
+
+  ⟨×⟩-∘ : ∀ {A A′ A″ B B′ B″}
+    → {f : A′ ⇒ A″} {f′ : A ⇒ A′} {g : B′ ⇒ B″} {g′ : B ⇒ B′}
+    → ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩ ≈ ⟨ f ∘ f′ × g ∘ g′ ⟩
+  ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} = Bld.⟨×⟩-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″)

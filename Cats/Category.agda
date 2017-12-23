@@ -35,3 +35,6 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   open Product.Build Cat public
   open Terminal.Build Cat public
   open Unique.Build Cat public
+
+
+open Product public using (HasBinaryProducts)
