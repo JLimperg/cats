@@ -3,6 +3,7 @@ module Cats.Category.Constructions.Equalizer where
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Util.Conv
 
 import Cats.Category.Constructions.Mono as Mono
 import Cats.Category.Constructions.Unique as Unique
@@ -33,6 +34,12 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       isEqualizer : IsEqualizer f g e
 
     open IsEqualizer isEqualizer public
+
+
+  instance
+    Conv-Equalizer-⇒ : ∀ {A B} {f g : A ⇒ B}
+      → Conv (Equalizer f g) (λ e → Equalizer.E e ⇒ A)
+    Conv-Equalizer-⇒ .Conv._↓ = Equalizer.e
 
 
   equalizer→mono : ∀ {A B} {f g : A ⇒ B} {E} {e : E ⇒ A}

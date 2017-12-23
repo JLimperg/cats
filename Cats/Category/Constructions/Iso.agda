@@ -4,6 +4,7 @@ open import Relation.Binary using (IsEquivalence ; Setoid)
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Util.Conv
 
 import Relation.Binary.EqReasoning as EqReasoning
 
@@ -27,6 +28,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       forth-back : forth ∘ back ≈ id
 
   open _≅_
+
+
+  instance
+    Conv-≅-⇒ : ∀ {A B} → Conv′ (A ≅ B) (A ⇒ B)
+    Conv-≅-⇒ .Conv._↓ = forth
 
 
   ≅-equiv : IsEquivalence _≅_

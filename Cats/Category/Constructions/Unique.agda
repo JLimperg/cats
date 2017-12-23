@@ -4,6 +4,7 @@ open import Data.Unit using (⊤)
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Util.Conv
 
 
 module Build {lo la l≈} (Cat : Category lo la l≈) where
@@ -34,6 +35,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       arr : A ⇒ B
       prop : P arr
       unique : IsUniqueSuchThat P arr
+
+
+  instance Conv-∃!′-⇒ : ∀ {lp A B} {P : A ⇒ B → Set lp} → Conv′ (∃!′ P) (A ⇒ B)
+  Conv-∃!′-⇒ .Conv._↓ = ∃!′.arr
 
 
   syntax ∃!′ (λ f → P) = ∃![ f ] P

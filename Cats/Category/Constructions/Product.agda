@@ -4,6 +4,7 @@ open import Data.Bool using (Bool ; true ; false ; not)
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Util.Conv
 open import Cats.Util.Logic.Constructive
 
 import Cats.Category.Constructions.Iso as Iso
@@ -42,6 +43,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       projl : prod ⇒ A
       projr : prod ⇒ B
       isBinaryProduct : IsBinaryProduct prod projl projr
+
+
+
+  instance Conv-BinaryProduct-Obj : ∀ {A B} → Conv′ (BinaryProduct A B) Obj
+  Conv-BinaryProduct-Obj .Conv._↓ = BinaryProduct.prod
 
 
   Bool-elim : ∀ {a} {A : Bool → Set a} → A true → A false → (b : Bool) → A b
