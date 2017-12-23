@@ -44,10 +44,148 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       projr : prod ⇒ B
       isBinaryProduct : IsBinaryProduct prod projl projr
 
+  open BinaryProduct using (projl ; projr ; isBinaryProduct)
 
 
   instance Conv-BinaryProduct-Obj : ∀ {A B} → Conv′ (BinaryProduct A B) Obj
   Conv-BinaryProduct-Obj .Conv._↓ = BinaryProduct.prod
+
+
+  [_]⟨_,_⟩ : ∀ {A B} (A×B : BinaryProduct A B) {Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A×B ↓
+  [ A×B ]⟨ f , g ⟩ = isBinaryProduct A×B f g ↓
+
+
+  ⟨,⟩-projl : ∀ {A B} (A×B : BinaryProduct A B) {Z}
+    → {f : Z ⇒ A} {g : Z ⇒ B}
+    → projl A×B ∘ [ A×B ]⟨ f , g ⟩ ≈ f
+  ⟨,⟩-projl A×B {f = f} {g}
+      = ≈.sym (∧-eliml (∃!′.prop (isBinaryProduct A×B f g)))
+
+
+  ⟨,⟩-projr : ∀ {A B} (A×B : BinaryProduct A B) {Z}
+    → {f : Z ⇒ A} {g : Z ⇒ B}
+    → projr A×B ∘ [ A×B ]⟨ f , g ⟩ ≈ g
+  ⟨,⟩-projr A×B {f = f} {g}
+      = ≈.sym (∧-elimr (∃!′.prop (isBinaryProduct A×B f g)))
+
+
+  ⟨,⟩-resp : ∀ {A B} (A×B : BinaryProduct A B) {Z}
+    → {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
+    → f ≈ f′
+    → g ≈ g′
+    → [ A×B ]⟨ f , g ⟩ ≈ [ A×B ]⟨ f′ , g′ ⟩
+  ⟨,⟩-resp A×B {f = f} {g = g} f≈f′ g≈g′
+      = ∃!′.unique (isBinaryProduct A×B f g)
+        ( ≈.trans f≈f′ (≈.sym (⟨,⟩-projl A×B))
+        , ≈.trans g≈g′ (≈.sym (⟨,⟩-projr A×B)))
+
+
+  ⟨,⟩-∘ : ∀ {A B} (A×B : BinaryProduct A B) {Y Z}
+    → {f : Y ⇒ Z} {g : Z ⇒ A} {h : Z ⇒ B}
+    → [ A×B ]⟨ g , h ⟩ ∘ f ≈ [ A×B ]⟨ g ∘ f , h ∘ f ⟩
+  ⟨,⟩-∘ A×B {f = f} {g} {h} = ≈.sym
+      (∃!′.unique
+        (isBinaryProduct A×B (g ∘ f) (h ∘ f))
+        (≈.sym lem₁ , ≈.sym lem₂))
+    where
+      lem₁ : projl A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f ≈ g ∘ f
+      lem₁
+          = begin
+              projl A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f
+            ≈⟨ unassoc ⟩
+              (projl A×B ∘ [ A×B ]⟨ g , h ⟩) ∘ f
+            ≈⟨ ∘-resp-l (⟨,⟩-projl A×B) ⟩
+              g ∘ f
+            ∎
+
+      lem₂ : projr A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f ≈ h ∘ f
+      lem₂
+          = begin
+              projr A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f
+            ≈⟨ unassoc ⟩
+              (projr A×B ∘ [ A×B ]⟨ g , h ⟩) ∘ f
+            ≈⟨ ∘-resp-l (⟨,⟩-projr A×B) ⟩
+              h ∘ f
+            ∎
+
+
+  [_][_]⟨_×_⟩ :
+    ∀ {A B} (A×B : BinaryProduct A B)
+      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
+    → (A ⇒ A′)
+    → (B ⇒ B′)
+    → A×B ↓ ⇒ A′×B′ ↓
+  [ A×B ][ A′×B′ ]⟨ f × g ⟩ = [ A′×B′ ]⟨ f ∘ projl A×B , g ∘ projr A×B ⟩
+
+
+  ⟨×⟩-resp :
+    ∀ {A B} (A×B : BinaryProduct A B)
+      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
+    → {f f′ : A ⇒ A′}
+    → {g g′ : B ⇒ B′}
+    → f ≈ f′
+    → g ≈ g′
+    → [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ [ A×B ][ A′×B′ ]⟨ f′ × g′ ⟩
+  ⟨×⟩-resp A×B A′×B′ f≈f′ g≈g′ = ⟨,⟩-resp A′×B′ (∘-resp-l f≈f′) (∘-resp-l g≈g′)
+
+
+  ⟨×⟩-projl :
+    ∀ {A B} (A×B : BinaryProduct A B)
+      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
+    → {f : A ⇒ A′}
+    → {g : B ⇒ B′}
+    → projl A′×B′ ∘ [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ f ∘ projl A×B
+  ⟨×⟩-projl A×B A′×B′ = ⟨,⟩-projl A′×B′
+
+
+  ⟨×⟩-projr :
+    ∀ {A B} (A×B : BinaryProduct A B)
+      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
+    → {f : A ⇒ A′}
+    → {g : B ⇒ B′}
+    → projr A′×B′ ∘ [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ g ∘ projr A×B
+  ⟨×⟩-projr A×B A′×B′ = ⟨,⟩-projr A′×B′
+
+
+  ⟨×⟩-∘ :
+    ∀ {A B} (A×B : BinaryProduct A B)
+      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
+      {A″ B″} (A″×B″ : BinaryProduct A″ B″)
+      {f : A′ ⇒ A″}
+      {g : B′ ⇒ B″}
+      {f′ : A ⇒ A′}
+      {g′ : B ⇒ B′}
+    → [ A′×B′ ][ A″×B″ ]⟨ f × g ⟩ ∘ [ A×B ][ A′×B′ ]⟨ f′ × g′ ⟩
+    ≈ [ A×B ][ A″×B″ ]⟨ f ∘ f′ × g ∘ g′ ⟩
+  ⟨×⟩-∘ {A} {B} A×B {A′} {B′} A′×B′ {A″} {B″} A″×B″ {f} {g} {f′} {g′}
+      = begin
+          [ A″×B″ ]⟨ f ∘ projl A′×B′ , g ∘ projr A′×B′ ⟩ ∘
+          [ A′×B′ ]⟨ f′ ∘ projl A×B  , g′ ∘ projr A×B  ⟩
+        ≈⟨ ⟨,⟩-∘ A″×B″ ⟩
+          [ A″×B″ ]⟨
+            (f ∘ projl A′×B′) ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩
+          , (g ∘ projr A′×B′) ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩
+          ⟩
+        ≈⟨ ⟨,⟩-resp A″×B″ assoc assoc ⟩
+          [ A″×B″ ]⟨
+            f ∘ (projl A′×B′ ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩)
+          , g ∘ (projr A′×B′ ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩)
+          ⟩
+        ≈⟨ ⟨,⟩-resp A″×B″ (∘-resp-r (⟨,⟩-projl A′×B′)) (∘-resp-r (⟨,⟩-projr A′×B′)) ⟩
+          [ A″×B″ ]⟨
+            f ∘ (f′ ∘ projl A×B)
+          , g ∘ (g′ ∘ projr A×B)
+          ⟩
+        ≈⟨ ⟨,⟩-resp A″×B″ unassoc unassoc ⟩
+          [ A″×B″ ]⟨
+              (f ∘ f′) ∘ projl A×B
+            , (g ∘ g′) ∘ projr A×B
+          ⟩
+        ∎
+
+
+  -- TODO Generalise _-×-_ and ⟨_,_⟩ to non-binary products. This should make
+  -- the duplication in the associated lemmas go away.
 
 
   Bool-elim : ∀ {a} {A : Bool → Set a} → A true → A false → (b : Bool) → A b
@@ -196,8 +334,8 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
           not
           (IsBinaryProduct→IsProduct prod)
           (IsBinaryProduct→IsProduct prod′)
-          (λ { {true} → id ; {false} → id})
-          (λ { {true} → id ; {false} → id})
+          (λ { {true} → id ; {false} → id })
+          (λ { {true} → id ; {false} → id })
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
           (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
 
