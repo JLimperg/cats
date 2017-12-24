@@ -3,6 +3,7 @@ module Cats.Category where
 open import Level
 
 import Cats.Category.Base as Base
+import Cats.Category.Constructions.CCC as CCC
 import Cats.Category.Constructions.Epi as Epi
 import Cats.Category.Constructions.Equalizer as Equalizer
 import Cats.Category.Constructions.Exponential as Exponential
@@ -32,7 +33,8 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
   open Unique.Build Cat public
 
 
+open CCC public using (IsCCC)
 open Exponential public using (HasExponentials)
 open Initial public using (HasInitial)
-open Product public using (HasBinaryProducts)
+open Product public using (HasBinaryProducts ; HasFiniteProducts)
 open Terminal public using (HasTerminal)

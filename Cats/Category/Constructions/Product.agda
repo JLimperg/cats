@@ -8,6 +8,7 @@ open import Cats.Util.Conv
 open import Cats.Util.Logic.Constructive
 
 import Cats.Category.Constructions.Iso as Iso
+import Cats.Category.Constructions.Terminal as Terminal
 import Cats.Category.Constructions.Unique as Unique
 
 
@@ -413,3 +414,16 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
     → {f : A′ ⇒ A″} {f′ : A ⇒ A′} {g : B′ ⇒ B″} {g′ : B ⇒ B′}
     → ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩ ≈ ⟨ f ∘ f′ × g ∘ g′ ⟩
   ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} = Bld.⟨×⟩-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″)
+
+
+record HasFiniteProducts {lo la l≈} (Cat : Category lo la l≈)
+  : Set (lo ⊔ la ⊔ l≈)
+  where
+  open Terminal using (HasTerminal)
+
+  field
+    {{hasTerminal}} : HasTerminal Cat
+    {{hasBinaryProducts}} : HasBinaryProducts Cat
+
+  open HasTerminal hasTerminal public
+  open HasBinaryProducts hasBinaryProducts public
