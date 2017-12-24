@@ -33,4 +33,6 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 
 
 open Exponential public using (HasExponentials)
+open Initial public using (HasInitial)
 open Product public using (HasBinaryProducts)
+open Terminal public using (HasTerminal)

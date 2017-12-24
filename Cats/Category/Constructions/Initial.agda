@@ -37,3 +37,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   Initial⇒X-unique : ∀ {Zero} → IsInitial Zero → ∀ {X} {f g : Zero ⇒ X} → f ≈ g
   Initial⇒X-unique init {X} {f} {g} with init X
   ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
+
+
+record HasInitial {lo la l≈} (Cat : Category lo la l≈)
+  : Set (lo ⊔ la ⊔ l≈) where
+  open Category Cat
+  open Build Cat
+
+  field
+    Zero : Obj
+    isInitial : IsInitial Zero

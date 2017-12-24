@@ -3,7 +3,8 @@ module Cats.Category.Cat where
 open import Data.Product using (_,_)
 open import Data.Unit using (⊤ ; tt)
 open import Level
-open import Relation.Binary using (IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_)
+open import Relation.Binary using
+  (IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 open import Cats.Category
@@ -13,7 +14,7 @@ open import Cats.Functor
 open import Cats.Util.Assoc using (assoc!)
 
 
-module _ lo la l≈ where
+module Build lo la l≈ where
 
   infixr 9 _∘_
   infixr 4 _≈_
@@ -275,49 +276,4 @@ module _ lo la l≈ where
       }
 
 
-module _ {lo la l≈} where
-
-  open Category (Cat lo la l≈)
-
-
-  Zero-Initial : IsInitial (Zero lo la l≈)
-  Zero-Initial X = ∃!-intro f _ f-Unique
-    where
-      f : Functor (Zero lo la l≈) X
-      f = record
-          { fobj = λ()
-          ; fmap = λ{}
-          ; fmap-resp = λ{}
-          ; fmap-id = λ{}
-          ; fmap-∘ = λ{}
-          }
-
-      f-Unique : IsUnique f
-      f-Unique f′ = record
-          { iso = λ{}
-          ; fmap-≈ = λ{}
-          }
-
-
-  One-Terminal : IsTerminal (One lo la l≈)
-  One-Terminal X = ∃!-intro f _ f-Unique
-    where
-      f : Functor X (One lo la l≈)
-      f = record
-          { fobj = λ x → lift tt
-          ; fmap = λ _ → lift tt
-          ; fmap-resp = λ _ → lift tt
-          ; fmap-id = lift tt
-          ; fmap-∘ = λ _ _ → lift tt
-          }
-
-      f-Unique : IsUnique f
-      f-Unique f′ = record
-          { iso = record
-              { forth = lift tt
-              ; back = lift tt
-              ; back-forth = lift tt
-              ; forth-back = lift tt
-              }
-          ; fmap-≈ = λ _ → lift tt
-          }
+open Build public using (Cat)

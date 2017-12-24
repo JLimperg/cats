@@ -37,3 +37,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   X⇒Terminal-unique : ∀ {One} → IsTerminal One → ∀ {X} {f g : X ⇒ One} → f ≈ g
   X⇒Terminal-unique term {X} {f} {g} with term X
   ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
+
+
+record HasTerminal {lo la l≈} (Cat : Category lo la l≈)
+  : Set (lo ⊔ la ⊔ l≈) where
+  open Category Cat
+  open Build Cat
+
+  field
+    One : Obj
+    isTerminal : IsTerminal One
