@@ -9,9 +9,9 @@ open import Cats.Functor
 
 module _ {lo la l≈} {C : Category lo la l≈} where
 
-  private
-    open module C = Category C renaming (Hom to Homset)
-    open Category (Setoids la l≈) using () renaming (_⇒_ to _⇒′_)
+  open Category C renaming (Hom to Homset)
+  open Category (Setoids la l≈) using () renaming (_⇒_ to _⇒′_)
+  open Setoids.Build using (resp)
 
 
   Hom : Obj → Functor C (Setoids la l≈)
@@ -24,8 +24,6 @@ module _ {lo la l≈} {C : Category lo la l≈} where
           → trans assoc (resp (fmap f) (resp (fmap g) x≈y))
       }
     module Hom where
-      open Setoids._⇒_ using (resp)
-
       fobj : Obj → Setoid la l≈
       fobj A = Homset X A
 
@@ -35,5 +33,5 @@ module _ {lo la l≈} {C : Category lo la l≈} where
       fmap : ∀ {A B} → A ⇒ B → fobj A ⇒′ fobj B
       fmap f = record
           { arr = λ g → f ∘ g
-          ; resp = ∘-resp C.≈.refl
+          ; resp = ∘-resp-r
           }

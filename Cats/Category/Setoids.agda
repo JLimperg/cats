@@ -6,13 +6,14 @@ open import Relation.Binary using
 
 open import Cats.Category
 
+open Setoid renaming (_≈_ to eq)
 
-module _ (l l≈ : Level) where
+
+module Build (l l≈ : Level) where
 
   infixr 9 _∘_
   infixr 4 _≈_
 
-  open Setoid renaming (_≈_ to eq)
 
   Obj : Set (suc (l ⊔ l≈))
   Obj = Setoid l l≈
@@ -23,7 +24,7 @@ module _ (l l≈ : Level) where
       arr : Carrier A → Carrier B
       resp : arr Preserves eq A ⟶ eq B
 
-  open _⇒_
+  open _⇒_ public
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) (l ⊔ l≈)
@@ -70,3 +71,6 @@ module _ (l l≈ : Level) where
       ; id-l = λ {A} {B} {f} → resp f
       ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → assoc f g h
       }
+
+
+open Build public using (Setoids)
