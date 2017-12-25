@@ -9,7 +9,11 @@ open import Cats.Functor
 import Cats.Util.Function as Fun
 
 
-module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
+module _ {lo la l≈ lo′ la′ l≈′}
+  {J : Category lo la l≈}
+  {Z : Category lo′ la′ l≈′}
+  (D : Functor J Z)
+  where
 
   infixr 9 _∘_
   infixr 4 _≈_
@@ -20,7 +24,7 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
     module D = Functor D
 
 
-  record Cone : Set (lo ⊔ la ⊔ l≈) where
+  record Cone : Set (lo ⊔ la ⊔ la′ ⊔ lo′ ⊔ l≈′) where
     field
       Apex : Z.Obj
       arr : ∀ j → Apex Z.⇒ D.fobj j
@@ -30,7 +34,7 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
   Obj = Cone
 
 
-  record _⇒_ (A B : Obj) : Set (lo ⊔ la ⊔ l≈) where
+  record _⇒_ (A B : Obj) : Set (lo ⊔ la′ ⊔ l≈′) where
     private
       module A = Cone A ; module B = Cone B
 
@@ -39,7 +43,7 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
       commute : ∀ j → B.arr j Z.∘ θ Z.≈ A.arr j
 
 
-  _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈
+  _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈′
   _≈_ = Z._≈_ Fun.on _⇒_.θ
 
 
@@ -72,7 +76,7 @@ module _ {lo la l≈} {J Z : Category lo la l≈} (D : Functor J Z) where
       open Cone ; open _⇒_ ; open Z.≈ ; open Z.≈-Reasoning
 
 
-  Cones : Category (lo ⊔ la ⊔ l≈) (lo ⊔ la ⊔ l≈) l≈
+  Cones : Category (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la′ ⊔ l≈′) l≈′
   Cones = record
       { Obj = Obj
       ; _⇒_ = _⇒_
