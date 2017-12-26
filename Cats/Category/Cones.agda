@@ -5,6 +5,7 @@ open import Level using (_⊔_)
 
 open import Cats.Category
 open import Cats.Functor
+open import Cats.Util.Conv
 
 import Cats.Util.Function as Fun
 
@@ -31,6 +32,11 @@ module _ {lo la l≈ lo′ la′ l≈′}
       commute : ∀ {i j} (α : i J.⇒ j) → arr j Z.≈ D.fmap α Z.∘ arr i
 
 
+  instance
+    Conv-Cone-Obj : Conv′ Cone Z.Obj
+    Conv-Cone-Obj .Conv._↓ = Cone.Apex
+
+
   Obj = Cone
 
 
@@ -41,6 +47,11 @@ module _ {lo la l≈ lo′ la′ l≈′}
     field
       θ : A.Apex Z.⇒ B.Apex
       commute : ∀ j → B.arr j Z.∘ θ Z.≈ A.arr j
+
+
+  instance
+    Conv-⇒-→ : ∀ {A B} → Conv′ (A ⇒ B) (A ↓ Z.⇒ B ↓)
+    Conv-⇒-→ .Conv._↓ = _⇒_.θ
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈′
@@ -89,3 +100,20 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; id-l = Z.id-l
       ; assoc = Z.assoc
       }
+
+
+  open Category Cones using (_≅_)
+
+
+  cone-iso→obj-iso : ∀ {c d : Cone}
+    → c ≅ d
+    → c ↓ Z.≅ d ↓
+  cone-iso→obj-iso i = record
+      { forth = θ (forth i)
+      ; back = θ (back i)
+      ; back-forth = back-forth i
+      ; forth-back = forth-back i
+      }
+    where
+      open _≅_
+      open _⇒_ using (θ)
