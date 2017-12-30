@@ -3,20 +3,34 @@ module Cats.Category.Preorder where
 open import Data.Unit using (⊤ ; tt)
 open import Level
 open import Relation.Binary as Rel
-  using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
+  using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_ ; Setoid)
 
 open import Cats.Category
+open import Cats.Category.Setoids using (Setoids)
+open import Cats.Util.Conv
 open import Cats.Util.Function as Fun using (_on_)
 
 
-module _ lc l≈ l≤ where
+module _ (lc l≈ l≤ : Level) where
 
   infixr 9 _∘_
   infixr 4 _≈_
 
 
+  private
+    module Setoids = Category (Setoids lc l≈)
+
+
   Obj : Set (suc (lc ⊔ l≈ ⊔ l≤))
   Obj = Rel.Preorder lc l≈ l≤
+
+
+  Universe : Obj → Setoid lc l≈
+  Universe A = record
+      { Carrier = Rel.Preorder.Carrier A
+      ; _≈_ = Rel.Preorder._≈_ A
+      ; isEquivalence = Rel.Preorder.isEquivalence A
+      }
 
 
   record _⇒_ (A B : Obj) : Set (lc ⊔ l≈ ⊔ l≤) where
@@ -25,44 +39,36 @@ module _ lc l≈ l≤ where
       module B = Rel.Preorder B
 
     field
-      arr : A.Carrier → B.Carrier
-      resp : ∀ {x y} → x A.≈ y → arr x B.≈ arr y
-      monotone : ∀ {x y} → x A.∼ y → arr x B.∼ arr y
+      arr : Universe A Setoids.⇒ Universe B
+      monotone : ∀ {x y} → x A.∼ y → (arr ⃗) x B.∼ (arr ⃗) y
 
-  open _⇒_
+    open Cats.Category.Setoids.Build._⇒_ arr public using (resp)
+
+  open _⇒_ using (monotone ; resp)
+
+
+  instance
+    HasArrow-⇒ : ∀ A B → HasArrow (A ⇒ B) _ _ _
+    HasArrow-⇒ A B = record { Cat = Setoids lc l≈ ; _⃗ = _⇒_.arr }
 
 
   id : ∀ {A} → A ⇒ A
-  id = record { arr = Fun.id ; resp = λ eq → eq ; monotone = λ eq → eq }
+  id = record { arr = Setoids.id ; monotone = Fun.id }
 
 
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   g ∘ f = record
-      { arr = arr g Fun.∘ arr f
+      { arr = g ⃗ Setoids.∘ f ⃗
       ; monotone = monotone g Fun.∘ monotone f
-      ; resp = resp g Fun.∘ resp f
       }
 
 
-  -- TODO Generalise extensional function equality so that we can use it here.
-  -- The reason we can't right now is that extensional function equality assumes
-  -- x ≡ y instead of x A.≈ y.
   _≈_ : {A B : Obj} → Rel (A ⇒ B) (lc ⊔ l≈)
-  _≈_ {A} {B} f g = ∀ {x y} → x A.≈ y → arr f x B.≈ arr g y
-    where
-      module A = Rel.Preorder A
-      module B = Rel.Preorder B
+  _≈_ = Setoids._≈_ on _⃗
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-  equiv {A} {B} = record
-     { refl = λ {f} x≈y → resp f x≈y
-     ; sym = λ f≈g x≈y → B.Eq.sym (f≈g (A.Eq.sym x≈y))
-     ; trans = λ f≈g g≈h x≈y → B.Eq.trans (f≈g x≈y) (g≈h A.Eq.refl)
-     }
-   where
-     module A = Rel.Preorder A
-     module B = Rel.Preorder B
+  equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
 
 
   ∘-resp : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_

@@ -2,9 +2,12 @@ module Cats.Category.Mon where
 
 open import Data.Unit using (⊤)
 open import Relation.Binary using (Setoid ; _Preserves₂_⟶_⟶_ ; IsEquivalence)
-open import Level using (Level ; zero ; suc ; _⊔_)
+open import Level
 
 open import Cats.Category
+open import Cats.Category.Setoids using (Setoids)
+open import Cats.Util.Conv
+
 import Cats.Util.Function as Fun
 
 
@@ -34,6 +37,9 @@ module _ (l l≈ : Level) where
   infixr 4 _≈_
 
 
+  module Setoids = Category (Setoids l l≈)
+
+
   Obj : Set (suc (l ⊔ l≈))
   Obj = Monoid l l≈
 
@@ -44,52 +50,46 @@ module _ (l l≈ : Level) where
       module N = Monoid N
 
     field
-      arr : M.Carrier → N.Carrier
-      resp : ∀ {x y} → x M.≈ y → arr x N.≈ arr y
-      unit : arr M.unit N.≈ N.unit
-      lift : ∀ {n m} → arr (n M.⊕ m) N.≈ arr n N.⊕ arr m
+      arr : M.Universe Setoids.⇒ N.Universe
+      unit : (arr ⃗) M.unit N.≈ N.unit
+      commute : ∀ {n m} → (arr ⃗) (n M.⊕ m) N.≈ (arr ⃗) n N.⊕ (arr ⃗) m
 
-  open _⇒_
+    open Cats.Category.Setoids.Build._⇒_ arr public using (resp)
+
+  open _⇒_ using (unit ; commute ; resp)
+
+
+  instance
+    HasArrow-⇒ : ∀ M N → HasArrow (M ⇒ N) _ _ _
+    HasArrow-⇒ M N = record { Cat = Setoids l l≈ ; _⃗ = _⇒_.arr }
 
 
   id : ∀ {M} → M ⇒ M
   id {M} = record
-      { arr = Fun.id
-      ; resp = Fun.id
-      ; unit = M.≈.refl
-      ; lift = M.≈.refl
+      { arr = Setoids.id
+      ; unit = refl
+      ; commute = refl
       }
     where
-      module M = Monoid M
+      open Monoid M using (refl)
 
 
   _≈_ : ∀ {M N} (f g : M ⇒ N) → Set (l≈ ⊔ l)
-  _≈_ {M} {N} f g = ∀ {x y} → x M.≈ y → arr f x N.≈ arr g y
-    where
-      module M = Monoid M
-      module N = Monoid N
+  _≈_ = Setoids._≈_ Fun.on _⃗
 
 
   equiv : ∀ {M N} → IsEquivalence (_≈_ {M} {N})
-  equiv {M} {N} = record
-      { refl = λ {f} → resp f
-      ; sym = λ f≈g x≈y → N.≈.sym (f≈g (M.≈.sym x≈y))
-      ; trans = λ f≈g g≈h x≈y → N.≈.trans (f≈g x≈y) (g≈h M.≈.refl)
-      }
-    where
-      module M = Monoid M
-      module N = Monoid N
+  equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
 
 
   _∘_ : ∀ {M N O} → (N ⇒ O) → (M ⇒ N) → (M ⇒ O)
   _∘_ {M} {N} {O} f g = record
-      { arr = arr f Fun.∘ arr g
-      ; resp = resp f Fun.∘ resp g
-      ; unit = O.≈.trans (resp f (unit g)) (unit f)
-      ; lift = O.≈.trans (resp f (lift g)) (lift f)
+      { arr = f ⃗ Setoids.∘ g ⃗
+      ; unit = trans (resp f (unit g)) (unit f)
+      ; commute = trans (resp f (commute g)) (commute f)
       }
     where
-      module O = Monoid O
+      open Monoid O using (trans)
 
 
   Mon : Category (suc (l≈ ⊔ l)) (l≈ ⊔ l) (l≈ ⊔ l)

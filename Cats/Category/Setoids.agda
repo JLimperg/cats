@@ -59,7 +59,7 @@ module Build (l l≈ : Level) where
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   _∘_ {C = C} f g = record
       { arr = f ⃗ Fun.∘ g ⃗
-      ; resp = λ eq → resp f (resp g eq)
+      ; resp = resp f Fun.∘ resp g
       }
 
 
