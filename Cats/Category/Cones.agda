@@ -33,8 +33,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   instance
-    Conv-Cone-Obj : Conv′ Cone Z.Obj
-    Conv-Cone-Obj .Conv._↓ = Cone.Apex
+    HasObj-Cone : HasObj Cone lo′ la′ l≈′
+    HasObj-Cone = record { Cat = Z ; _ᴼ = Cone.Apex }
 
 
   Obj = Cone
@@ -50,8 +50,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   instance
-    Conv-⇒-→ : ∀ {A B} → Conv′ (A ⇒ B) (A ↓ Z.⇒ B ↓)
-    Conv-⇒-→ .Conv._↓ = _⇒_.θ
+    HasArrow-⇒ : ∀ {A B} → HasArrow (A ⇒ B) lo′ la′ l≈′
+    HasArrow-⇒ = record { Cat = Z ; _⃗ = _⇒_.θ }
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈′
@@ -71,20 +71,22 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   _∘_ {A} {B} {C} f g = record
-      { θ = θ f Z.∘ θ g
+      { θ = f ⃗ Z.∘ g ⃗
       ; commute = λ j →
           begin
-            arr C j Z.∘ θ f Z.∘ θ g
+            arr C j Z.∘ f ⃗ Z.∘ g ⃗
           ≈⟨ Z.unassoc ⟩
-            (arr C j Z.∘ θ f) Z.∘ θ g
+            (arr C j Z.∘ f ⃗) Z.∘ g ⃗
           ≈⟨ Z.∘-resp-l (commute f j) ⟩
-            arr B j Z.∘ θ g
+            arr B j Z.∘ g ⃗
           ≈⟨ commute g j ⟩
             arr A j
           ∎
       }
     where
-      open Cone ; open _⇒_ ; open Z.≈ ; open Z.≈-Reasoning
+      open Cone using (arr)
+      open _⇒_ using (commute)
+      open Z.≈-Reasoning
 
 
   Cones : Category (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la′ ⊔ l≈′) l≈′
@@ -107,13 +109,12 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   cone-iso→obj-iso : ∀ {c d : Cone}
     → c ≅ d
-    → c ↓ Z.≅ d ↓
+    → c ᴼ Z.≅ d ᴼ
   cone-iso→obj-iso i = record
-      { forth = θ (forth i)
-      ; back = θ (back i)
+      { forth = forth i ⃗
+      ; back = back i ⃗
       ; back-forth = back-forth i
       ; forth-back = forth-back i
       }
     where
       open _≅_
-      open _⇒_ using (θ)

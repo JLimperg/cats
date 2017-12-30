@@ -37,8 +37,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       unique : IsUniqueSuchThat P arr
 
 
-  instance Conv-∃!′-⇒ : ∀ {lp A B} {P : A ⇒ B → Set lp} → Conv′ (∃!′ P) (A ⇒ B)
-  Conv-∃!′-⇒ .Conv._↓ = ∃!′.arr
+  instance
+    HasArrow-∃! : ∀ {lp A B} {P : A ⇒ B → Set lp}
+      → HasArrow (∃!′ P) lo la l≈
+    HasArrow-∃! = record { Cat = Cat ; _⃗ = ∃!′.arr }
 
 
   syntax ∃!′ (λ f → P) = ∃![ f ] P

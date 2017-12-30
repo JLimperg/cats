@@ -11,7 +11,7 @@ module _ {lo la l≈} {C : Category lo la l≈} where
 
   open Category C renaming (Hom to Homset)
   open Category (Setoids la l≈) using () renaming (_⇒_ to _⇒′_)
-  open Setoids.Build using (resp)
+  open Setoids.Build._⇒_ using (resp)
 
 
   Hom : Obj → Functor C (Setoids la l≈)

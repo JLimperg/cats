@@ -7,6 +7,7 @@ open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids)
 open import Cats.Category.Setoids.Facts.Products as Products using
   (hasBinaryProducts)
+open import Cats.Util.Conv
 
 import Relation.Binary.PropositionalEquality as ≡
 import Relation.Binary.SetoidReasoning as SetoidReasoning
@@ -21,7 +22,7 @@ module Build l where
   open Base.Category (Setoids l l)
   open Category (Setoids l l) using (∃!-intro ; Exp ; IsUniqueSuchThat)
   open HasBinaryProducts (hasBinaryProducts l l)
-  open Setoids.Build l l using (arr ; resp)
+  open Setoids.Build._⇒_ using (resp)
 
 
   _↝_ : Obj → Obj → Obj
@@ -34,7 +35,7 @@ module Build l where
 
   eval : ∀ {B C} → (B ↝ C) × B ⇒ C
   eval = record
-      { arr = λ { (f , x) → arr f x }
+      { arr = λ { (f , x) → (f ⃗) x }
       ; resp = λ { (eq₁ , eq₂) → eq₁ eq₂ }
       }
 
@@ -42,7 +43,7 @@ module Build l where
   curry : ∀ {A B C} → A × B ⇒ C → A ⇒ B ↝ C
   curry {A} f = record
       { arr = λ a → record
-           { arr = λ b → arr f (a , b)
+           { arr = λ b → (f ⃗) (a , b)
            ; resp = λ eqb → resp f (refl , eqb)
            }
       ; resp = λ eqa eqb → resp f (eqa , eqb)
@@ -60,11 +61,11 @@ module Build l where
     → IsUniqueSuchThat (λ f̃ → eval ∘ ⟨ f̃ × id ⟩ ≈ f) (curry f)
   curry-unique {A} {B} {C} f {g} eval∘g≈f {a} {a′} a≈a′ {b} {b′} b≈b′
       = begin⟨ C ⟩
-          arr (arr (curry f) a) b
+          ((((curry f) ⃗) a) ⃗) b
         ≡⟨ ≡.refl ⟩
-          arr f (a , b)
+          (f ⃗) (a , b)
         ≈⟨ sym C (eval∘g≈f (sym A (a≈a′) , sym B (b≈b′))) ⟩
-          arr (arr g a′) b′
+          (((g ⃗) a′) ⃗) b′
         ∎
     where
       open SetoidReasoning

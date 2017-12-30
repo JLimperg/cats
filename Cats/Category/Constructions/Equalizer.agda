@@ -37,9 +37,14 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
 
   instance
-    Conv-Equalizer-⇒ : ∀ {A B} {f g : A ⇒ B}
-      → Conv (Equalizer f g) (λ e → Equalizer.E e ⇒ A)
-    Conv-Equalizer-⇒ .Conv._↓ = Equalizer.e
+    HasObj-Equalizer : ∀ {A B} {f g : A ⇒ B}
+      → HasObj (Equalizer f g) lo la l≈
+    HasObj-Equalizer = record { Cat = Cat ; _ᴼ = Equalizer.E }
+
+
+    HasArrow-Equalizer : ∀ {A B} {f g : A ⇒ B}
+      → HasArrow (Equalizer f g) lo la l≈
+    HasArrow-Equalizer = record { Cat = Cat ; _⃗ = Equalizer.e }
 
 
   equalizer→mono : ∀ {A B} {f g : A ⇒ B} {E} {e : E ⇒ A}

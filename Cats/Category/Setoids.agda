@@ -5,6 +5,11 @@ open import Relation.Binary using
   (Setoid ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_ ; Rel ; IsEquivalence)
 
 open import Cats.Category
+open import Cats.Category.Sets using (Sets)
+open import Cats.Util.Conv
+
+import Cats.Util.Function as Fun
+
 
 open Setoid renaming (_≈_ to eq)
 
@@ -24,11 +29,16 @@ module Build (l l≈ : Level) where
       arr : Carrier A → Carrier B
       resp : arr Preserves eq A ⟶ eq B
 
-  open _⇒_ public
+  open _⇒_ using (resp)
+
+
+  instance
+    HasArrow-⇒ : ∀ A B → HasArrow (A ⇒ B) (suc l) l l
+    HasArrow-⇒ A B = record { Cat = Sets l ; _⃗ = _⇒_.arr }
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) (l ⊔ l≈)
-  _≈_ {A} {B} f g = ∀ {x y} → eq A x y → eq B (arr f x) (arr g y)
+  _≈_ {A} {B} f g = ∀ {x y} → eq A x y → eq B ((f ⃗) x) ((g ⃗) y)
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
@@ -48,7 +58,7 @@ module Build (l l≈ : Level) where
 
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   _∘_ {C = C} f g = record
-      { arr = λ x → arr f (arr g x)
+      { arr = f ⃗ Fun.∘ g ⃗
       ; resp = λ eq → resp f (resp g eq)
       }
 

@@ -31,8 +31,8 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
 
   instance
-    Conv-≅-⇒ : ∀ {A B} → Conv′ (A ≅ B) (A ⇒ B)
-    Conv-≅-⇒ .Conv._↓ = forth
+    HasArrow-≅ : ∀ {A B} → HasArrow (A ≅ B) lo la l≈
+    HasArrow-≅ = record { Cat = Cat ; _⃗ = forth }
 
 
   ≅-equiv : IsEquivalence _≅_

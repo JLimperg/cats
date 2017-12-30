@@ -5,6 +5,7 @@ open import Relation.Binary.Product.Pointwise using (_×-setoid_)
 
 open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids)
+open import Cats.Util.Conv
 
 
 module Build l l≈ where
@@ -13,7 +14,7 @@ module Build l l≈ where
 
 
   open Category (Setoids l l≈)
-  open Setoids.Build l l≈ using (arr ; resp)
+  open Setoids.Build._⇒_ using (resp)
 
 
   _×_ : Obj → Obj → Obj
@@ -36,7 +37,7 @@ module Build l l≈ where
 
   ⟨_,_⟩ : ∀ {X A B} → X ⇒ A → X ⇒ B → X ⇒ A × B
   ⟨_,_⟩ {A = A} {B} xl xr = record
-      { arr = < arr xl , arr xr >
+      { arr = < xl ⃗ , xr ⃗ >
       ; resp = λ eq → resp xl eq , resp xr eq
       }
 

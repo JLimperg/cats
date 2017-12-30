@@ -48,12 +48,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   open BinaryProduct using (projl ; projr ; isBinaryProduct)
 
 
-  instance Conv-BinaryProduct-Obj : ∀ {A B} → Conv′ (BinaryProduct A B) Obj
-  Conv-BinaryProduct-Obj .Conv._↓ = BinaryProduct.prod
+  instance
+    HasObj-BinaryProduct : ∀ {A B} → HasObj (BinaryProduct A B) lo la l≈
+    HasObj-BinaryProduct = record { Cat = Cat ; _ᴼ = BinaryProduct.prod }
 
 
-  [_]⟨_,_⟩ : ∀ {A B} (A×B : BinaryProduct A B) {Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A×B ↓
-  [ A×B ]⟨ f , g ⟩ = isBinaryProduct A×B f g ↓
+  [_]⟨_,_⟩ : ∀ {A B} (A×B : BinaryProduct A B) {Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A×B ᴼ
+  [ A×B ]⟨ f , g ⟩ = isBinaryProduct A×B f g ⃗
 
 
   ⟨,⟩-projl : ∀ {A B} (A×B : BinaryProduct A B) {Z}
@@ -115,7 +116,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       {A′ B′} (A′×B′ : BinaryProduct A′ B′)
     → (A ⇒ A′)
     → (B ⇒ B′)
-    → A×B ↓ ⇒ A′×B′ ↓
+    → A×B ᴼ ⇒ A′×B′ ᴼ
   [ A×B ][ A′×B′ ]⟨ f × g ⟩ = [ A′×B′ ]⟨ f ∘ projl A×B , g ∘ projr A×B ⟩
 
 
@@ -354,7 +355,7 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
 
 
   _×_ : Obj → Obj → Obj
-  A × B = (A ×′ B) ↓
+  A × B = BinaryProduct.prod (A ×′ B)
 
 
   projl : ∀ {A B} → A × B ⇒ A

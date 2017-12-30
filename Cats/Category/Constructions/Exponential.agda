@@ -28,8 +28,8 @@ module Build {lo la l≈}
         → ∃![ f̃ ∈ A ⇒ Cᴮ ] (eval ∘ ⟨ f̃ × id ⟩ ≈ f)
 
 
-  instance Conv-Exp-Obj : ∀ {B C} → Conv′ (Exp B C) Obj
-  Conv-Exp-Obj .Conv._↓ = Exp.Cᴮ
+  instance HasObj-Exp : ∀ {B C} → HasObj (Exp B C) lo la l≈
+  HasObj-Exp = record { Cat = Cat ; _ᴼ = Exp.Cᴮ }
 
 
   module _ {B C} (Cᴮ : Exp B C) where
@@ -37,17 +37,17 @@ module Build {lo la l≈}
     open Exp Cᴮ using (eval ; curry)
 
 
-    uncurry : ∀ {A} → A ⇒ Cᴮ ↓ → A × B ⇒ C
+    uncurry : ∀ {A} → A ⇒ Cᴮ ᴼ → A × B ⇒ C
     uncurry f = eval ∘ ⟨ f × id ⟩
 
 
-    curry∘uncurry : ∀ {A} {f : A ⇒ Cᴮ ↓}
-      → curry (uncurry f) ↓ ≈ f
+    curry∘uncurry : ∀ {A} {f : A ⇒ Cᴮ ᴼ}
+      → curry (uncurry f) ⃗ ≈ f
     curry∘uncurry {f = f} = ∃!′.unique (curry (uncurry f)) ≈.refl
 
 
     uncurry∘curry : ∀ {A} {f : A × B ⇒ C}
-      → uncurry (curry f ↓) ≈ f
+      → uncurry (curry f ⃗) ≈ f
     uncurry∘curry {f = f} = ∃!′.prop (curry f)
 
 
@@ -73,7 +73,7 @@ record HasExponentials {lo la l≈}
 
 
   _↝_ : Obj → Obj → Obj
-  B ↝ C = (B ↝′ C) ↓
+  B ↝ C = (B ↝′ C) ᴼ
 
 
   eval : ∀ {B C} → (B ↝ C) × B ⇒ C
@@ -81,7 +81,7 @@ record HasExponentials {lo la l≈}
 
 
   curry : ∀ {A B C} → A × B ⇒ C → A ⇒ B ↝ C
-  curry {B = B} {C} f = Bld.curry (B ↝′ C) f ↓
+  curry {B = B} {C} f = Bld.curry (B ↝′ C) f ⃗
 
 
   uncurry : ∀ {A B C} → A ⇒ B ↝ C → A × B ⇒ C
