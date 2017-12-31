@@ -107,7 +107,7 @@ module _ {lo la l≈} {Cat : Category lo la l≈} {A B : Category.Obj Cat} where
   product→limit : BinaryProduct A B → Limit F
   product→limit P = record
       { cone = productData→cone (projl P) (projr P)
-      ; isTerminal = terminal (isBinaryProduct P)
+      ; isLimit = terminal (isBinaryProduct P)
       }
 
 
@@ -118,9 +118,9 @@ module _ {lo la l≈} {Cat : Category lo la l≈} {A B : Category.Obj Cat} where
           { prod = P
           ; projl = pl
           ; projr = pr
-          ; isBinaryProduct = product (Limit.isTerminal L)
+          ; isBinaryProduct = product (Limit.isLimit L)
           }
 
 
   product-unique : (P Q : BinaryProduct A B) → P ᴼ ≅ Q ᴼ
-  product-unique P Q = obj-unique F (product→limit P) (product→limit Q)
+  product-unique P Q = obj-unique (product→limit P) (product→limit Q)
