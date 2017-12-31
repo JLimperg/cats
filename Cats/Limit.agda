@@ -4,7 +4,7 @@ open import Level
 
 open import Cats.Category
 open import Cats.Category.Cones using
-  (Cone ; Cones ; HasObj-Cone ; HasArrow-⇒ ; cone-iso→obj-iso)
+  (Cone ; Cones ; HasObj-Cone ; HasArrow-⇒ ; cone-iso→obj-iso ; apFunctor)
 open import Cats.Functor
 open import Cats.Util.Conv
 
@@ -47,4 +47,12 @@ module _ {lo la l≈ lo′ la′ l≈′}
     obj-unique l m = cone-iso→obj-iso _ (unique l m)
 
 
+module _ {lo la l≈} {C D : Category lo la l≈} where
 
+  preservesLimits : (F : Functor C D) → Set (suc (lo ⊔ la ⊔ l≈))
+  preservesLimits F
+      = {J : Category lo la l≈}
+      → {D : Functor J C}
+      → {c : Cone D}
+      → IsLimit c
+      → IsLimit (apFunctor F c)

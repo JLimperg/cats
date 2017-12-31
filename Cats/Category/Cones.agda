@@ -4,8 +4,11 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level using (_⊔_)
 
 open import Cats.Category
+open import Cats.Category.Cat using (Cat)
 open import Cats.Functor
 open import Cats.Util.Conv
+
+import Relation.Binary.PropositionalEquality as ≡
 
 import Cats.Util.Function as Fun
 
@@ -118,3 +121,36 @@ module _ {lo la l≈ lo′ la′ l≈′}
       }
     where
       open _≅_
+
+
+private
+  module Cat {lo la l≈} = Category (Cat lo la l≈)
+
+
+apFunctor : ∀ {lo la l≈} {Y Z : Category lo la l≈}
+  → (F : Functor Y Z)
+  → {J : Category lo la l≈}
+  → {D : Functor J Y}
+  → Cone D
+  → Cone (F Cat.∘ D)
+apFunctor {Y = Y} {Z} F {J} {D} c = record
+    { Apex = fobj F Apex
+    ; arr = λ j → fmap F (arr j)
+    ; commute = λ {i} {j} α → Z.≈.sym (
+        begin
+          fmap (F Cat.∘ D) α Z.∘ fmap F (arr i)
+        ≡⟨ ≡.refl ⟩
+          fmap F (fmap D α) Z.∘ fmap F (arr i)
+        ≈⟨ Z.≈.sym (fmap-∘ F _ _) ⟩
+          fmap F (fmap D α Y.∘ arr i)
+        ≈⟨ fmap-resp F (Y.≈.sym (commute α)) ⟩
+          fmap F (arr j)
+        ∎
+      )
+    }
+  where
+    module Y = Category Y
+    module Z = Category Z
+    open Cone c
+    open Z.≈-Reasoning
+    open Functor
