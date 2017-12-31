@@ -20,13 +20,7 @@ module _ {lo la l≈} {Cat : Category lo la l≈} {A B : Category.Obj Cat} where
 
 
   F : Functor Two Cat
-  F = record
-       { fobj = λ { true → A ; false → B }
-       ; fmap = λ { Two.id → id }
-       ; fmap-resp = λ { {A} {B} {Two.id} {Two.id}  _ → ≈.refl }
-       ; fmap-id = ≈.refl
-       ; fmap-∘ = λ { Two.id Two.id → ≈.sym id-l }
-       }
+  F = Two.functor (λ { true → A ; false → B})
 
 
   private

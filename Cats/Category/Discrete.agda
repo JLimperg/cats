@@ -4,6 +4,7 @@ open import Data.Unit using (⊤)
 open import Level
 
 open import Cats.Category
+open import Cats.Functor
 
 
 Obj : Set li
@@ -31,3 +32,17 @@ Discrete = record
     ; id-l = _
     ; assoc = _
     }
+
+
+functor : ∀ {lo la l≈} {C : Category lo la l≈}
+  → (I → Category.Obj C)
+  → Functor Discrete C
+functor {C = C} f = record
+    { fobj = f
+    ; fmap = λ { id → C.id }
+    ; fmap-resp = λ { {_} {_} {id} {id} _ → C.≈.refl }
+    ; fmap-id = C.≈.refl
+    ; fmap-∘ = λ { id id → C.≈.sym C.id-l }
+    }
+  where
+    module C = Category C
