@@ -4,12 +4,12 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level using (_⊔_)
 
 open import Cats.Category
-open import Cats.Category.Cat using (Cat)
 open import Cats.Functor
 open import Cats.Util.Conv
 
 import Relation.Binary.PropositionalEquality as ≡
 
+import Cats.Category.Cat as CatDef
 import Cats.Util.Function as Fun
 
 
@@ -124,12 +124,14 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
 private
-  module Cat {lo la l≈} = Category (Cat lo la l≈)
+  module Cat = CatDef.Build
 
 
-apFunctor : ∀ {lo la l≈} {Y Z : Category lo la l≈}
+apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
+  → {Y : Category lo la l≈}
+  → {Z : Category lo′ la′ l≈′}
   → (F : Functor Y Z)
-  → {J : Category lo la l≈}
+  → {J : Category lo″ la″ l≈″}
   → {D : Functor J Y}
   → Cone D
   → Cone (F Cat.∘ D)

@@ -47,11 +47,14 @@ module _ {lo la l≈ lo′ la′ l≈′}
     obj-unique l m = cone-iso→obj-iso _ (unique l m)
 
 
-module _ {lo la l≈} {C D : Category lo la l≈} where
+module _ {lo la l≈ lo′ la′ l≈′}
+  {C : Category lo la l≈}
+  {D : Category lo′ la′ l≈′}
+  where
 
-  preservesLimits : (F : Functor C D) → Set (suc (lo ⊔ la ⊔ l≈))
-  preservesLimits F
-      = {J : Category lo la l≈}
+  preservesLimits : (lo″ la″ l≈″ : Level) → (F : Functor C D) → Set _
+  preservesLimits lo″ la″ l≈″ F
+      = {J : Category lo″ la″ l≈″}
       → {D : Functor J C}
       → {c : Cone D}
       → IsLimit c
