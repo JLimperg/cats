@@ -4,6 +4,7 @@ open import Data.Bool using (Bool ; true ; false ; not)
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Functor
 open import Cats.Util.Conv
 open import Cats.Util.Logic.Constructive
 
@@ -428,3 +429,27 @@ record HasFiniteProducts {lo la l≈} (Cat : Category lo la l≈)
 
   open HasTerminal hasTerminal public
   open HasBinaryProducts hasBinaryProducts public
+
+
+module _ {lo la l≈ lo′ la′ l≈′}
+  {C : Category lo la l≈}
+  {D : Category lo′ la′ l≈′}
+  where
+
+  open Category C
+  open Build using (IsBinaryProduct ; IsProduct)
+  open Functor
+
+
+  PreservesBinaryProducts : (F : Functor C D) → Set _
+  PreservesBinaryProducts F
+    = ∀ {A B A×B} {projl : A×B ⇒ A} {projr : A×B ⇒ B}
+    → IsBinaryProduct C A×B projl projr
+    → IsBinaryProduct D (fobj F A×B) (fmap F projl) (fmap F projr)
+
+
+  PreservesProducts : ∀ {i} (I : Set i) (F : Functor C D) → Set _
+  PreservesProducts I F
+    = ∀ {O : I → Obj} {P} {proj : ∀ i → P ⇒ O i}
+    → IsProduct C O P proj
+    → IsProduct D (λ i → fobj F (O i)) (fobj F P) (λ i → fmap F (proj i))
