@@ -1,8 +1,10 @@
 module Cats.Functor where
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Level
 open import Relation.Binary using (_Preserves_⟶_)
+
+import Cats.Category.Constructions.Iso as Iso
 
 
 record Functor {lo la l≈ lo′ la′ l≈′}
@@ -11,7 +13,9 @@ record Functor {lo la l≈ lo′ la′ l≈′}
   : Set (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′) where
   private
     module C = Category C
+    module C≅ = Iso.Build C
     module D = Category D
+    module D≅ = Iso.Build D
 
   field
     fobj : C.Obj → D.Obj
@@ -22,7 +26,7 @@ record Functor {lo la l≈ lo′ la′ l≈′}
       → fmap (f C.∘ g) D.≈ fmap f D.∘ fmap g
 
 
-  fobj-preserves-≅ : fobj Preserves C._≅_ ⟶ D._≅_
+  fobj-preserves-≅ : fobj Preserves C≅._≅_ ⟶ D≅._≅_
   fobj-preserves-≅ {i} {j} x≅y
       = record
       { forth = fmap (forth x≅y)
@@ -49,6 +53,6 @@ record Functor {lo la l≈ lo′ la′ l≈′}
           ∎
       }
     where
-      open C._≅_
+      open C≅._≅_
       module ≈ = D.≈
       open D.≈-Reasoning
