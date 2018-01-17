@@ -1,5 +1,6 @@
 module Cats.Category.Preorder.Facts.PreorderAsCategory where
 
+open import Data.Bool using (true ; false)
 open import Relation.Binary using (Preorder)
 
 import Level
@@ -48,17 +49,13 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
     → (pr : glb ∼ y)
     → (x ∼ glb ∨ y ∼ glb)
     → IsBinaryProduct glb pl pr
-  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = ∃!-intro (x∼glb ∘ xl) _  _
+  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = ∃!-intro (x∼glb ∘ xl) _ _
   ⊓-isBinaryProduct pl pr (∨-intror y∼glb) xl xr = ∃!-intro (y∼glb ∘ xr) _ _
 
 
   ⊓-to-BinaryProduct : ∀ {glb x y} → glb ≈ x ⊓ y → BinaryProduct x y
-  ⊓-to-BinaryProduct {glb} (pl , pr , maximal) = record
-    { prod = glb
-    ; projl = pl
-    ; projr = pr
-    ; isBinaryProduct = ⊓-isBinaryProduct pl pr maximal
-    }
+  ⊓-to-BinaryProduct {glb} (pl , pr , maximal)
+      = mkBinaryProduct pl pr (⊓-isBinaryProduct pl pr maximal)
 
 
   mono : ∀ {x y} (f : x ⇒ y) → IsMono f

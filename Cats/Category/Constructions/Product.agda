@@ -4,13 +4,18 @@ open import Data.Bool using (Bool ; true ; false ; not)
 open import Level
 
 open import Cats.Category.Base
+open import Cats.Category.Constructions.Terminal as Terminal using (HasTerminal)
 open import Cats.Functor
 open import Cats.Util.Conv
 open import Cats.Util.Logic.Constructive
 
 import Cats.Category.Constructions.Iso as Iso
-import Cats.Category.Constructions.Terminal as Terminal
 import Cats.Category.Constructions.Unique as Unique
+
+
+Bool-elim : ∀ {a} {A : Bool → Set a} → A true → A false → (i : Bool) → A i
+Bool-elim x y true = x
+Bool-elim x y false = y
 
 
 module Build {lo la l≈} (Cat : Category lo la l≈) where
@@ -19,12 +24,31 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   open Cat.≈-Reasoning
   open Iso.Build Cat
   open Unique.Build Cat
+  open Terminal.Build Cat
 
 
   IsProduct : ∀ {li} {I : Set li} (O : I → Obj) P → (∀ i → P ⇒ O i)
     → Set (lo ⊔ la ⊔ l≈ ⊔ li)
   IsProduct O P proj
       = ∀ {X} (x : ∀ i → X ⇒ O i) → ∃![ u ] (∀ i → x i ≈ proj i ∘ u)
+
+
+  IsBinaryProduct : ∀ {A B} P → (P ⇒ A) → (P ⇒ B) → Set (lo ⊔ la ⊔ l≈)
+  IsBinaryProduct {A} {B} P projl projr
+      = ∀ {X} (xl : X ⇒ A) (xr : X ⇒ B)
+        → ∃![ u ] (xl ≈ projl ∘ u ∧ xr ≈ projr ∘ u)
+
+
+  IsBinaryProduct→IsProduct : ∀ {A B P} {pl : P ⇒ A} {pr : P ⇒ B}
+    → IsBinaryProduct P pl pr
+    → IsProduct (Bool-elim A B) P (Bool-elim pl pr)
+  IsBinaryProduct→IsProduct isBinProd x = record
+      { arr = f ⃗
+      ; prop = Bool-elim (∧-eliml (∃!′.prop f)) (∧-elimr (∃!′.prop f))
+      ; unique = λ eq → ∃!′.unique f (eq true , eq false)
+      }
+    where
+      f = isBinProd (x true) (x false)
 
 
   record Product {li} {I : Set li} (O : I → Obj) : Set (lo ⊔ la ⊔ l≈ ⊔ li) where
@@ -34,188 +58,95 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       isProduct : IsProduct O prod proj
 
 
-  IsBinaryProduct : ∀ {A B} P → (P ⇒ A) → (P ⇒ B) → Set (lo ⊔ la ⊔ l≈)
-  IsBinaryProduct {A} {B} P projl projr
-      = ∀ {X} (xl : X ⇒ A) (xr : X ⇒ B) → ∃![ u ] (xl ≈ projl ∘ u ∧ xr ≈ projr ∘ u)
-
-
-  record BinaryProduct (A B : Obj) : Set (lo ⊔ la ⊔ l≈) where
-    field
-      prod : Obj
-      projl : prod ⇒ A
-      projr : prod ⇒ B
-      isBinaryProduct : IsBinaryProduct prod projl projr
-
-  open BinaryProduct using (projl ; projr ; isBinaryProduct)
+  open Product using (proj ; isProduct)
 
 
   instance
-    HasObj-BinaryProduct : ∀ {A B} → HasObj (BinaryProduct A B) lo la l≈
-    HasObj-BinaryProduct = record { Cat = Cat ; _ᴼ = BinaryProduct.prod }
+    HasObj-Product : ∀ {li} {I : Set li} {O : I → Obj}
+      → HasObj (Product O) lo la l≈
+    HasObj-Product = record { Cat = Cat ; _ᴼ = Product.prod }
 
 
-  [_]⟨_,_⟩ : ∀ {A B} (A×B : BinaryProduct A B) {Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A×B ᴼ
-  [ A×B ]⟨ f , g ⟩ = isBinaryProduct A×B f g ⃗
+  BinaryProduct : Obj → Obj → Set (lo ⊔ la ⊔ l≈)
+  BinaryProduct A B = Product (Bool-elim A B)
 
 
-  ⟨,⟩-projl : ∀ {A B} (A×B : BinaryProduct A B) {Z}
-    → {f : Z ⇒ A} {g : Z ⇒ B}
-    → projl A×B ∘ [ A×B ]⟨ f , g ⟩ ≈ f
-  ⟨,⟩-projl A×B {f = f} {g}
-      = ≈.sym (∧-eliml (∃!′.prop (isBinaryProduct A×B f g)))
+  mkBinaryProduct : ∀ {A B P} (pl : P ⇒ A) (pr : P ⇒ B)
+    → IsBinaryProduct P pl pr
+    → BinaryProduct A B
+  mkBinaryProduct {P = P} pl pr isBinProd = record
+      { isProduct = IsBinaryProduct→IsProduct isBinProd }
 
 
-  ⟨,⟩-projr : ∀ {A B} (A×B : BinaryProduct A B) {Z}
-    → {f : Z ⇒ A} {g : Z ⇒ B}
-    → projr A×B ∘ [ A×B ]⟨ f , g ⟩ ≈ g
-  ⟨,⟩-projr A×B {f = f} {g}
-      = ≈.sym (∧-elimr (∃!′.prop (isBinaryProduct A×B f g)))
+  nullaryProduct-Terminal : (P : Product {I = ⊥} (λ())) → IsTerminal (P ᴼ)
+  nullaryProduct-Terminal P X with isProduct P {X = X} λ()
+  ... | ∃!-intro arr _ unique = ∃!-intro arr _ (λ _ → unique λ())
 
 
-  ⟨,⟩-resp : ∀ {A B} (A×B : BinaryProduct A B) {Z}
-    → {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
-    → f ≈ f′
-    → g ≈ g′
-    → [ A×B ]⟨ f , g ⟩ ≈ [ A×B ]⟨ f′ , g′ ⟩
-  ⟨,⟩-resp A×B {f = f} {g = g} f≈f′ g≈g′
-      = ∃!′.unique (isBinaryProduct A×B f g)
-        ( ≈.trans f≈f′ (≈.sym (⟨,⟩-projl A×B))
-        , ≈.trans g≈g′ (≈.sym (⟨,⟩-projr A×B)))
+  module _ {li} {I : Set li} {O : I → Obj} (P : Product O) where
+
+    factorizer : ∀ {X} → (∀ i → X ⇒ O i) → X ⇒ P ᴼ
+    factorizer proj = isProduct P proj ⃗
 
 
-  ⟨,⟩-∘ : ∀ {A B} (A×B : BinaryProduct A B) {Y Z}
-    → {f : Y ⇒ Z} {g : Z ⇒ A} {h : Z ⇒ B}
-    → [ A×B ]⟨ g , h ⟩ ∘ f ≈ [ A×B ]⟨ g ∘ f , h ∘ f ⟩
-  ⟨,⟩-∘ A×B {f = f} {g} {h} = ≈.sym
-      (∃!′.unique
-        (isBinaryProduct A×B (g ∘ f) (h ∘ f))
-        (≈.sym lem₁ , ≈.sym lem₂))
+    factorizer-proj : ∀ {X} {x : ∀ i → X ⇒ O i} {i}
+      → proj P i ∘ factorizer x ≈ x i
+    factorizer-proj {x = x} {i} = ≈.sym (∃!′.prop (isProduct P x) i)
+
+
+    factorizer-resp : ∀ {X} {x y : ∀ i → X ⇒ O i}
+      → (∀ i → x i ≈ y i)
+      → factorizer x ≈ factorizer y
+    factorizer-resp {x = x} {y} eq
+        = ∃!′.unique (isProduct P x)
+            (λ i → ≈.trans (eq i) (≈.sym factorizer-proj))
+
+
+    factorizer-∘ : ∀ {X} {x : ∀ i → X ⇒ O i} {Z} {f : Z ⇒ X}
+      → factorizer x ∘ f ≈ factorizer (λ i → x i ∘ f)
+    factorizer-∘ {x = x} {f = f} = ≈.sym (
+          ∃!′.unique (isProduct P (λ i → x i ∘ f))
+            (λ i → ≈.sym (≈.trans unassoc (∘-resp-l factorizer-proj)))
+        )
+
+
+  module _ {li} {I : Set li}
+    {O : I → Obj}  (P : Product O)
+    {O′ : I → Obj} (P′ : Product O′)
     where
-      lem₁ : projl A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f ≈ g ∘ f
-      lem₁
-          = begin
-              projl A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f
-            ≈⟨ unassoc ⟩
-              (projl A×B ∘ [ A×B ]⟨ g , h ⟩) ∘ f
-            ≈⟨ ∘-resp-l (⟨,⟩-projl A×B) ⟩
-              g ∘ f
-            ∎
 
-      lem₂ : projr A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f ≈ h ∘ f
-      lem₂
-          = begin
-              projr A×B ∘ [ A×B ]⟨ g , h ⟩ ∘ f
-            ≈⟨ unassoc ⟩
-              (projr A×B ∘ [ A×B ]⟨ g , h ⟩) ∘ f
-            ≈⟨ ∘-resp-l (⟨,⟩-projr A×B) ⟩
-              h ∘ f
-            ∎
+    times : (∀ i → O i ⇒ O′ i) → P ᴼ ⇒ P′ ᴼ
+    times x = factorizer P′ (λ i → x i ∘ proj P i)
 
 
-  [_][_]⟨_×_⟩ :
-    ∀ {A B} (A×B : BinaryProduct A B)
-      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
-    → (A ⇒ A′)
-    → (B ⇒ B′)
-    → A×B ᴼ ⇒ A′×B′ ᴼ
-  [ A×B ][ A′×B′ ]⟨ f × g ⟩ = [ A′×B′ ]⟨ f ∘ projl A×B , g ∘ projr A×B ⟩
+    times-proj : ∀ {x : ∀ i → O i ⇒ O′ i} {i}
+      → proj P′ i ∘ times x ≈ x i ∘ proj P i
+    times-proj = factorizer-proj P′
 
 
-  ⟨×⟩-resp :
-    ∀ {A B} (A×B : BinaryProduct A B)
-      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
-    → {f f′ : A ⇒ A′}
-    → {g g′ : B ⇒ B′}
-    → f ≈ f′
-    → g ≈ g′
-    → [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ [ A×B ][ A′×B′ ]⟨ f′ × g′ ⟩
-  ⟨×⟩-resp A×B A′×B′ f≈f′ g≈g′ = ⟨,⟩-resp A′×B′ (∘-resp-l f≈f′) (∘-resp-l g≈g′)
+    times-resp : {x y : ∀ i → O i ⇒ O′ i}
+      → (∀ i → x i ≈ y i)
+      → times x ≈ times y
+    times-resp {x} {y} eq = factorizer-resp P′ (λ i → ∘-resp-l (eq i))
 
 
-  ⟨×⟩-projl :
-    ∀ {A B} (A×B : BinaryProduct A B)
-      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
-    → {f : A ⇒ A′}
-    → {g : B ⇒ B′}
-    → projl A′×B′ ∘ [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ f ∘ projl A×B
-  ⟨×⟩-projl A×B A′×B′ = ⟨,⟩-projl A′×B′
-
-
-  ⟨×⟩-projr :
-    ∀ {A B} (A×B : BinaryProduct A B)
-      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
-    → {f : A ⇒ A′}
-    → {g : B ⇒ B′}
-    → projr A′×B′ ∘ [ A×B ][ A′×B′ ]⟨ f × g ⟩ ≈ g ∘ projr A×B
-  ⟨×⟩-projr A×B A′×B′ = ⟨,⟩-projr A′×B′
-
-
-  ⟨×⟩-∘ :
-    ∀ {A B} (A×B : BinaryProduct A B)
-      {A′ B′} (A′×B′ : BinaryProduct A′ B′)
-      {A″ B″} (A″×B″ : BinaryProduct A″ B″)
-      {f : A′ ⇒ A″}
-      {g : B′ ⇒ B″}
-      {f′ : A ⇒ A′}
-      {g′ : B ⇒ B′}
-    → [ A′×B′ ][ A″×B″ ]⟨ f × g ⟩ ∘ [ A×B ][ A′×B′ ]⟨ f′ × g′ ⟩
-    ≈ [ A×B ][ A″×B″ ]⟨ f ∘ f′ × g ∘ g′ ⟩
-  ⟨×⟩-∘ {A} {B} A×B {A′} {B′} A′×B′ {A″} {B″} A″×B″ {f} {g} {f′} {g′}
-      = begin
-          [ A″×B″ ]⟨ f ∘ projl A′×B′ , g ∘ projr A′×B′ ⟩ ∘
-          [ A′×B′ ]⟨ f′ ∘ projl A×B  , g′ ∘ projr A×B  ⟩
-        ≈⟨ ⟨,⟩-∘ A″×B″ ⟩
-          [ A″×B″ ]⟨
-            (f ∘ projl A′×B′) ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩
-          , (g ∘ projr A′×B′) ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩
-          ⟩
-        ≈⟨ ⟨,⟩-resp A″×B″ assoc assoc ⟩
-          [ A″×B″ ]⟨
-            f ∘ (projl A′×B′ ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩)
-          , g ∘ (projr A′×B′ ∘ [ A′×B′ ]⟨ f′ ∘ projl A×B , g′ ∘ projr A×B ⟩)
-          ⟩
-        ≈⟨ ⟨,⟩-resp A″×B″ (∘-resp-r (⟨,⟩-projl A′×B′)) (∘-resp-r (⟨,⟩-projr A′×B′)) ⟩
-          [ A″×B″ ]⟨
-            f ∘ (f′ ∘ projl A×B)
-          , g ∘ (g′ ∘ projr A×B)
-          ⟩
-        ≈⟨ ⟨,⟩-resp A″×B″ unassoc unassoc ⟩
-          [ A″×B″ ]⟨
-              (f ∘ f′) ∘ projl A×B
-            , (g ∘ g′) ∘ projr A×B
-          ⟩
-        ∎
-
-
-  -- TODO Generalise _-×-_ and ⟨_,_⟩ to non-binary products. This should make
-  -- the duplication in the associated lemmas go away.
-
-
-  Bool-elim : ∀ {a} {A : Bool → Set a} → A true → A false → (b : Bool) → A b
-  Bool-elim x y true  = x
-  Bool-elim x y false = y
-
-
-  IsProduct→IsBinaryProduct : ∀ {A B P proj}
-    → IsProduct (Bool-elim A B) P proj
-    → IsBinaryProduct P (proj true) (proj false)
-  IsProduct→IsBinaryProduct prod xl xr with prod (Bool-elim xl xr)
-  ... | ∃!-intro u u-eq u-uniq
-      = ∃!-intro
-          u
-          (u-eq true , u-eq false)
-          (λ { (h₁ , h₂) → u-uniq (Bool-elim h₁ h₂) })
-
-
-  IsBinaryProduct→IsProduct : ∀ {A B P projl projr}
-    → IsBinaryProduct P projl projr
-    → IsProduct (Bool-elim A B) P (Bool-elim projl projr)
-  IsBinaryProduct→IsProduct prod proj with prod (proj true) (proj false)
-  ... | ∃!-intro u (u-eq₁ , u-eq₂) u-uniq
-      = ∃!-intro
-          u
-          (Bool-elim u-eq₁ u-eq₂)
-          (λ eq → u-uniq (eq true , eq false))
+  times-∘ : ∀ {li} {I : Set li}
+    → {O O′ O″ : I → Obj}
+    → (P : Product O) (P′ : Product O′) (P″ : Product O″)
+    → {x : ∀ i → O i ⇒ O′ i} {y : ∀ i → O′ i ⇒ O″ i}
+    → times P′ P″ y ∘ times P P′ x ≈ times P P″ (λ i → y i ∘ x i)
+  times-∘ P P′ P″ {x} {y} =
+    begin
+      times P′ P″ y ∘ times P P′ x
+    ≈⟨ factorizer-∘ P″ ⟩
+      factorizer P″ (λ i → (y i ∘ proj P′ i) ∘ times P P′ x)
+    ≈⟨ factorizer-resp P″ (λ i → assoc) ⟩
+      factorizer P″ (λ i → y i ∘ proj P′ i ∘ times P P′ x)
+    ≈⟨ factorizer-resp P″ (λ i → ∘-resp-r (times-proj P P′)) ⟩
+      factorizer P″ (λ i → y i ∘ x i ∘ proj P i)
+    ≈⟨ factorizer-resp P″ (λ i → unassoc) ⟩
+      times P P″ (λ i → y i ∘ x i)
+    ∎
 
 
   proj-cancel : ∀ {li} {I : Set li} {O : I → Obj} {P proj}
@@ -234,120 +165,87 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         ∎
 
 
-  Product-unique : ∀ {li} {I : Set li} {O : I → Obj} {P proj}
-    → IsProduct O P proj
-    → ∀  {P′ proj′}
-    → IsProduct O P′ proj′
-    → P ≅ P′
-  Product-unique {P = P} {proj} prod {P′} {proj′} prod′
-    with prod′ proj | prod proj′
-  ... | ∃!-intro u u-eq _ | ∃!-intro v v-eq _ = record
-      { forth = u
-      ; back = v
-      ; back-forth = proj-cancel prod (lemma u-eq v-eq)
-      ; forth-back = proj-cancel prod′ (lemma v-eq u-eq)
-      }
-    where
-      lemma : ∀ {li} {I : Set li} {O : I → Obj} {P P′ : Obj}
-        → {proj : ∀ i → P ⇒ O i} {proj′ : ∀ i → P′ ⇒ O i}
-        → ∀ {u v}
-        → (∀ i → proj i ≈ proj′ i ∘ u)
-        → (∀ i → proj′ i ≈ proj i ∘ v)
-        → ∀ i → proj i ∘ v ∘ u ≈ proj i ∘ id
-      lemma {P = P} {P′} {proj} {proj′} {u} {v} u-eq v-eq i
-          = begin
-              proj i ∘ v ∘ u
-            ≈⟨ ≈.sym assoc ⟩
-              (proj i ∘ v) ∘ u
-            ≈⟨ ∘-resp-l (≈.sym (v-eq _)) ⟩
-              proj′ i ∘ u
-            ≈⟨ ≈.sym (u-eq _) ⟩
-              proj i
-            ≈⟨ ≈.sym id-r ⟩
-              proj i ∘ id
-            ∎
+record HasProducts {lo la l≈} li (C : Category lo la l≈)
+  : Set (suc li ⊔ lo ⊔ la ⊔ l≈ )
+  where
+  private open module Bld = Build C using (Product)
+  open Category C
+
+  field
+    Π′ : {I : Set li} (O : I → Obj) → Product O
 
 
-  -- TODO eliminate duplication in lemmas
-  Product-permute : ∀ {li} {I : Set li}
-    → (perm : I → I)
-    → ∀ {O : I → Obj} {P proj}
-    → IsProduct O P proj
-    → ∀ {O′ : I → Obj} {P′ proj′}
-    → IsProduct O′ P′ proj′
-    → (f₁ : ∀ {i} → O (perm i) ⇒ O′ i)
-    → (f₂ : ∀ {i} → O′ (perm i) ⇒ O i)
-    → (∀ {i} → f₂ ∘ f₁ ∘ proj (perm (perm i)) ≈ proj i)
-    → (∀ {i} → f₁ ∘ f₂ ∘ proj′ (perm (perm i)) ≈ proj′ i)
-    → P ≅ P′
-  Product-permute perm {O} {P} {proj} prod {O′} {P′} {proj′} prod′ f₁ f₂ eq₁ eq₂
-    with prod′ {P} (λ i → f₁ ∘ proj (perm i))
-       | prod {P′} (λ i → f₂ ∘ proj′ (perm i))
-  ... | ∃!-intro u u-eq _ | ∃!-intro v v-eq _
-      = record
-      { forth = u
-      ; back = v
-      ; back-forth = proj-cancel prod lem₁
-      ; forth-back = proj-cancel prod′ lem₂
-      }
-    where
-      lem₁ : ∀ i → proj i ∘ v ∘ u ≈ proj i ∘ id
-      lem₁ i
-          = begin
-              proj i ∘ v ∘ u
-            ≈⟨ unassoc ⟩
-              (proj i ∘ v) ∘ u
-            ≈⟨ ∘-resp-l (≈.sym (v-eq _)) ⟩
-              (f₂ ∘ proj′ (perm i)) ∘ u
-            ≈⟨ assoc ⟩
-              f₂ ∘ proj′ (perm i) ∘ u
-            ≈⟨ ∘-resp-r (≈.sym (u-eq _)) ⟩
-              f₂ ∘ f₁ ∘ proj (perm (perm i))
-            ≈⟨ eq₁ ⟩
-              proj i
-            ≈⟨ ≈.sym id-r ⟩
-              proj i ∘ id
-            ∎
+  module _ {I : Set li} where
 
-      lem₂ : ∀ i → proj′ i ∘ u ∘ v ≈ proj′ i ∘ id
-      lem₂ i
-          = begin
-              proj′ i ∘ u ∘ v
-            ≈⟨ unassoc ⟩
-              (proj′ i ∘ u) ∘ v
-            ≈⟨ ∘-resp-l (≈.sym (u-eq _)) ⟩
-              (f₁ ∘ proj (perm i)) ∘ v
-            ≈⟨ assoc ⟩
-              f₁ ∘ proj (perm i) ∘ v
-            ≈⟨ ∘-resp-r (≈.sym (v-eq _)) ⟩
-              f₁ ∘ f₂ ∘ proj′ (perm (perm i))
-            ≈⟨ eq₂ ⟩
-              proj′ i
-            ≈⟨ ≈.sym id-r ⟩
-              proj′ i ∘ id
-            ∎
+    Π : ∀ (O : I → Obj) → Obj
+    Π O = Π′ O ᴼ
 
 
-  BinaryProduct-commute : ∀ {A B P pl pr Q ql qr}
-    → IsBinaryProduct {A} {B} P pl pr
-    → IsBinaryProduct {B} {A} Q ql qr
-    → P ≅ Q
-  BinaryProduct-commute prod prod′
-      = Product-permute
-          not
-          (IsBinaryProduct→IsProduct prod)
-          (IsBinaryProduct→IsProduct prod′)
-          (λ { {true} → id ; {false} → id })
-          (λ { {true} → id ; {false} → id })
-          (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
-          (λ { {true} → ≈.trans id-l id-l ; {false} → ≈.trans id-l id-l })
+    syntax Π (λ i → O) = Π[ i ] O
+
+
+    proj : ∀ {O : I → Obj} i → Π O ⇒ O i
+    proj {O} = Bld.Product.proj (Π′ O)
+
+
+    factorizer : ∀ {O : I → Obj} {X} → (∀ i → X ⇒ O i) → X ⇒ Π O
+    factorizer {O} = Bld.factorizer (Π′ O)
+
+
+    times : ∀ {O O′ : I → Obj} → (∀ i → O i ⇒ O′ i) → Π O ⇒ Π O′
+    times {O} {O′} = Bld.times (Π′ O) (Π′ O′)
+
+
+    factorizer-proj : ∀ {O : I → Obj} {X} {x : ∀ i → X ⇒ O i} {i}
+      → proj i ∘ factorizer x ≈ x i
+    factorizer-proj {O} = Bld.factorizer-proj (Π′ O)
+
+
+    factorizer-resp : ∀ {O : I → Obj} {X} {x y : ∀ i → X ⇒ O i}
+      → (∀ i → x i ≈ y i)
+      → factorizer x ≈ factorizer y
+    factorizer-resp {O} = Bld.factorizer-resp (Π′ O)
+
+
+    factorizer-∘ : ∀ {O : I → Obj} {X} {x : ∀ i → X ⇒ O i} {Z} {f : Z ⇒ X}
+      → factorizer x ∘ f ≈ factorizer (λ i → x i ∘ f)
+    factorizer-∘ {O} = Bld.factorizer-∘ (Π′ O)
+
+
+    times-proj : ∀ {O O′ : I → Obj} {x : ∀ i → O i ⇒ O′ i} {i}
+      → proj i ∘ times x ≈ x i ∘ proj i
+    times-proj {O} {O′} = Bld.times-proj (Π′ O) (Π′ O′)
+
+
+    times-resp : ∀ {O O′ : I → Obj} {x y : ∀ i → O i ⇒ O′ i}
+      → (∀ i → x i ≈ y i)
+      → times x ≈ times y
+    times-resp {O} {O′} = Bld.times-resp (Π′ O) (Π′ O′)
+
+
+    times-∘ : ∀ {O O′ O″ : I → Obj} {x : ∀ i → O i ⇒ O′ i} {y : ∀ i → O′ i ⇒ O″ i}
+      → times y ∘ times x ≈ times (λ i → y i ∘ x i)
+    times-∘ {O} {O′} {O″} = Bld.times-∘ (Π′ O) (Π′ O′) (Π′ O″)
+
+
+instance
+  HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
+    → HasProducts zero C
+    → HasTerminal C
+  HasProducts→HasTerminal {C = C} record { Π′ = Π }
+      = let P = Π {I = ⊥} λ() in
+        record
+          { One = P ᴼ
+          ; isTerminal = Build.nullaryProduct-Terminal C P
+          }
 
 
 record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   : Set (lo ⊔ la ⊔ l≈)
   where
-  private open module Bld = Build C using (BinaryProduct)
+  private open module Bld = Build C using (BinaryProduct ; Product)
   open Category C
+  open ≈-Reasoning
 
   infixr 2 _×_ _×′_ ⟨_×_⟩ ⟨_,_⟩
 
@@ -356,72 +254,101 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
 
 
   _×_ : Obj → Obj → Obj
-  A × B = BinaryProduct.prod (A ×′ B)
+  A × B = (A ×′ B) ᴼ
 
 
   projl : ∀ {A B} → A × B ⇒ A
-  projl {A} {B} = BinaryProduct.projl (A ×′ B)
+  projl {A} {B} = Product.proj (A ×′ B) true
 
 
   projr : ∀ {A B} → A × B ⇒ B
-  projr {A} {B} = BinaryProduct.projr (A ×′ B)
+  projr {A} {B} = Product.proj (A ×′ B) false
 
 
   ⟨_,_⟩ : ∀ {A B Z} → Z ⇒ A → Z ⇒ B → Z ⇒ A × B
-  ⟨_,_⟩ {A} {B} = Bld.[ A ×′ B ]⟨_,_⟩
+  ⟨_,_⟩ {A} {B} f g
+      = Bld.factorizer (A ×′ B) (Bool-elim f g)
 
 
   ⟨_×_⟩ : ∀ {A B A′ B′} → A ⇒ A′ → B ⇒ B′ → A × B ⇒ A′ × B′
-  ⟨_×_⟩ {A} {B} {A′} {B′} = Bld.[ A ×′ B ][ A′ ×′ B′ ]⟨_×_⟩
+  ⟨_×_⟩ {A} {B} {A′} {B′} f g
+      = Bld.times (A ×′ B)(A′ ×′ B′) (Bool-elim f g)
 
 
   ⟨,⟩-resp : ∀ {A B Z} {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
     → f ≈ f′
     → g ≈ g′
     → ⟨ f , g ⟩ ≈ ⟨ f′ , g′ ⟩
-  ⟨,⟩-resp {A} {B} = Bld.⟨,⟩-resp (A ×′ B)
+  ⟨,⟩-resp {A} {B} f≈f′ g≈g′
+      = Bld.factorizer-resp (A ×′ B) (Bool-elim f≈f′ g≈g′)
 
 
   ⟨,⟩-projl : ∀ {A B Z} {f : Z ⇒ A} {g : Z ⇒ B} → projl ∘ ⟨ f , g ⟩ ≈ f
-  ⟨,⟩-projl {A} {B} = Bld.⟨,⟩-projl (A ×′ B)
+  ⟨,⟩-projl {A} {B} = Bld.factorizer-proj (A ×′ B)
 
 
   ⟨,⟩-projr : ∀ {A B Z} {f : Z ⇒ A} {g : Z ⇒ B} → projr ∘ ⟨ f , g ⟩ ≈ g
-  ⟨,⟩-projr {A} {B} = Bld.⟨,⟩-projr (A ×′ B)
+  ⟨,⟩-projr {A} {B} = Bld.factorizer-proj (A ×′ B)
 
 
   ⟨,⟩-∘ : ∀ {A B Y Z} {f : Y ⇒ Z} {g : Z ⇒ A} {h : Z ⇒ B}
     → ⟨ g , h ⟩ ∘ f ≈ ⟨ g ∘ f , h ∘ f ⟩
-  ⟨,⟩-∘ {A} {B} = Bld.⟨,⟩-∘ (A ×′ B)
+  ⟨,⟩-∘ {A} {B} {Y} {Z} {f} {g} {h}
+      = begin
+          ⟨ g , h ⟩ ∘ f
+        ≈⟨ Bld.factorizer-∘ (A ×′ B) ⟩
+          Bld.factorizer (A ×′ B)
+            (λ i → Bool-elim {A = λ i → Z ⇒ Bool-elim A B i} g h i ∘ f)
+        ≈⟨ Bld.factorizer-resp (A ×′ B) (Bool-elim ≈.refl ≈.refl) ⟩
+          ⟨ g ∘ f , h ∘ f ⟩
+        ∎
 
 
   ⟨×⟩-resp : ∀ {A A′ B B′} {f f′ : A ⇒ A′} {g g′ : B ⇒ B′}
     → f ≈ f′
     → g ≈ g′
     → ⟨ f × g ⟩ ≈ ⟨ f′ × g′ ⟩
-  ⟨×⟩-resp {A} {A′} {B} {B′} = Bld.⟨×⟩-resp (A ×′ B) (A′ ×′ B′)
+  ⟨×⟩-resp {A} {A′} {B} {B′} f≈f′ g≈g′
+      = Bld.times-resp (A ×′ B) (A′ ×′ B′) (Bool-elim f≈f′ g≈g′)
 
 
   ⟨×⟩-projl : ∀ {A A′ B B′} {f : A ⇒ A′} {g : B ⇒ B′}
     → projl ∘ ⟨ f × g ⟩ ≈ f ∘ projl
-  ⟨×⟩-projl {A} {A′} {B} {B′} = Bld.⟨×⟩-projl (A ×′ B) (A′ ×′ B′)
+  ⟨×⟩-projl {A} {A′} {B} {B′} = Bld.times-proj (A ×′ B) (A′ ×′ B′)
 
 
   ⟨×⟩-projr : ∀ {A A′ B B′} {f : A ⇒ A′} {g : B ⇒ B′}
     → projr ∘ ⟨ f × g ⟩ ≈ g ∘ projr
-  ⟨×⟩-projr {A} {A′} {B} {B′} = Bld.⟨×⟩-projr (A ×′ B) (A′ ×′ B′)
+  ⟨×⟩-projr {A} {A′} {B} {B′} = Bld.times-proj (A ×′ B) (A′ ×′ B′)
 
 
   ⟨×⟩-∘ : ∀ {A A′ A″ B B′ B″}
     → {f : A′ ⇒ A″} {f′ : A ⇒ A′} {g : B′ ⇒ B″} {g′ : B ⇒ B′}
     → ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩ ≈ ⟨ f ∘ f′ × g ∘ g′ ⟩
-  ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} = Bld.⟨×⟩-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″)
+  ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} {f} {f′} {g} {g′}
+      = begin
+          ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩
+        ≈⟨ Bld.times-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″) ⟩
+          Bld.times (A ×′ B) (A″ ×′ B″)
+            (λ i →
+              Bool-elim {A = λ i → Bool-elim A′ B′ i ⇒ Bool-elim A″ B″ i} f g i ∘
+              Bool-elim {A = λ i → Bool-elim A B i ⇒ Bool-elim A′ B′ i} f′ g′ i)
+        ≈⟨ Bld.times-resp (A ×′ B) (A″ ×′ B″) (Bool-elim ≈.refl ≈.refl) ⟩
+          ⟨ f ∘ f′ × g ∘ g′ ⟩
+        ∎
+
+
+instance
+  HasProducts→HasBinaryProducts : ∀ {lo la l≈} {C : Category lo la l≈}
+    → HasProducts zero C
+    → HasBinaryProducts C
+  HasProducts→HasBinaryProducts record { Π′ = Π }
+      = record { _×′_ = λ A B → Π (Bool-elim A B) }
 
 
 record HasFiniteProducts {lo la l≈} (Cat : Category lo la l≈)
   : Set (lo ⊔ la ⊔ l≈)
   where
-  open Terminal using (HasTerminal)
 
   field
     {{hasTerminal}} : HasTerminal Cat
@@ -437,7 +364,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
   where
 
   open Category C
-  open Build using (IsBinaryProduct ; IsProduct)
+  open Build using (IsProduct ; IsBinaryProduct)
   open Functor
 
 

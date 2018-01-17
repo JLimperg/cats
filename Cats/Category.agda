@@ -36,5 +36,8 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 open CCC public using (IsCCC)
 open Exponential public using (HasExponentials)
 open Initial public using (HasInitial)
-open Product public using (HasBinaryProducts ; HasFiniteProducts)
+open Product public using
+  ( HasProducts ; HasBinaryProducts ; HasFiniteProducts
+  ; HasProducts→HasBinaryProducts
+  ; HasProducts→HasTerminal )
 open Terminal public using (HasTerminal)

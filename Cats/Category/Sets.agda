@@ -73,37 +73,24 @@ module _ {l} where
   -- The proof that all epis are surjective is nonconstructive, so we omit it.
 
 
-  instance hasBinaryProducts : HasBinaryProducts (Sets l)
-  hasBinaryProducts = record
-      { _×′_ = λ A B → record
-            { prod = A × B
-            ; projl = proj₁
-            ; projr = proj₂
-            ; isBinaryProduct = λ xl xr → ∃!-intro
-                (λ x → xl x , xr x)
-                ((λ _ → ≡.refl) , (λ _ → ≡.refl))
-                λ { (eq₁ , eq₂) x → ×-≡ (eq₁ x) (eq₂ x) }
+  instance
+    hasProducts : HasProducts l (Sets l)
+    hasProducts = record
+        { Π′ = λ O → record
+            { prod = ∀ i → O i
+            ; proj = λ i p → p i
+            ; isProduct = λ x → record
+                { arr = λ a i → x i a
+                ; prop = λ i a → ≡.refl
+                ; unique = λ y a → funext λ i → y i a
+                }
             }
-      }
-    where
-      ×-≡ : ∀ {a b} {A : Set a} {B : Set b} {x : A} {y : B} {z}
-        → x ≡ proj₁ z
-        → y ≡ proj₂ z
-        → (x , y) ≡ z
-      ×-≡ {z = z₁ , z₂} eq₁ eq₂ = ≡.cong₂ _,_ eq₁ eq₂
-
-
-  exponentialIsProduct : ∀ {I A : Obj} → IsProduct {I = I} (λ _ → A) (I → A) (λ i f → f i)
-  exponentialIsProduct projX
-      = ∃!-intro
-          (λ x i → projX i x)
-          (λ _ _ → ≡.refl)
-          (λ eq x → funext λ i → eq i x)
-    where
-      postulate
-        funext : ∀ {a b} {A : Set a} {B : A → Set b} {f g : (a : A) → B a}
-          → (∀ x → f x ≡ g x)
-          → f ≡ g
+        }
+      where
+        postulate
+          funext : ∀ {a b} {A : Set a} {B : A → Set b} {f g : (a : A) → B a}
+            → (∀ x → f x ≡ g x)
+            → f ≡ g
 
 
   Equ : ∀ {A B} (f g : A ⇒ B) → Set l

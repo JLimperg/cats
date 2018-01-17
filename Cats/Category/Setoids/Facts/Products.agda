@@ -8,6 +8,8 @@ open import Cats.Category.Setoids as Setoids using (Setoids)
 open import Cats.Util.Conv
 
 
+-- TODO Generalise to infinite products.
+
 module Build l l≈ where
 
   infixr 2 _×_
@@ -42,16 +44,16 @@ module Build l l≈ where
       }
 
 
+  isBinaryProduct : ∀ {A B} → IsBinaryProduct (A × B) projl projr
+  isBinaryProduct xl xr = record
+    { arr = ⟨ xl , xr ⟩
+    ; prop = (λ eq → resp xl eq) , (λ eq → resp xr eq)
+    ; unique = λ { (eq₁ , eq₂) x≈y → eq₁ x≈y , eq₂ x≈y }
+    }
+
+
   _×′_ : ∀ A B → BinaryProduct A B
-  A ×′ B = record
-      { prod = A × B
-      ; projl = projl
-      ; projr = projr
-      ; isBinaryProduct = λ xl xr → ∃!-intro
-          ⟨ xl , xr ⟩
-          ((λ {_} {_} eq → resp xl eq) , λ {_} {_} eq → resp xr eq)
-          (λ { (eq₁ , eq₂) x≈y → eq₁ x≈y , eq₂ x≈y })
-      }
+  A ×′ B = mkBinaryProduct projl projr isBinaryProduct
 
 
 instance hasBinaryProducts : ∀ l l≈ → HasBinaryProducts (Setoids l l≈)
