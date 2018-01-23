@@ -337,11 +337,46 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
         ∎
 
 
-HasProducts→HasBinaryProducts : ∀ {lo la l≈} {C : Category lo la l≈}
-  → HasProducts zero C
+-- The following is conceptually trivial, but we have to dig quite deep to
+-- avoid level-related nonsense.
+HasProducts→HasBinaryProducts : ∀ {lp lo la l≈} {C : Category lo la l≈}
+  → HasProducts lp C
   → HasBinaryProducts C
-HasProducts→HasBinaryProducts record { Π′ = Π }
-    = record { _×′_ = λ A B → Π (Bool-elim A B) }
+HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
+    = record { _×′_ = _×_ }
+  where
+    open Category C
+    open Unique.Build C
+    open Build C
+    open Product using (proj ; isProduct)
+    open ∃!′ using (arr ; prop ; unique)
+
+    _×_ : ∀ A B → Build.BinaryProduct C A B
+    A × B = record
+        { prod = prod′
+        ; proj = proj′
+        ; isProduct = isProduct′
+        }
+      where
+        O : Lift {ℓ = lp} Bool → _
+        O (lift true) = A
+        O (lift false) = B
+
+        prod′ = Π O ᴼ
+
+        proj′ = Bool-elim (proj (Π O) (lift true)) (proj (Π O) (lift false))
+
+        isProduct′ : IsProduct (Bool-elim A B) prod′ proj′
+        isProduct′ {X} x = record
+            { arr = arr′ ⃗
+            ; prop = Bool-elim (prop arr′ (lift true)) (prop arr′ (lift false))
+            ; unique = λ eq → unique arr′
+                (λ { (lift true) → eq true ; (lift false) → eq false})
+            }
+          where
+            arr′ = isProduct (Π O)
+              λ { (lift true) → x true ; (lift false) → x false}
+
 
 
 record HasFiniteProducts {lo la l≈} (Cat : Category lo la l≈)
