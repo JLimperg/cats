@@ -228,16 +228,15 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
     times-∘ {O} {O′} {O″} = Bld.times-∘ (Π′ O) (Π′ O′) (Π′ O″)
 
 
-instance
-  HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
-    → HasProducts zero C
-    → HasTerminal C
-  HasProducts→HasTerminal {C = C} record { Π′ = Π }
-      = let P = Π {I = ⊥} λ() in
-        record
-          { One = P ᴼ
-          ; isTerminal = Build.nullaryProduct-Terminal C P
-          }
+HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
+  → HasProducts zero C
+  → HasTerminal C
+HasProducts→HasTerminal {C = C} record { Π′ = Π }
+    = let P = Π {I = ⊥} λ() in
+      record
+        { One = P ᴼ
+        ; isTerminal = Build.nullaryProduct-Terminal C P
+        }
 
 
 record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
@@ -338,12 +337,11 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
         ∎
 
 
-instance
-  HasProducts→HasBinaryProducts : ∀ {lo la l≈} {C : Category lo la l≈}
-    → HasProducts zero C
-    → HasBinaryProducts C
-  HasProducts→HasBinaryProducts record { Π′ = Π }
-      = record { _×′_ = λ A B → Π (Bool-elim A B) }
+HasProducts→HasBinaryProducts : ∀ {lo la l≈} {C : Category lo la l≈}
+  → HasProducts zero C
+  → HasBinaryProducts C
+HasProducts→HasBinaryProducts record { Π′ = Π }
+    = record { _×′_ = λ A B → Π (Bool-elim A B) }
 
 
 record HasFiniteProducts {lo la l≈} (Cat : Category lo la l≈)
