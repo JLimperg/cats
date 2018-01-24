@@ -1,10 +1,15 @@
 module Cats.Functor where
 
-open import Cats.Category.Base
 open import Level
 open import Relation.Binary using (_Preserves_⟶_)
 
+open import Cats.Category.Base
+open import Cats.Util.Function using () renaming (_∘_ to _⊙_)
+
 import Cats.Category.Constructions.Iso as Iso
+
+
+infixr 9 _∘_
 
 
 record Functor {lo la l≈ lo′ la′ l≈′}
@@ -56,3 +61,34 @@ record Functor {lo la l≈ lo′ la′ l≈′}
       open C≅._≅_
       module ≈ = D.≈
       open D.≈-Reasoning
+
+
+id : ∀ {lo la l≈} {C : Category lo la l≈} → Functor C C
+id {C = C} = record
+    { fobj = λ x → x
+    ; fmap = λ f → f
+    ; fmap-resp = λ eq → eq
+    ; fmap-id = C.≈.refl
+    ; fmap-∘ = λ _ _ → C.≈.refl
+    }
+  where
+    module C = Category C
+
+
+_∘_ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
+  → {C : Category lo la l≈}
+  → {D : Category lo′ la′ l≈′}
+  → {E : Category lo″ la″ l≈″}
+  → Functor D E → Functor C D → Functor C E
+_∘_ {C = C} {D} {E} F G = record
+    { fobj = F.fobj ⊙ G.fobj
+    ; fmap = F.fmap ⊙ G.fmap
+    ; fmap-resp = F.fmap-resp ⊙ G.fmap-resp
+    ; fmap-id = ≈.trans (F.fmap-resp G.fmap-id) F.fmap-id
+    ; fmap-∘ = λ f g → ≈.trans (F.fmap-resp (G.fmap-∘ _ _)) (F.fmap-∘ _ _)
+    }
+  where
+    module F = Functor F
+    module G = Functor G
+    module E = Category E
+    module ≈ = E.≈

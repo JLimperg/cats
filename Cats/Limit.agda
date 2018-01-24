@@ -2,11 +2,14 @@ module Cats.Limit where
 
 open import Level
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Category.Cones using
   (Cone ; Cones ; HasObj-Cone ; HasArrow-⇒ ; cone-iso→obj-iso ; apFunctor)
-open import Cats.Functor
+open import Cats.Functor using (Functor)
 open import Cats.Util.Conv
+
+import Cats.Category.Constructions.Terminal as Terminal
+import Cats.Category.Constructions.Iso as Iso
 
 
 module _ {lo la l≈ lo′ la′ l≈′}
@@ -15,7 +18,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
   where
 
   IsLimit : {D : Functor J Z} → Cone D → Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′)
-  IsLimit {D} = Category.IsTerminal (Cones D)
+  IsLimit {D} = Terminal.Build.IsTerminal (Cones D)
 
 
   record Limit (D : Functor J Z) : Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) where
@@ -32,18 +35,16 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   module _ {D : Functor J Z} where
 
-    open Category (Cones D) using (_≅_ ; terminal-unique)
+    open Iso.Build (Cones D) using (_≅_)
+    open Iso.Build Z using () renaming (_≅_ to _≅Z_)
     open Limit using (isLimit)
-
-    private
-      module Z = Category Z
 
 
     unique : (l m : Limit D) → l ᴼ ≅ m ᴼ
-    unique l m = terminal-unique (isLimit l) (isLimit m)
+    unique l m = Terminal.Build.terminal-unique (Cones D) (isLimit l) (isLimit m)
 
 
-    obj-unique : (l m : Limit D) → l ᴼ ᴼ Z.≅ m ᴼ ᴼ
+    obj-unique : (l m : Limit D) → l ᴼ ᴼ ≅Z m ᴼ ᴼ
     obj-unique l m = cone-iso→obj-iso _ (unique l m)
 
 

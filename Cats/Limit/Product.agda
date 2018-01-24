@@ -6,7 +6,7 @@ open import Data.Product using (_×_ ; _,_ ; ∃-syntax ; proj₁ ; proj₂)
 open import Cats.Category
 open import Cats.Category.Cones using (Cones ; Cone ; HasObj-Cone)
 open import Cats.Category.Discrete as Discrete using (Discrete)
-open import Cats.Functor
+open import Cats.Functor using (Functor)
 open import Cats.Limit
 open import Cats.Util.Conv
 

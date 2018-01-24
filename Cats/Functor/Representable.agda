@@ -4,7 +4,7 @@ open import Relation.Binary using (Setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids)
-open import Cats.Functor
+open import Cats.Functor using (Functor)
 
 
 module _ {lo la l≈} where

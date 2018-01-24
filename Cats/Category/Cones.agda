@@ -3,13 +3,13 @@ module Cats.Category.Cones where
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level using (_⊔_)
 
-open import Cats.Category
-open import Cats.Functor
+open import Cats.Category.Base
+open import Cats.Functor using (Functor) renaming (_∘_ to _∘F_)
 open import Cats.Util.Conv
 
 import Relation.Binary.PropositionalEquality as ≡
 
-import Cats.Category.Cat as CatDef
+import Cats.Category.Constructions.Iso as Iso
 import Cats.Util.Function as Fun
 
 
@@ -107,12 +107,13 @@ module _ {lo la l≈ lo′ la′ l≈′}
       }
 
 
-  open Category Cones using (_≅_)
+  open Iso.Build Cones using (_≅_)
+  open Iso.Build Z using () renaming (_≅_ to _≅Z_)
 
 
   cone-iso→obj-iso : ∀ {c d : Cone}
     → c ≅ d
-    → c ᴼ Z.≅ d ᴼ
+    → c ᴼ ≅Z d ᴼ
   cone-iso→obj-iso i = record
       { forth = forth i ⃗
       ; back = back i ⃗
@@ -123,10 +124,6 @@ module _ {lo la l≈ lo′ la′ l≈′}
       open _≅_
 
 
-private
-  module Cat = CatDef.Build
-
-
 apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → {Y : Category lo la l≈}
   → {Z : Category lo′ la′ l≈′}
@@ -134,13 +131,13 @@ apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → {J : Category lo″ la″ l≈″}
   → {D : Functor J Y}
   → Cone D
-  → Cone (F Cat.∘ D)
+  → Cone (F ∘F D)
 apFunctor {Y = Y} {Z} F {J} {D} c = record
     { Apex = fobj F Apex
     ; arr = λ j → fmap F (arr j)
     ; commute = λ {i} {j} α → Z.≈.sym (
         begin
-          fmap (F Cat.∘ D) α Z.∘ fmap F (arr i)
+          fmap (F ∘F D) α Z.∘ fmap F (arr i)
         ≡⟨ ≡.refl ⟩
           fmap F (fmap D α) Z.∘ fmap F (arr i)
         ≈⟨ Z.≈.sym (fmap-∘ F _ _) ⟩

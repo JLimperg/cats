@@ -5,7 +5,7 @@ open import Level
 
 open import Cats.Category.Base
 open import Cats.Category.Constructions.Terminal as Terminal using (HasTerminal)
-open import Cats.Functor
+open import Cats.Functor using (Functor)
 open import Cats.Util.Conv
 open import Cats.Util.Logic.Constructive
 

@@ -4,7 +4,7 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level
 
 open import Cats.Category
-open import Cats.Functor
+open import Cats.Functor using (Functor)
 
 
 record Trans {lo la l≈ lo′ la′ l≈′}

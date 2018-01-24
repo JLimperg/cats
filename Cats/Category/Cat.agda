@@ -10,66 +10,15 @@ open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 open import Cats.Category
 open import Cats.Category.Zero
 open import Cats.Category.One
-open import Cats.Functor
+open import Cats.Functor using (Functor ; _∘_ ; id)
 open import Cats.Util.Assoc using (assoc!)
 
 
 module Build where
 
-  infixr 9 _∘_
-
-
   _⇒_ : ∀ {lo la l≈ lo′ la′ l≈′}
     → Category lo la l≈ → Category lo′ la′ l≈′ → Set _
   C ⇒ D = Functor C D
-
-
-  id : ∀ {lo la l≈} {C : Category lo la l≈} → C ⇒ C
-  id {C = C} = record
-      { fobj = λ x → x
-      ; fmap = λ f → f
-      ; fmap-resp = λ eq → eq
-      ; fmap-id = C.≈.reflexive ≡.refl
-      ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
-      }
-    where
-      module C = Category C
-
-
-  _∘_ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
-    → {C : Category lo la l≈}
-    → {D : Category lo′ la′ l≈′}
-    → {E : Category lo″ la″ l≈″}
-    → D ⇒ E → C ⇒ D → C ⇒ E
-  _∘_ {C = C} {D} {E} F G = record
-      { fobj = fobj
-      ; fmap = fmap
-      ; fmap-resp = fmap-resp
-      ; fmap-id = fmap-id
-      ; fmap-∘ = fmap-∘
-      }
-    where
-      module F = Functor F
-      module G = Functor G
-      module C = Category C
-      module E = Category E
-      module ≈ = E.≈
-
-      fobj : C.Obj → E.Obj
-      fobj = λ x → F.fobj (G.fobj x)
-
-      fmap : ∀ {A B} → A C.⇒ B → fobj A E.⇒ fobj B
-      fmap = λ f → F.fmap (G.fmap f)
-
-      fmap-resp : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ E._≈_
-      fmap-resp eq = F.fmap-resp (G.fmap-resp eq)
-
-      fmap-id : ∀ {A} → F.fmap (G.fmap (C.id {A})) E.≈ E.id
-      fmap-id = ≈.trans (F.fmap-resp G.fmap-id) F.fmap-id
-
-      fmap-∘ : ∀ {A B C} (f : B C.⇒ C) (g : A C.⇒ B)
-        → fmap (f C.∘ g) E.≈ fmap f E.∘ fmap g
-      fmap-∘ f g = ≈.trans (F.fmap-resp (G.fmap-∘ _ _)) (F.fmap-∘ _ _)
 
 
   module _ lo la l≈ where

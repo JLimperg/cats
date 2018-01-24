@@ -3,8 +3,8 @@ module Cats.Category.Discrete {li} (I : Set li) where
 open import Data.Unit using (⊤)
 open import Level
 
-open import Cats.Category
-open import Cats.Functor
+open import Cats.Category.Base
+open import Cats.Functor using (Functor)
 
 
 Obj : Set li
