@@ -271,7 +271,15 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
 
   ⟨_×_⟩ : ∀ {A B A′ B′} → A ⇒ A′ → B ⇒ B′ → A × B ⇒ A′ × B′
   ⟨_×_⟩ {A} {B} {A′} {B′} f g
-      = Bld.times (A ×′ B)(A′ ×′ B′) (Bool-elim f g)
+      = Bld.times (A ×′ B) (A′ ×′ B′) (Bool-elim f g)
+
+
+  first : ∀ {A A′ B} → A ⇒ A′ → A × B ⇒ A′ × B
+  first f = ⟨ f × id ⟩
+
+
+  second : ∀ {A B B′} → B ⇒ B′ → A × B ⇒ A × B′
+  second f = ⟨ id × f ⟩
 
 
   ⟨,⟩-resp : ∀ {A B Z} {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
