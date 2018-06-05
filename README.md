@@ -7,5 +7,5 @@ expect anything to be 'production-ready' in any sense.
 
 ## Dependencies
 
-Agda 2.6.0
-agda-stdlib 0.14
+Agda 2.5.4
+agda-stdlib experimental@2ff655cc3b6632ee0e3a52319360177b65ef59ce

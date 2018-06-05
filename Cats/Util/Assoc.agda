@@ -2,7 +2,8 @@ module Cats.Util.Assoc where
 
 open import Level using (_⊔_)
 open import Relation.Binary using (IsEquivalence)
-open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
+open import Relation.Binary.PropositionalEquality as ≡ using (_≡_ ; refl)
+open import Relation.Nullary using (Dec ; yes ; no)
 
 open import Category.Monad using (RawMonad)
 open import Data.Bool using (Bool ; true ; false ; not)
@@ -12,6 +13,7 @@ open import Data.Product using (_×_ ; _,_ ; proj₁ ; proj₂)
 open import Data.Unit using (⊤ ; tt)
 open import Data.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Data.String using (String)
+open import Function using () renaming (_∘_ to _⊚_)
 open import Reflection
 
 open import Cats.Category.Base using (Category)
@@ -90,11 +92,18 @@ module _ {lo la l≈} (C : Category lo la l≈) where
 
 ------------------------------------------------------------------------------
 -- Reflective magic
-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+
+boolPredToDecidable : ∀ {a} {A : Set a} → (f : A → Bool) → ∀ x → Dec (f x ≡ true)
+boolPredToDecidable f x with f x
+... | true = yes refl
+... | false = no λ()
 
 
 removeHiddenArguments : Term → Term
-removeHiddenArguments (def n args) = def n (List.filter (λ x → not (isHidden x)) args)
+removeHiddenArguments (def n args)
+    = def n (List.filter (boolPredToDecidable (not ⊚ isHidden)) args)
   where
     isHidden : ∀ {A} → Arg A → Bool
     isHidden (arg (arg-info hidden r) x) = true
