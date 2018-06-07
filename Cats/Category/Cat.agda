@@ -87,7 +87,7 @@ module Build where
                     back iso D.∘ F.fmap f D.∘ forth iso
                   ≈⟨ D.∘-resp-r (D.∘-resp-l (fmap-≈-FG f)) ⟩
                     forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G
-                  ≈⟨ lem ⟩
+                  ≈⟨ assoc! D ⟩
                     (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
                   ≈⟨ D.∘-resp-l (forth-back F≅G) ⟩
                     D.id D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
@@ -99,10 +99,6 @@ module Build where
                     G.fmap f
                   ∎
                 )
-              where
-                lem : forth F≅G D.∘ (back F≅G D.∘ G.fmap f D.∘ forth F≅G) D.∘ back F≅G D.≈
-                      (forth F≅G D.∘ back F≅G) D.∘ G.fmap f D.∘ forth F≅G D.∘ back F≅G
-                lem = assoc! D
 
         trans : ∀ {F G H : C ⇒ D} → F ≈ G → G ≈ H → F ≈ H
         trans {F} {G} {H}
@@ -130,7 +126,7 @@ module Build where
                     back iso D.∘ H.fmap f D.∘ forth iso
                   ≡⟨ ≡.refl ⟩
                     (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G
-                  ≈⟨ lem ⟩
+                  ≈⟨ assoc! D ⟩
                     back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
                   ≈⟨ D.∘-resp-r (D.∘-resp-l (≈.sym (fmap-≈-GH f))) ⟩
                     back F≅G D.∘ G.fmap f D.∘ forth F≅G
@@ -138,10 +134,6 @@ module Build where
                     F.fmap f
                   ∎
                 )
-              where
-                lem : (back F≅G D.∘ back G≅H) D.∘ H.fmap f D.∘ forth G≅H D.∘ forth F≅G D.≈
-                      back F≅G D.∘ (back G≅H D.∘ H.fmap f D.∘ forth G≅H) D.∘ forth F≅G
-                lem = assoc! D
 
 
     ∘-resp : ∀ {C D E : Obj} → _∘_ {C = C} {D} {E} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
@@ -177,7 +169,7 @@ module Build where
                 back iso E.∘ G.fmap (I.fmap f) E.∘ forth iso
               ≡⟨ ≡.refl ⟩
                 (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
-              ≈⟨ lem ⟩
+              ≈⟨ assoc! E ⟩
                 back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
               ≈⟨ E.∘-resp-r (E.∘-resp-l (≈.trans (E.∘-resp-r (≈.sym (G.fmap-∘ _ _))) (≈.sym (G.fmap-∘ _ _)))) ⟩
                 back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
@@ -187,10 +179,6 @@ module Build where
                 F.fmap (H.fmap f)
               ∎
             )
-          where
-            lem : (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G) E.≈
-                  back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
-            lem = assoc! E
 
 
     id-r : {C D : Obj} → {F : C ⇒ D} → F ∘ id ≈ F

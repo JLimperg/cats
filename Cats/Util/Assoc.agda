@@ -1,6 +1,6 @@
 module Cats.Util.Assoc where
 
-open import Level using (_⊔_)
+open import Level using (_⊔_ ; Lift ; lift) renaming (zero to lzero ; suc to lsuc)
 open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_ ; refl)
 open import Relation.Nullary using (Dec ; yes ; no)
@@ -22,6 +22,12 @@ open RawMonad {{...}}
 
 instance
   maybeMonad = Maybe.monad
+
+  tcMonad : RawMonad {lzero} TC
+  tcMonad = record
+    { return = returnTC
+    ; _>>=_ = bindTC
+    }
 
   sumMonad : ∀ {a b} {A : Set a} → RawMonad {a ⊔ b} (A ⊎_)
   sumMonad = record
@@ -133,10 +139,52 @@ sequence (x ∷ xs)
       sequence xs >>= λ xs' →
       return (x' ∷ xs')
 
+
+void : ∀ {f} {M : Set f → Set f} {{_ : RawMonad M}} → ∀ {A} → M A → M (Lift ⊤)
+void m = m >>= λ _ → return (lift tt)
+
+
+mapM : ∀ {a f} {M : Set f → Set f} {{_ : RawMonad M}}
+  → ∀ {A : Set a} {B} → (A → M B) → List A → M (List B)
+mapM f = sequence ⊚ List.map f
+
+
+mapM′ : ∀ {a f} {M : Set f → Set f} {{_ : RawMonad M}}
+  → ∀ {A : Set a} {B} → (A → M B) → List A → M (Lift ⊤)
+mapM′ f = void ⊚ mapM f
+
+
+fromArg : ∀ {A} → Arg A → A
+fromArg (arg _ x) = x
+
+
+fromAbs : ∀ {A} → Abs A → A
+fromAbs (abs _ x) = x
+
+
+-- This may or may not loop if there are metas in the input term that cannot be
+-- solved when this tactic is called.
+{-# TERMINATING #-}
+blockOnAnyMeta : Term → TC (Lift ⊤)
+blockOnAnyMeta (var x args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
+blockOnAnyMeta (con c args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
+blockOnAnyMeta (def f args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
+blockOnAnyMeta (lam v t) = blockOnAnyMeta (fromAbs t)
+blockOnAnyMeta (pat-lam cs args) = return _ -- TODO
+blockOnAnyMeta (pi a b) =
+    blockOnAnyMeta (fromArg a) >>= λ _ →
+    blockOnAnyMeta (fromAbs b)
+blockOnAnyMeta (sort s) = return _
+blockOnAnyMeta (lit l) = return _
+blockOnAnyMeta (meta x x₁) = blockOnMeta x
+blockOnAnyMeta unknown = return _
+
+
 macro
   assoc! : ∀ {lo la l≈} → Category lo la l≈ → Term → TC ⊤
   assoc! C hole
       = bindTC (inferType hole) λ goal →
+        bindTC (blockOnAnyMeta goal) λ _ →
         bindTC (normalise goal) λ goalN →
         bindTC (embedError goal (matchGoal goalN)) λ lhsrhs →
         let (lhs , rhs) = lhsrhs in
