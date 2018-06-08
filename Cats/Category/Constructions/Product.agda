@@ -285,6 +285,10 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   second f = ⟨ id × f ⟩
 
 
+  swap : ∀ {A B} → A × B ⇒ B × A
+  swap = ⟨ projr , projl ⟩
+
+
   ⟨,⟩-resp : ∀ {A B Z} {f f′ : Z ⇒ A} {g g′ : Z ⇒ B}
     → f ≈ f′
     → g ≈ g′
