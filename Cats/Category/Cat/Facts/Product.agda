@@ -96,3 +96,33 @@ instance
           λ { (eq₁ , eq₂) → ≈.sym (⟨,⟩-unique (≈.sym eq₁) (≈.sym eq₂)) }
 
 
+-- We get the following functors 'for free' from the above definition of
+-- products in Cat, but those must have their domain and codomain category at
+-- the same levels. The definitions below lift this restriction.
+
+
+⟨_×_⟩ : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂ lo₃ la₃ l≈₃ lo₄ la₄ l≈₄}
+  → {C : Category lo₁ la₁ l≈₁} {C′ : Category lo₂ la₂ l≈₂}
+  → {D : Category lo₃ la₃ l≈₃} {D′ : Category lo₄ la₄ l≈₄}
+  → C ⇒ C′ → D ⇒ D′ → (C × D) ⇒ (C′ × D′)
+⟨ F × G ⟩ = ⟨ F ∘ proj₁ , G ∘ proj₂ ⟩
+
+
+First : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂ lo₃ la₃ l≈₃}
+  → {C : Category lo₁ la₁ l≈₁} {C′ : Category lo₂ la₂ l≈₂}
+  → {D : Category lo₃ la₃ l≈₃}
+  → C ⇒ C′ → (C × D) ⇒ (C′ × D)
+First F = ⟨ F × id ⟩
+
+
+Second : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂ lo₃ la₃ l≈₃}
+  → {C : Category lo₁ la₁ l≈₁} {D : Category lo₂ la₂ l≈₂}
+  → {D′ : Category lo₃ la₃ l≈₃}
+  → D ⇒ D′ → (C × D) ⇒ (C × D′)
+Second F = ⟨ id × F ⟩
+
+
+Swap : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂}
+  → {C : Category lo₁ la₁ l≈₁} {D : Category lo₂ la₂ l≈₂}
+  → (C × D) ⇒ (D × C)
+Swap = ⟨ proj₂ , proj₁ ⟩
