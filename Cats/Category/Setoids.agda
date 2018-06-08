@@ -44,8 +44,8 @@ module Build (l l≈ : Level) where
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
   equiv {A} {B} = record
       { refl = λ {f} → resp f
-      ; sym = λ {f} {g} eq x≈y → B.sym (eq (A.sym x≈y))
-      ; trans = λ {f} eq₁ eq₂ x≈y → B.trans (eq₁ x≈y) (eq₂ A.refl)
+      ; sym = λ eq x≈y → B.sym (eq (A.sym x≈y))
+      ; trans = λ eq₁ eq₂ x≈y → B.trans (eq₁ x≈y) (eq₂ A.refl)
       }
     where
       module A = Setoid A
