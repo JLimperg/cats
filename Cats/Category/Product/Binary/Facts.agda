@@ -42,23 +42,3 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; back-forth = ∧-elimr (back-forth f)
       ; forth-back = ∧-elimr (forth-back f)
       }
-
-
-  proj₁ : Functor (C × D) C
-  proj₁ = record
-      { fobj = ∧-eliml
-      ; fmap = ∧-eliml
-      ; fmap-resp = ∧-eliml
-      ; fmap-id = C.≈.refl
-      ; fmap-∘ = λ _ _ → C.≈.refl
-      }
-
-
-  proj₂ : Functor (C × D) D
-  proj₂ = record
-      { fobj = ∧-elimr
-      ; fmap = ∧-elimr
-      ; fmap-resp = ∧-elimr
-      ; fmap-id = D.≈.refl
-      ; fmap-∘ = λ _ _ → D.≈.refl
-      }

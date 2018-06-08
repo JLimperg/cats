@@ -33,6 +33,9 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       = ∀ {X} (x : ∀ i → X ⇒ O i) → ∃![ u ] (∀ i → x i ≈ proj i ∘ u)
 
 
+  -- TODO The types of the equalities in IsBinaryProducts are backwards, since
+  -- we want the RHS to be simpler than the LHS. So, projl ∘ u ≈ xl instead
+  -- of xl ≈ projl ∘ u.
   IsBinaryProduct : ∀ {A B} P → (P ⇒ A) → (P ⇒ B) → Set (lo ⊔ la ⊔ l≈)
   IsBinaryProduct {A} {B} P projl projr
       = ∀ {X} (xl : X ⇒ A) (xr : X ⇒ B)

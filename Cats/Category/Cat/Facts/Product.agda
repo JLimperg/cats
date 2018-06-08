@@ -2,62 +2,97 @@ module Cats.Category.Cat.Facts.Product where
 
 open import Data.Bool using (true ; false)
 open import Data.Product using (_,_)
+open import Level using (_⊔_)
 
 open import Cats.Category
-open import Cats.Category.Cat using (Cat)
+open import Cats.Category.Cat as Cat using (Cat ; Functor ; _⇒_ ; _∘_ ; id ; _≈_)
 open import Cats.Category.Product.Binary using (_×_)
-open import Cats.Category.Product.Binary.Facts using (proj₁ ; proj₂ ; iso-intro)
-open import Cats.Functor using (Functor)
-open import Cats.Util.Logic.Constructive using (_∧_)
+open import Cats.Category.Product.Binary.Facts using (iso-intro)
+open import Cats.Util.Logic.Constructive using (_∧_ ; ∧-eliml ; ∧-elimr)
+
+open Functor
 
 
-module _ {lo la l≈} where
+module _ {lo la l≈ lo′ la′ l≈′}
+  {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+  where
 
-  open module Cat = Category (Cat lo la l≈) using
-    (IsBinaryProduct ; ∃!-intro ; IsUniqueSuchThat ; mkBinaryProduct)
+  private
+    module C = Category C
+    module D = Category D
 
 
-  isBinaryProduct : ∀ {C D : Category lo la l≈}
-    → IsBinaryProduct (C × D) proj₁ proj₂
-  isBinaryProduct {C} {D} {X} xl xr = ∃!-intro arr (prop₁ , prop₂) unique
-    where
-      module C = Category C
-      module D = Category D
-      module xl = Functor xl
-      module xr = Functor xr
+  proj₁ : (C × D) ⇒ C
+  proj₁ = record
+      { fobj = ∧-eliml
+      ; fmap = ∧-eliml
+      ; fmap-resp = ∧-eliml
+      ; fmap-id = C.≈.refl
+      ; fmap-∘ = λ _ _ → C.≈.refl
+      }
 
-      arr : Functor X (C × D)
-      arr = record
-          { fobj = λ x → xl.fobj x , xr.fobj x
-          ; fmap = λ f → xl.fmap f , xr.fmap f
-          ; fmap-resp = λ eq → xl.fmap-resp eq , xr.fmap-resp eq
-          ; fmap-id = xl.fmap-id , xr.fmap-id
-          ; fmap-∘ = λ f g → xl.fmap-∘ f g , xr.fmap-∘ f g
-          }
 
-      prop₁ : xl Cat.≈ proj₁ Cat.∘ arr
-      prop₁ = record
+  proj₂ : (C × D) ⇒ D
+  proj₂ = record
+      { fobj = ∧-elimr
+      ; fmap = ∧-elimr
+      ; fmap-resp = ∧-elimr
+      ; fmap-id = D.≈.refl
+      ; fmap-∘ = λ _ _ → D.≈.refl
+      }
+
+
+  module _ {lo″ la″ l≈″} {X : Category lo″ la″ l≈″} where
+
+    ⟨_,_⟩ : X ⇒ C → X ⇒ D → X ⇒ (C × D)
+    ⟨ F , G ⟩ = record
+        { fobj = λ x → fobj F x , fobj G x
+        ; fmap = λ f → fmap F f , fmap G f
+        ; fmap-resp = λ eq → fmap-resp F eq , fmap-resp G eq
+        ; fmap-id = fmap-id F , fmap-id G
+        ; fmap-∘ = λ f g → fmap-∘ F f g , fmap-∘ G f g
+        }
+
+
+    module _ {F : X ⇒ C} {G : X ⇒ D} where
+
+      ⟨,⟩-proj₁ : proj₁ ∘ ⟨ F , G ⟩ ≈ F
+      ⟨,⟩-proj₁ = record
           { iso = C.≅.refl
           ; fmap-≈ = λ _ → C.≈.sym (C.≈.trans C.id-l C.id-r)
           }
 
-      prop₂ : xr Cat.≈ proj₂ Cat.∘ arr
-      prop₂ = record
+
+      ⟨,⟩-proj₂ : proj₂ ∘ ⟨ F , G ⟩ ≈ G
+      ⟨,⟩-proj₂ = record
           { iso = D.≅.refl
           ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-l D.id-r)
           }
 
-      unique :
-        IsUniqueSuchThat (λ u → xl Cat.≈ proj₁ Cat.∘ u ∧ xr Cat.≈ proj₂ Cat.∘ u) arr
-      unique {F} (eql , eqr) = record
-          { iso = iso-intro (iso eql) (iso eqr)
-          ; fmap-≈ = λ f → fmap-≈ eql f , fmap-≈ eqr f
+
+      ⟨,⟩-unique : ∀ {H} → proj₁ ∘ H ≈ F → proj₂ ∘ H ≈ G → H ≈ ⟨ F , G ⟩
+      ⟨,⟩-unique {H} eq₁ eq₂ = record
+          { iso = iso-intro (iso eq₁) (iso eq₂)
+          ; fmap-≈ = λ f → fmap-≈ eq₁ f , fmap-≈ eq₂ f
           }
         where
-          open Cats.Category.Cat.Build._≈_
+          open _≈_
 
 
-  instance
-    hasBinaryProducts : HasBinaryProducts (Cat lo la l≈)
-    hasBinaryProducts .HasBinaryProducts._×′_ C D
-        = mkBinaryProduct proj₁ proj₂ isBinaryProduct
+instance
+  hasBinaryProducts : ∀ lo la l≈ → HasBinaryProducts (Cat lo la l≈)
+  hasBinaryProducts lo la l≈ .HasBinaryProducts._×′_ C D
+      = mkBinaryProduct proj₁ proj₂ isBinaryProduct
+    where
+      open module Catt = Category (Cat lo la l≈) using
+        (IsBinaryProduct ; mkBinaryProduct ; ∃!-intro)
+      module ≈ = Catt.≈
+
+      isBinaryProduct : ∀ {C D : Category lo la l≈}
+        → IsBinaryProduct (C × D) proj₁ proj₂
+      isBinaryProduct {C} {D} {X} F G = ∃!-intro
+          ⟨ F , G ⟩
+          (≈.sym (⟨,⟩-proj₁ {G = G}) , ≈.sym (⟨,⟩-proj₂ {F = F}))
+          λ { (eq₁ , eq₂) → ≈.sym (⟨,⟩-unique (≈.sym eq₁) (≈.sym eq₂)) }
+
+

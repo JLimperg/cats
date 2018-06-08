@@ -23,7 +23,7 @@ module _ {lo la l≈} {C D : Category lo la l≈} where
 
   private
     open module HBP {lo} {la} {l≈} =
-      HasBinaryProducts (hasBinaryProducts {lo} {la} {l≈})
+      HasBinaryProducts (hasBinaryProducts lo la l≈)
     module Fun = Category (Fun ((C ᵒᵖ) × D) (Setoids la l≈))
 
 
