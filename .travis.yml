@@ -9,4 +9,4 @@ install:
 - docker pull jlimperg/agda-stdlib:2.5.4_0.16
 
 script:
-- docker run -v $TRAVIS_BUILD_DIR:/build jlimperg/agda-stdlib:2.5.4_0.16 /bin/sh -c 'cd /build/tools/everything && stack setup && cd /build && make'
+- docker run -v $TRAVIS_BUILD_DIR:/build jlimperg/agda-stdlib:2.5.4_0.16 /bin/sh -c 'cd /build/tools/everything && stack --allow-different-user setup && cd /build && make STACKOPTS=--allow-different-user'

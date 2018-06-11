@@ -1,13 +1,14 @@
 .DEFAULT_GOAL = Everything.agdai
 AGDA = agda
 STACK = stack
+STACKOPTS =
 VERBOSITY = 0
 
 -include env.mk
 
 EVERYTHING_DIR = tools/everything
 EVERYTHING_STACK_YAML = $(EVERYTHING_DIR)/stack.yaml
-EVERYTHING_STACK = $(STACK) --stack-yaml='$(EVERYTHING_STACK_YAML)'
+EVERYTHING_STACK = $(STACK) $(STACKOPTS) --stack-yaml='$(EVERYTHING_STACK_YAML)'
 
 
 Everything.agda: $(shell find Cats -type d)
