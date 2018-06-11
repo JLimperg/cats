@@ -159,7 +159,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
       module I = Functor I
 
       iso : ∀ {x} → F.fobj (H.fobj x) E.≅ G.fobj (I.fobj x)
-      iso {x} = E.≅.trans F≅G (G.fobj-preserves-≅ H≅I)
+      iso {x} = E.≅.trans F≅G (G.fobj-resp H≅I)
 
 
       open Category._≅_

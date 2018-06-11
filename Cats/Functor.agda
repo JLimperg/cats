@@ -31,8 +31,8 @@ record Functor {lo la l≈ lo′ la′ l≈′}
       → fmap (f C.∘ g) D.≈ fmap f D.∘ fmap g
 
 
-  fobj-preserves-≅ : fobj Preserves C≅._≅_ ⟶ D≅._≅_
-  fobj-preserves-≅ {i} {j} x≅y
+  fobj-resp : fobj Preserves C≅._≅_ ⟶ D≅._≅_
+  fobj-resp {i} {j} x≅y
       = record
       { forth = fmap (forth x≅y)
       ; back = fmap (back x≅y)
