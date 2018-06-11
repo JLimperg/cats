@@ -5,13 +5,20 @@ open import Level using (_⊔_)
 open import Relation.Binary using (_Preserves₂_⟶_⟶_)
 
 open import Cats.Category
+open import Cats.Category.Cat using (_≈_)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts)
 open import Cats.Category.Fun using (Fun ; Trans)
 open import Cats.Category.Product.Binary using (_×_)
+open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
+open import Cats.Util.Assoc using (assoc!)
+
+import Cats.Category.Constructions.Iso as Iso
+import Cats.Category.Fun.Facts as Fun
 
 open Functor
 open Trans
+open Iso.Build._≅_
 
 
 module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
@@ -34,7 +41,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       module C = Category C
       module D = Category D
       module E = Category E
-      open E.≈-Reasoning
+      module D↝E = Category (Fun D E)
       open module HBP {lo} {la} {l≈} =
         HasBinaryProducts (hasBinaryProducts lo la l≈)
 
@@ -67,10 +74,61 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
               fmap F (C.id , f) E.∘ fmap F (C.id , g)
             ∎
         }
+      where
+        open E.≈-Reasoning
 
 
-    transposeBifunctor₁ : Bifunctor C D E
-      → Functor C (Fun D E)
+    Bifunctor→Functor₁-resp : ∀ {F G x y}
+      → F ≈ G
+      → x C.≅ y
+      → Bifunctor→Functor₁ F x ≈ Bifunctor→Functor₁ G y
+    Bifunctor→Functor₁-resp {F} {G} {x} {y}
+      record { iso = Fx≅Gx ; fmap-≈ = fmap-≈ } x≅y
+        = record
+        { iso = λ {z} →
+            let open E.≅-Reasoning in
+            begin
+              fobj F (x , z)
+            ≈⟨ Fx≅Gx ⟩
+              fobj G (x , z)
+            ≈⟨ fobj-resp G (iso-intro x≅y D.≅.refl) ⟩
+              fobj G (y , z)
+            ∎
+        ; fmap-≈ = λ f →
+            let open E.≈-Reasoning in
+            E.≈.sym (
+              begin
+                (back Fx≅Gx E.∘ fmap G (back x≅y , D.id) E.∘ E.id) E.∘
+                fmap G (C.id , f) E.∘
+                (E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp (E.∘-resp-r E.id-r) (E.∘-resp-r (E.∘-resp-l E.id-l)) ⟩
+                (back Fx≅Gx E.∘ fmap G (back x≅y , D.id)) E.∘
+                fmap G (C.id , f) E.∘
+                fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx
+              ≈⟨ assoc! E ⟩
+                back Fx≅Gx E.∘ (fmap G (back x≅y , D.id) E.∘
+                fmap G (C.id , f) E.∘
+                fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-r (E.∘-resp-l
+                   (E.≈.trans
+                     (E.∘-resp-r (E.≈.sym (fmap-∘ G _ _)))
+                     (E.≈.sym (fmap-∘ G _ _)))) ⟩
+                back Fx≅Gx E.∘
+                fmap G (back x≅y C.∘ C.id C.∘ forth x≅y , D.id D.∘ f D.∘ D.id) E.∘
+                forth Fx≅Gx
+              ≈⟨ E.≈.sym (fmap-≈ _) ⟩
+                fmap F (back x≅y C.∘ C.id C.∘ forth x≅y , D.id D.∘ f D.∘ D.id)
+              ≈⟨ fmap-resp F
+                   ( (C.≈.trans (C.∘-resp-r C.id-l) (back-forth x≅y))
+                   , D.≈.trans D.id-l D.id-r
+                   ) ⟩
+                fmap F (C.id , f)
+              ∎
+            )
+        }
+
+
+    transposeBifunctor₁ : Bifunctor C D E → Functor C (Fun D E)
     transposeBifunctor₁ F = record
         { fobj = Bifunctor→Functor₁ F
         ; fmap = λ {a} {b} f → record
@@ -99,6 +157,43 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
               fmap F (f , D.id) E.∘ fmap F (g , D.id)
             ∎
         }
+      where
+        open E.≈-Reasoning
+
+
+    transposeBifunctor₁-resp : ∀ {F G}
+      → F ≈ G
+      → transposeBifunctor₁ F ≈ transposeBifunctor₁ G
+    transposeBifunctor₁-resp {F} {G} F≈G = record
+        { iso = Fun.≈→≅ (Bifunctor→Functor₁-resp F≈G C.≅.refl)
+        ; fmap-≈ = λ f x → sym (
+            begin
+              (back (iso F≈G) E.∘ fmap G (C.id , D.id) E.∘ E.id) E.∘
+              fmap G (f , D.id) E.∘
+              (E.id E.∘ fmap G (C.id , D.id)) E.∘ forth (iso F≈G)
+            ≈⟨ assoc! E ⟩
+              back (iso F≈G) E.∘
+              (fmap G (C.id , D.id) E.∘ E.id E.∘ fmap G (f , D.id) E.∘ E.id E.∘ fmap G (C.id , D.id)) E.∘
+              forth (iso F≈G)
+            ≈⟨ E.∘-resp-r (E.∘-resp-l
+                 (trans
+                   (E.∘-resp-l (fmap-id G))
+                   (E.∘-resp-r (E.∘-resp-r (E.∘-resp-r (E.∘-resp-r (fmap-id G))))))) ⟩
+              back (iso F≈G) E.∘
+              (E.id E.∘ E.id E.∘ fmap G (f , D.id) E.∘ E.id E.∘ E.id) E.∘
+              forth (iso F≈G)
+            ≈⟨ E.∘-resp-r (E.∘-resp-l (trans E.id-l (trans E.id-l
+                 (trans (E.∘-resp-r E.id-l) E.id-r)))) ⟩
+              back (iso F≈G) E.∘ fmap G (f , D.id) E.∘ forth (iso F≈G)
+            ≈⟨ E.≈.sym (fmap-≈ F≈G _) ⟩
+              fmap F (f , D.id)
+            ∎
+          )
+        }
+      where
+        open E.≈-Reasoning
+        open E.≈ using (sym ; trans)
+        open _≈_ using (iso ; fmap-≈)
 
 
     Bifunctor→Functor₂ : Bifunctor C D E → D.Obj → Functor C E
@@ -116,10 +211,11 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
               fmap F (f , D.id) E.∘ fmap F (g , D.id)
             ∎
         }
+      where
+        open E.≈-Reasoning
 
 
-    transposeBifunctor₂ : Bifunctor C D E
-      → Functor D (Fun C E)
+    transposeBifunctor₂ : Bifunctor C D E → Functor D (Fun C E)
     transposeBifunctor₂ F = record
         { fobj = Bifunctor→Functor₂ F
         ; fmap = λ {a} {b} f → record
@@ -148,3 +244,5 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
               fmap F (C.id , f) E.∘ fmap F (C.id , g)
             ∎
         }
+      where
+        open E.≈-Reasoning
