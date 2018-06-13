@@ -16,6 +16,7 @@ module Build {lo la l≈}
   where
 
   open Category Cat
+  open ≈-Reasoning
   open Unique.Build Cat
   open HasBinaryProducts hasBinaryProducts
 
@@ -61,6 +62,24 @@ module Build {lo la l≈}
   HasObj-Exp = record { Cat = Cat ; _ᴼ = Exp.Cᴮ }
 
   open Exp public
+
+
+  curry∘curry : ∀ {A B C Y Z} (Cᴮ : Exp B C) (Yᶻ : Exp Y Z)
+    → {f : Cᴮ ᴼ × Y ⇒ Z} {g : A × B ⇒ C}
+    → curry Yᶻ f ∘ curry Cᴮ g ≈ curry Yᶻ (f ∘ ⟨ curry Cᴮ g × id ⟩)
+  curry∘curry Cᴮ Yᶻ {f} {g} = ≈.sym (curry-unique Yᶻ (
+      begin
+        eval Yᶻ ∘ ⟨ curry Yᶻ f ∘ curry Cᴮ g × id ⟩
+      ≈⟨ ∘-resp-r (⟨×⟩-resp ≈.refl (≈.sym id-l)) ⟩
+        eval Yᶻ ∘ ⟨ curry Yᶻ f ∘ curry Cᴮ g × id ∘ id ⟩
+      ≈⟨ ∘-resp-r (≈.sym ⟨×⟩-∘) ⟩
+        eval Yᶻ ∘ ⟨ curry Yᶻ f × id ⟩ ∘ ⟨ curry Cᴮ g × id ⟩
+      ≈⟨ unassoc ⟩
+        (eval Yᶻ ∘ ⟨ curry Yᶻ f × id ⟩) ∘ ⟨ curry Cᴮ g × id ⟩
+      ≈⟨ ∘-resp-l (eval-curry Yᶻ) ⟩
+        f ∘ ⟨ curry Cᴮ g × id ⟩
+      ∎
+    ))
 
 
 record HasExponentials {lo la l≈}
@@ -110,3 +129,9 @@ record HasExponentials {lo la l≈}
   uncurry∘curry : ∀ {A B C} {f : A × B ⇒ C}
     → uncurry (curry f) ≈ f
   uncurry∘curry {B = B} {C} = Bld.uncurry∘curry (B ↝′ C)
+
+
+  curry∘curry : ∀ {A B C Y Z}
+    → {f : (B ↝ C) × Y ⇒ Z} {g : A × B ⇒ C}
+    → curry f ∘ curry g ≈ curry (f ∘ ⟨ curry g × id ⟩)
+  curry∘curry {B = B} {C} {Y} {Z} = Bld.curry∘curry (B ↝′ C) (Y ↝′ Z)
