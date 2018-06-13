@@ -12,8 +12,9 @@ open import Cats.Category.Cat as Cat using
   (id to Id)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_⟩)
 open import Cats.Category.Fun using (Fun ; Trans)
-open import Cats.Category.Fun.Facts using (NatIso ; NatIso→≅)
+open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Product.Binary using (_×_)
+open import Cats.Trans.Iso using (NatIso)
 open import Cats.Util.Assoc using (assoc!)
 open import Cats.Util.Conv
 
