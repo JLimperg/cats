@@ -189,7 +189,7 @@ instance
       { _↝′_ = λ B C → record
           { Cᴮ = B ↝ C
           ; eval = Eval
-          ; curry = λ F → record
+          ; curry′ = λ F → record
               { arr = Curry F
               ; prop = Curry-correct {F = F}
               ; unique = λ {g} eq →

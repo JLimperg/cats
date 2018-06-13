@@ -24,34 +24,43 @@ module Build {lo la l≈}
     field
       Cᴮ : Obj
       eval : Cᴮ × B ⇒ C
-      curry : ∀ {A} (f : A × B ⇒ C)
+      curry′ : ∀ {A} (f : A × B ⇒ C)
         → ∃![ f̃ ∈ A ⇒ Cᴮ ] (eval ∘ ⟨ f̃ × id ⟩ ≈ f)
+
+
+    curry : ∀ {A} → A × B ⇒ C → A ⇒ Cᴮ
+    curry f = curry′ f ⃗
+
+
+    eval-curry : ∀ {A} {f : A × B ⇒ C}
+      → eval ∘ ⟨ curry f × id ⟩ ≈ f
+    eval-curry {f = f} = ∃!′.prop (curry′ f)
+
+
+    curry-unique : ∀ {A} {f : A × B ⇒ C} {g}
+      → eval ∘ ⟨ g × id ⟩ ≈ f
+      → curry f ≈ g
+    curry-unique {f = f} = ∃!′.unique (curry′ f)
+
+
+    uncurry : ∀ {A} → A ⇒ Cᴮ → A × B ⇒ C
+    uncurry f = eval ∘ ⟨ f × id ⟩
+
+
+    curry∘uncurry : ∀ {A} {f : A ⇒ Cᴮ}
+      → curry (uncurry f) ≈ f
+    curry∘uncurry = curry-unique ≈.refl
+
+
+    uncurry∘curry : ∀ {A} {f : A × B ⇒ C}
+      → uncurry (curry f) ≈ f
+    uncurry∘curry = eval-curry
 
 
   instance HasObj-Exp : ∀ {B C} → HasObj (Exp B C) lo la l≈
   HasObj-Exp = record { Cat = Cat ; _ᴼ = Exp.Cᴮ }
 
-
-  module _ {B C} (Cᴮ : Exp B C) where
-
-    open Exp Cᴮ using (eval ; curry)
-
-
-    uncurry : ∀ {A} → A ⇒ Cᴮ ᴼ → A × B ⇒ C
-    uncurry f = eval ∘ ⟨ f × id ⟩
-
-
-    curry∘uncurry : ∀ {A} {f : A ⇒ Cᴮ ᴼ}
-      → curry (uncurry f) ⃗ ≈ f
-    curry∘uncurry {f = f} = ∃!′.unique (curry (uncurry f)) ≈.refl
-
-
-    uncurry∘curry : ∀ {A} {f : A × B ⇒ C}
-      → uncurry (curry f ⃗) ≈ f
-    uncurry∘curry {f = f} = ∃!′.prop (curry f)
-
-
-  open Exp public using (eval ; curry)
+  open Exp public
 
 
 record HasExponentials {lo la l≈}
@@ -81,7 +90,7 @@ record HasExponentials {lo la l≈}
 
 
   curry : ∀ {A B C} → A × B ⇒ C → A ⇒ B ↝ C
-  curry {B = B} {C} f = Bld.curry (B ↝′ C) f ⃗
+  curry {B = B} {C} f = Bld.curry (B ↝′ C) f
 
 
   uncurry : ∀ {A B C} → A ⇒ B ↝ C → A × B ⇒ C
@@ -90,7 +99,7 @@ record HasExponentials {lo la l≈}
 
   eval-curry : ∀ {A B C} {f : A × B ⇒ C}
     → eval ∘ ⟨ curry f × id ⟩ ≈ f
-  eval-curry {B = B} {C} {f} = ∃!′.prop (Bld.curry (B ↝′ C) f)
+  eval-curry {B = B} {C} = Bld.eval-curry (B ↝′ C)
 
 
   curry∘uncurry : ∀ {A B C} {f : A ⇒ B ↝ C}

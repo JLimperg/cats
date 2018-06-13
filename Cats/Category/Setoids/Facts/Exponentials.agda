@@ -76,7 +76,7 @@ module Build l where
   B ↝′ C = record
       { Cᴮ = B ↝ C
       ; eval = eval
-      ; curry = λ f → ∃!-intro
+      ; curry′ = λ f → ∃!-intro
           (curry f)
           (λ {x} {y} eq → curry-correct f eq)
           (λ {g} (eval∘g≈f : eval ∘ ⟨ g × id ⟩ ≈ f)
