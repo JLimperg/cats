@@ -58,17 +58,21 @@ module _ {lo la l≈ lo′ la′ l≈′}
             C.∘-resp (fmap-resp G f≈g) (θ≈ι a)
       ; fmap-id = λ { {F , b} → C.≈.trans (C.∘-resp-l (fmap-id F)) C.id-l }
       ; fmap-∘ = λ where
-          {F , a} {G , b} {H , c} (θ , f) (ι , g) →
+          {F , a} {G , b} {H , c} {θ , f} {ι , g} →
             begin
-              fmap H (f B.∘ g) C.∘ component (θ B↝C.∘ ι) a
-            ≈⟨ C.∘-resp-l (fmap-∘ H _ _) ⟩
-              (fmap H f C.∘ fmap H g) C.∘ (component θ a C.∘ component ι a)
-            ≈⟨ assoc! C ⟩
-              fmap H f C.∘ (fmap H g C.∘ component θ a) C.∘ component ι a
-            ≈⟨ C.∘-resp-r (C.∘-resp-l (C.≈.sym (natural θ))) ⟩
-              fmap H f C.∘ (component θ b C.∘ fmap G g) C.∘ component ι a
-            ≈⟨ assoc! C ⟩
               (fmap H f C.∘ component θ b) C.∘ (fmap G g C.∘ component ι a)
+            ≈⟨ C.∘-resp-l (C.≈.sym (natural θ)) ⟩
+              (component θ c C.∘ fmap G f) C.∘ (fmap G g C.∘ component ι a)
+            ≈⟨ assoc! C ⟩
+              component θ c C.∘ (fmap G f C.∘ fmap G g) C.∘ component ι a
+            ≈⟨ C.∘-resp-r (C.∘-resp-l (fmap-∘ G)) ⟩
+              component θ c C.∘ (fmap G (f B.∘ g)) C.∘ component ι a
+            ≈⟨ assoc! C ⟩
+              (component θ c C.∘ fmap G (f B.∘ g)) C.∘ component ι a
+            ≈⟨ C.∘-resp-l (natural θ) ⟩
+              (fmap H (f B.∘ g) C.∘ component θ a) C.∘ component ι a
+            ≈⟨ assoc! C ⟩
+              fmap H (f B.∘ g) C.∘ component (θ B↝C.∘ ι) a
             ∎
       }
     where
@@ -105,7 +109,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
             fmap Eval (fmap (Curry F) f , f′)
           ≡⟨⟩
             fmap F (B.id , f′) D.∘ fmap F (f , C.id)
-          ≈⟨ D.≈.sym (fmap-∘ F _ _) ⟩
+          ≈⟨ fmap-∘ F ⟩
             fmap F (B.id B.∘ f , f′ C.∘ C.id)
           ≈⟨ fmap-resp F (B.id-l , C.id-r) ⟩
             fmap F (f , f′)

@@ -2,12 +2,13 @@ module Cats.Functor.Representable where
 
 open import Data.Product using (_×_ ; _,_)
 open import Relation.Binary using (Setoid)
-open import Relation.Binary.SetoidReasoning
 
 open import Cats.Bifunctor using (Bifunctor)
 open import Cats.Category
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Setoids as Setoids using (Setoids)
+open import Cats.Util.Assoc using (assoc!)
+open import Cats.Util.SetoidReasoning
 
 import Relation.Binary.PropositionalEquality as ≡
 
@@ -33,36 +34,15 @@ module Build {lo la l≈} (C : Category lo la l≈) where
       ; fmap-resp = λ where
           (f≈g , h≈i) x≈y → ∘-resp h≈i (∘-resp x≈y f≈g)
       ; fmap-id = λ where
-          {A , B} {h} {i} h≈i →
-            begin⟨ Homset A B ⟩
-              arr (fmap (id , id)) h
-            ≡⟨ ≡.refl ⟩
-              id ∘ h ∘ id
-            ≈⟨ id-l ⟩
-              h ∘ id
-            ≈⟨ id-r ⟩
-              h
-            ≈⟨ h≈i ⟩
-              i
-            ∎
+          {A , B} {h} {i} h≈i → ≈.trans id-l (≈.trans id-r h≈i)
       ; fmap-∘ = λ where
-          {A , B} {A′ , B′} {A″ , B″} (f , f′) (g , g′) {h} {i} h≈i →
+          {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} {h} {i} h≈i →
             begin⟨ Homset A″ B″ ⟩
-              arr (fmap (g ∘ f , f′ ∘ g′)) h
-            ≡⟨ ≡.refl ⟩
-              (f′ ∘ g′) ∘ h ∘ (g ∘ f)
-            ≈⟨ assoc ⟩
-              f′ ∘ g′ ∘ h ∘ g ∘ f
-            ≈⟨ ∘-resp-r unassoc ⟩
-              f′ ∘ ((g′ ∘ h) ∘ (g ∘ f))
-            ≈⟨ ∘-resp-r unassoc ⟩
-              f′ ∘ (((g′ ∘ h) ∘ g) ∘ f)
-            ≈⟨ ∘-resp-r (∘-resp-l assoc) ⟩
               f′ ∘ (g′ ∘ h ∘ g) ∘ f
-            ≈⟨ ∘-resp-r (∘-resp-l (∘-resp-r (∘-resp-l h≈i))) ⟩
-              f′ ∘ (g′ ∘ i ∘ g) ∘ f
-            ≡⟨ ≡.refl ⟩
-              arr (fmap (f , f′) S.∘ fmap (g , g′)) i
+            ≈⟨ assoc! C ⟩
+              (f′ ∘ g′) ∘ h ∘ g ∘ f
+            ≈⟨ ∘-resp-r (∘-resp-l h≈i) ⟩
+              (f′ ∘ g′) ∘ i ∘ g ∘ f
             ∎
       }
 

@@ -140,7 +140,7 @@ apFunctor {Y = Y} {Z} F {J} {D} c = record
           fmap (F ∘F D) α Z.∘ fmap F (arr i)
         ≡⟨ ≡.refl ⟩
           fmap F (fmap D α) Z.∘ fmap F (arr i)
-        ≈⟨ Z.≈.sym (fmap-∘ F _ _) ⟩
+        ≈⟨ fmap-∘ F ⟩
           fmap F (fmap D α Y.∘ arr i)
         ≈⟨ fmap-resp F (Y.≈.sym (commute α)) ⟩
           fmap F (arr j)

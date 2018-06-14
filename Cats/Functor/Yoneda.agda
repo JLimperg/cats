@@ -75,13 +75,14 @@ module _ {l} {C : Category l l l} where
     back-θ a = record
         { component = back-θ-component a
         ; natural = λ {c′} {d′} {f} {g} {g′} g≈g′ →
+            let open IsEquivalence (isEquivalence (fobj F d′)) using (sym) in
             begin⟨ fobj F d′ ⟩
               arr (back-θ-component a d′ Sets.∘ fmap (fobj y c) f) g
             ≡⟨⟩
               arr (fmap F (C.id C.∘ g C.∘ f)) a
             ≈⟨ fmap-resp F (C.≈.trans C.id-l (C.∘-resp-l g≈g′)) Fc≈.refl ⟩
               arr (fmap F (g′ C.∘ f)) a
-            ≈⟨ fmap-∘ F f g′ Fc≈.refl ⟩
+            ≈⟨ sym (fmap-∘ F Fc≈.refl) ⟩
               arr (fmap F f Sets.∘ fmap F g′) a
             ≡⟨⟩
               arr (fmap F f Sets.∘ back-θ-component a c′) g′

@@ -42,7 +42,7 @@ functor {C = C} f = record
     ; fmap = λ { id → C.id }
     ; fmap-resp = λ { {_} {_} {id} {id} _ → C.≈.refl }
     ; fmap-id = C.≈.refl
-    ; fmap-∘ = λ { id id → C.≈.sym C.id-l }
+    ; fmap-∘ = λ { {f = id} {id} → C.id-l }
     }
   where
     module C = Category C

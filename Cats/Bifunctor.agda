@@ -65,14 +65,15 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
         ; fmap = λ f → fmap F (C.id , f)
         ; fmap-resp = λ x≈y → fmap-resp F (C.≈.refl , x≈y)
         ; fmap-id = fmap-id F
-        ; fmap-∘ = λ f g →
-            begin
-              fmap F (C.id , f D.∘ g)
-            ≈⟨ fmap-resp F (C.≈.sym C.id-l , D.≈.refl) ⟩
-              fmap F (C.id C.∘ C.id , f D.∘ g)
-            ≈⟨ fmap-∘ F _ _ ⟩
-              fmap F (C.id , f) E.∘ fmap F (C.id , g)
-            ∎
+        ; fmap-∘ = λ where
+            {f = f} {g} →
+              begin
+                fmap F (C.id , f) E.∘ fmap F (C.id , g)
+              ≈⟨ fmap-∘ F ⟩
+                fmap F (C.id C.∘ C.id , f D.∘ g)
+              ≈⟨ fmap-resp F (C.id-l , D.≈.refl) ⟩
+                fmap F (C.id , f D.∘ g)
+              ∎
         }
       where
         open E.≈-Reasoning
@@ -111,8 +112,8 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
                 fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
               ≈⟨ E.∘-resp-r (E.∘-resp-l
                    (E.≈.trans
-                     (E.∘-resp-r (E.≈.sym (fmap-∘ G _ _)))
-                     (E.≈.sym (fmap-∘ G _ _)))) ⟩
+                     (E.∘-resp-r (fmap-∘ G))
+                     (fmap-∘ G))) ⟩
                 back Fx≅Gx E.∘
                 fmap G (back x≅y C.∘ C.id C.∘ forth x≅y , D.id D.∘ f D.∘ D.id) E.∘
                 forth Fx≅Gx
@@ -136,26 +137,27 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
             ; natural = λ {a′} {b′} {g} →
                 begin
                   fmap F (f , D.id) E.∘ fmap (Bifunctor→Functor₁ F a) g
-                ≈⟨ E.≈.sym (fmap-∘ F _ _) ⟩
+                ≈⟨ fmap-∘ F ⟩
                   fmap F (f C.∘ C.id , D.id D.∘ g)
                 ≈⟨ fmap-resp F
                     ( (C.≈.trans C.id-r (C.≈.sym C.id-l))
                     , D.≈.trans D.id-l (D.≈.sym D.id-r) ) ⟩
                   fmap F (C.id C.∘ f , g D.∘ D.id)
-                ≈⟨ fmap-∘ F _ _ ⟩
+                ≈⟨ E.≈.sym (fmap-∘ F) ⟩
                   fmap (Bifunctor→Functor₁ F b) g E.∘ fmap F (f , D.id)
                 ∎
             }
         ; fmap-resp = λ x≈y d → fmap-resp F (x≈y , D.≈.refl)
         ; fmap-id = λ _ → fmap-id F
-        ; fmap-∘ = λ f g d →
-            begin
-              fmap F (f C.∘ g , D.id)
-            ≈⟨ fmap-resp F (C.≈.refl , D.≈.sym D.id-l) ⟩
-              fmap F (f C.∘ g , D.id D.∘ D.id)
-            ≈⟨ fmap-∘ F _ _ ⟩
-              fmap F (f , D.id) E.∘ fmap F (g , D.id)
-            ∎
+        ; fmap-∘ = λ where
+            {f = f} {g} d →
+              begin
+                fmap F (f , D.id) E.∘ fmap F (g , D.id)
+              ≈⟨ fmap-∘ F ⟩
+                fmap F (f C.∘ g , D.id D.∘ D.id)
+              ≈⟨ fmap-resp F (C.≈.refl , D.id-l) ⟩
+                fmap F (f C.∘ g , D.id)
+              ∎
         }
       where
         open E.≈-Reasoning
@@ -202,14 +204,15 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
         ; fmap = λ f → fmap F (f , D.id)
         ; fmap-resp = λ x≈y → fmap-resp F (x≈y , D.≈.refl)
         ; fmap-id = fmap-id F
-        ; fmap-∘ = λ f g →
-            begin
-              fmap F (f C.∘ g , D.id)
-            ≈⟨ fmap-resp F (C.≈.refl , D.≈.sym D.id-l) ⟩
-              fmap F (f C.∘ g , D.id D.∘ D.id)
-            ≈⟨ fmap-∘ F _ _ ⟩
-              fmap F (f , D.id) E.∘ fmap F (g , D.id)
-            ∎
+        ; fmap-∘ = λ where
+            {f = f} {g} →
+              begin
+                fmap F (f , D.id) E.∘ fmap F (g , D.id)
+              ≈⟨ fmap-∘ F ⟩
+                fmap F (f C.∘ g , D.id D.∘ D.id)
+              ≈⟨ fmap-resp F (C.≈.refl , D.id-l) ⟩
+                fmap F (f C.∘ g , D.id)
+              ∎
         }
       where
         open E.≈-Reasoning
@@ -223,26 +226,27 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
             ; natural = λ {a′} {b′} {g} →
                 begin
                   fmap F (C.id , f) E.∘ fmap (Bifunctor→Functor₂ F a) g
-                ≈⟨ E.≈.sym (fmap-∘ F _ _) ⟩
+                ≈⟨ fmap-∘ F ⟩
                   fmap F (C.id C.∘ g , f D.∘ D.id)
                 ≈⟨ fmap-resp F
                      ( (C.≈.trans C.id-l (C.≈.sym C.id-r))
                      , (D.≈.trans D.id-r (D.≈.sym D.id-l)) ) ⟩
                   fmap F (g C.∘ C.id , D.id D.∘ f)
-                ≈⟨ fmap-∘ F _ _ ⟩
+                ≈⟨ E.≈.sym (fmap-∘ F) ⟩
                   fmap (Bifunctor→Functor₂ F b) g E.∘ fmap F (C.id , f)
                 ∎
             }
         ; fmap-resp = λ x≈y _ → fmap-resp F (C.≈.refl , x≈y)
         ; fmap-id = λ _ → fmap-id F
-        ; fmap-∘ = λ f g _ →
-            begin
-              fmap F (C.id , f D.∘ g)
-            ≈⟨ fmap-resp F (C.≈.sym C.id-l , D.≈.refl) ⟩
-              fmap F (C.id C.∘ C.id , f D.∘ g)
-            ≈⟨ fmap-∘ F _ _ ⟩
-              fmap F (C.id , f) E.∘ fmap F (C.id , g)
-            ∎
+        ; fmap-∘ = λ where
+            {f = f} {g} _ →
+              begin
+                fmap F (C.id , f) E.∘ fmap F (C.id , g)
+              ≈⟨ fmap-∘ F ⟩
+                fmap F (C.id C.∘ C.id , f D.∘ g)
+              ≈⟨ fmap-resp F (C.id-l , D.≈.refl) ⟩
+                fmap F (C.id , f D.∘ g)
+              ∎
         }
       where
         open E.≈-Reasoning

@@ -16,5 +16,5 @@ Op F = record
     ; fmap = fmap F
     ; fmap-resp = fmap-resp F
     ; fmap-id = fmap-id F
-    ; fmap-∘ = λ f g → fmap-∘ F g f
+    ; fmap-∘ = fmap-∘ F
     }

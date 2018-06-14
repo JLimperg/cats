@@ -176,7 +176,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
               (back F≅G E.∘ G.fmap (back H≅I)) E.∘ G.fmap (I.fmap f) E.∘ (G.fmap (forth H≅I) E.∘ forth F≅G)
             ≈⟨ assoc! E ⟩
               back F≅G E.∘ (G.fmap (back H≅I) E.∘ G.fmap (I.fmap f) E.∘ G.fmap (forth H≅I)) E.∘ forth F≅G
-            ≈⟨ E.∘-resp-r (E.∘-resp-l (≈.trans (E.∘-resp-r (≈.sym (G.fmap-∘ _ _))) (≈.sym (G.fmap-∘ _ _)))) ⟩
+            ≈⟨ E.∘-resp-r (E.∘-resp-l (≈.trans (E.∘-resp-r (G.fmap-∘ )) (G.fmap-∘ ))) ⟩
               back F≅G E.∘ G.fmap (back H≅I D.∘ I.fmap f D.∘ forth H≅I) E.∘ forth F≅G
             ≈⟨ E.∘-resp-r (E.∘-resp-l (G.fmap-resp (D.≈.sym (fmap-≈-HI _)))) ⟩
               back F≅G E.∘ G.fmap (H.fmap f) E.∘ forth F≅G

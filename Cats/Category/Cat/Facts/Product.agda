@@ -28,7 +28,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; fmap = ∧-eliml
       ; fmap-resp = ∧-eliml
       ; fmap-id = C.≈.refl
-      ; fmap-∘ = λ _ _ → C.≈.refl
+      ; fmap-∘ = C.≈.refl
       }
 
 
@@ -38,7 +38,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; fmap = ∧-elimr
       ; fmap-resp = ∧-elimr
       ; fmap-id = D.≈.refl
-      ; fmap-∘ = λ _ _ → D.≈.refl
+      ; fmap-∘ = D.≈.refl
       }
 
 
@@ -50,7 +50,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
         ; fmap = λ f → fmap F f , fmap G f
         ; fmap-resp = λ eq → fmap-resp F eq , fmap-resp G eq
         ; fmap-id = fmap-id F , fmap-id G
-        ; fmap-∘ = λ f g → fmap-∘ F f g , fmap-∘ G f g
+        ; fmap-∘ = fmap-∘ F , fmap-∘ G
         }
 
 

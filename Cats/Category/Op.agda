@@ -65,14 +65,14 @@ module _ {lo la l≈ : Level} where
           ; fmap = λ f → f
           ; fmap-resp = λ eq → eq
           ; fmap-id = C.≈.reflexive ≡.refl
-          ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
+          ; fmap-∘ = C.≈.reflexive ≡.refl
           }
       ; back = record
           { fobj = λ x → x
           ; fmap = λ f → f
           ; fmap-resp = λ eq → eq
           ; fmap-id = C.≈.reflexive ≡.refl
-          ; fmap-∘ = λ _ _ → C.≈.reflexive ≡.refl
+          ; fmap-∘ = C.≈.reflexive ≡.refl
           }
       ; back-forth = record
           { iso = record

@@ -8,6 +8,8 @@ open import Cats.Util.Function using () renaming (_∘_ to _⊙_)
 
 import Cats.Category.Constructions.Iso as Iso
 
+open Iso.Build._≅_
+
 
 infixr 9 _∘_
 
@@ -27,8 +29,8 @@ record Functor {lo la l≈ lo′ la′ l≈′}
     fmap : ∀ {A B} → A C.⇒ B → fobj A D.⇒ fobj B
     fmap-resp : ∀ {A B} → fmap {A} {B} Preserves C._≈_ ⟶ D._≈_
     fmap-id : ∀ {A} → fmap (C.id {A}) D.≈ D.id
-    fmap-∘ : ∀ {A B C} (f : B C.⇒ C) (g : A C.⇒ B)
-      → fmap (f C.∘ g) D.≈ fmap f D.∘ fmap g
+    fmap-∘ : ∀ {A B C} {f : B C.⇒ C} {g : A C.⇒ B}
+      → fmap f D.∘ fmap g D.≈ fmap (f C.∘ g)
 
 
   fobj-resp : fobj Preserves C≅._≅_ ⟶ D≅._≅_
@@ -39,7 +41,7 @@ record Functor {lo la l≈ lo′ la′ l≈′}
       ; back-forth
           = begin
               fmap (back x≅y) D.∘ fmap (forth x≅y)
-            ≈⟨ ≈.sym (fmap-∘ _ _) ⟩
+            ≈⟨ fmap-∘ ⟩
               fmap (back x≅y C.∘ forth x≅y)
             ≈⟨  fmap-resp (back-forth x≅y) ⟩
               fmap C.id
@@ -49,7 +51,7 @@ record Functor {lo la l≈ lo′ la′ l≈′}
       ; forth-back
           = begin
             fmap (forth x≅y) D.∘ fmap (back x≅y)
-          ≈⟨ ≈.sym (fmap-∘ _ _) ⟩
+          ≈⟨ fmap-∘ ⟩
             fmap (forth x≅y C.∘ back x≅y)
           ≈⟨ fmap-resp (forth-back x≅y) ⟩
             fmap C.id
@@ -58,9 +60,9 @@ record Functor {lo la l≈ lo′ la′ l≈′}
           ∎
       }
     where
-      open C≅._≅_
-      module ≈ = D.≈
       open D.≈-Reasoning
+
+open Functor public
 
 
 id : ∀ {lo la l≈} {C : Category lo la l≈} → Functor C C
@@ -69,7 +71,7 @@ id {C = C} = record
     ; fmap = λ f → f
     ; fmap-resp = λ eq → eq
     ; fmap-id = C.≈.refl
-    ; fmap-∘ = λ _ _ → C.≈.refl
+    ; fmap-∘ = C.≈.refl
     }
   where
     module C = Category C
@@ -80,15 +82,12 @@ _∘_ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → {D : Category lo′ la′ l≈′}
   → {E : Category lo″ la″ l≈″}
   → Functor D E → Functor C D → Functor C E
-_∘_ {C = C} {D} {E} F G = record
-    { fobj = F.fobj ⊙ G.fobj
-    ; fmap = F.fmap ⊙ G.fmap
-    ; fmap-resp = F.fmap-resp ⊙ G.fmap-resp
-    ; fmap-id = ≈.trans (F.fmap-resp G.fmap-id) F.fmap-id
-    ; fmap-∘ = λ f g → ≈.trans (F.fmap-resp (G.fmap-∘ _ _)) (F.fmap-∘ _ _)
+_∘_ {E = E} F G = record
+    { fobj = fobj F ⊙ fobj G
+    ; fmap = fmap F ⊙ fmap G
+    ; fmap-resp = fmap-resp F ⊙ fmap-resp G
+    ; fmap-id = E.≈.trans (fmap-resp F (fmap-id G)) (fmap-id F)
+    ; fmap-∘ = E.≈.trans (fmap-∘ F) (fmap-resp F (fmap-∘ G))
     }
   where
-    module F = Functor F
-    module G = Functor G
     module E = Category E
-    module ≈ = E.≈
