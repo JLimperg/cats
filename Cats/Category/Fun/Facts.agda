@@ -30,21 +30,21 @@ module _ {lo la l≈ lo′ la′ l≈′}
   NatIso→≅ : NatIso F G → F ≅ G
   NatIso→≅ i = record
       { forth = record
-          { component = λ c → forth (iso i c)
+          { component = λ c → forth (iso i)
           ; natural = forth-natural i
           }
       ; back = record
-          { component = λ c → back (iso i c)
+          { component = λ c → back (iso i)
           ; natural = back-natural i
           }
-      ; back-forth = λ c → back-forth (iso i c)
-      ; forth-back = λ c → forth-back (iso i c)
+      ; back-forth = λ c → back-forth (iso i)
+      ; forth-back = λ c → forth-back (iso i)
       }
 
 
   ≅→NatIso : F ≅ G → NatIso F G
   ≅→NatIso i = record
-      { iso = λ c → record
+      { iso = λ {c} → record
           { forth = component (forth i) c
           ; back = component (back i) c
           ; back-forth = back-forth i c
@@ -56,7 +56,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   ≈→≅ : F ≈ G → F ≅ G
   ≈→≅ record { iso = i ; fmap-≈ = fmap-≈ } = NatIso→≅ record
-      { iso = λ _ → i
+      { iso = i
       ; forth-natural = λ {c} {d} {f} →
           begin
             forth i D.∘ fmap F f
@@ -75,17 +75,17 @@ module _ {lo la l≈ lo′ la′ l≈′}
   ≅→≈ : F ≅ G → F ≈ G
   ≅→≈ F≅G with ≅→NatIso F≅G
   ... | ni@record { iso = i } = record
-      { iso = λ {x} → i x
-      ; fmap-≈ = λ {A} {B} f → D.≈.sym (
+      { iso = i
+      ; fmap-≈ = λ f → D.≈.sym (
           begin
-            back (i B) D.∘ fmap G f D.∘ forth (i A)
+            back i D.∘ fmap G f D.∘ forth i
           ≈⟨ assoc! D ⟩
-            (back (i B) D.∘ fmap G f) D.∘ forth (i A)
+            (back i D.∘ fmap G f) D.∘ forth i
           ≈⟨ D.∘-resp-l (back-natural ni) ⟩
-            (fmap F f D.∘ back (i A)) D.∘ forth (i A)
+            (fmap F f D.∘ back i) D.∘ forth i
           ≈⟨ assoc! D ⟩
-            fmap F f D.∘ back (i A) D.∘ forth (i A)
-          ≈⟨ D.∘-resp-r (back-forth (i A))  ⟩
+            fmap F f D.∘ back i D.∘ forth i
+          ≈⟨ D.∘-resp-r (back-forth i)  ⟩
             fmap F f D.∘ D.id
           ≈⟨ D.id-r ⟩
             fmap F f

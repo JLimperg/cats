@@ -132,7 +132,7 @@ module _ {l} {C : Category l l l} where
 
   yoneda : (Hom[ Presheaves ] ∘ First (Op y)) Funs.≅ (Eval ∘ Swap)
   yoneda = NatIso→≅ record
-      { iso = λ { (c , F) → iso c F }
+      { iso = λ { {c , F} → iso c F }
       ; forth-natural = λ where
           {c , F} {c′ , F′} {f , θ} {ι} {τ} ι≈τ →
             let module S = Setoid (fobj F′ c′) in

@@ -28,44 +28,44 @@ module _ {lo la l≈ lo′ la′ l≈′}
   record NatIso (F G : Functor C D) : Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′)
     where
     field
-      iso : ∀ C → fobj F C ≅ fobj G C
+      iso : ∀ {c} → fobj F c ≅ fobj G c
 
-      forth-natural : ∀ {A B} {f : A C.⇒ B}
-        → forth (iso B) D.∘ fmap F f D.≈ fmap G f D.∘ forth (iso A)
+      forth-natural : ∀ {c d} {f : c C.⇒ d}
+        → forth iso D.∘ fmap F f D.≈ fmap G f D.∘ forth iso
 
 
-    back-natural : ∀ {A B} {f : A C.⇒ B}
-      → back (iso B) D.∘ fmap G f D.≈ fmap F f D.∘ back (iso A)
-    back-natural {A} {B} {f} =
+    back-natural : ∀ {c d} {f : c C.⇒ d}
+      → back iso D.∘ fmap G f D.≈ fmap F f D.∘ back iso
+    back-natural {f = f} =
         begin
-          back (iso B) D.∘ fmap G f
+          back iso D.∘ fmap G f
         ≈⟨ D.∘-resp-r (D.≈.sym D.id-r) ⟩
-          back (iso B) D.∘ fmap G f D.∘ D.id
-        ≈⟨ D.∘-resp-r (D.∘-resp-r (D.≈.sym (forth-back (iso A)))) ⟩
-          back (iso B) D.∘ fmap G f D.∘ forth (iso A) D.∘ back (iso A)
+          back iso D.∘ fmap G f D.∘ D.id
+        ≈⟨ D.∘-resp-r (D.∘-resp-r (D.≈.sym (forth-back iso))) ⟩
+          back iso D.∘ fmap G f D.∘ forth iso D.∘ back iso
         ≈⟨ assoc! D ⟩
-          back (iso B) D.∘ (fmap G f D.∘ forth (iso A)) D.∘ back (iso A)
+          back iso D.∘ (fmap G f D.∘ forth iso) D.∘ back iso
         ≈⟨ D.∘-resp-r (D.∘-resp-l (D.≈.sym forth-natural)) ⟩
-          back (iso B) D.∘ (forth (iso B) D.∘ fmap F f) D.∘ back (iso A)
+          back iso D.∘ (forth iso D.∘ fmap F f) D.∘ back iso
         ≈⟨ assoc! D ⟩
-          (back (iso B) D.∘ (forth (iso B))) D.∘ fmap F f D.∘ back (iso A)
-        ≈⟨ D.∘-resp-l (back-forth (iso B)) ⟩
-          D.id D.∘ fmap F f D.∘ back (iso A)
+          (back iso D.∘ (forth iso)) D.∘ fmap F f D.∘ back iso
+        ≈⟨ D.∘-resp-l (back-forth iso) ⟩
+          D.id D.∘ fmap F f D.∘ back iso
         ≈⟨ D.id-l ⟩
-          fmap F f D.∘ back (iso A)
+          fmap F f D.∘ back iso
         ∎
 
 
     Forth : Trans F G
     Forth = record
-        { component = λ c → forth (iso c)
+        { component = λ _ → forth iso
         ; natural = forth-natural
         }
 
 
     Back : Trans G F
     Back = record
-        { component = λ c → back (iso c)
+        { component = λ _ → back iso
         ; natural = back-natural
         }
 
@@ -74,33 +74,33 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   id : ∀ {F} → NatIso F F
   id = record
-      { iso = λ _ → ≅.refl
+      { iso = ≅.refl
       ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
       }
 
 
   sym : ∀ {F G} → NatIso F G → NatIso G F
   sym θ = record
-      { iso = λ c → ≅.sym (iso θ c)
+      { iso = ≅.sym (iso θ)
       ; forth-natural = back-natural θ
       }
 
 
   _∘_ : ∀ {F G H} → NatIso G H → NatIso F G → NatIso F H
   _∘_ {F} {G} {H} θ ι = record
-      { iso = λ c → ≅.trans (iso ι c) (iso θ c)
-      ; forth-natural = λ {c} {d} {f} →
+      { iso = ≅.trans (iso ι) (iso θ)
+      ; forth-natural = λ {_} {_} {f} →
           begin
-            (forth (iso θ d) D.∘ forth (iso ι d)) D.∘ fmap F f
+            (forth (iso θ) D.∘ forth (iso ι)) D.∘ fmap F f
           ≈⟨ D.assoc ⟩
-            forth (iso θ d) D.∘ forth (iso ι d) D.∘ fmap F f
+            forth (iso θ) D.∘ forth (iso ι) D.∘ fmap F f
           ≈⟨ D.∘-resp-r (forth-natural ι) ⟩
-            forth (iso θ d) D.∘ fmap G f D.∘ forth (iso ι c)
+            forth (iso θ) D.∘ fmap G f D.∘ forth (iso ι)
           ≈⟨ D.unassoc ⟩
-            (forth (iso θ d) D.∘ fmap G f) D.∘ forth (iso ι c)
+            (forth (iso θ) D.∘ fmap G f) D.∘ forth (iso ι)
           ≈⟨ D.∘-resp-l (forth-natural θ) ⟩
-            (fmap H f D.∘ forth (iso θ c)) D.∘ forth (iso ι c)
+            (fmap H f D.∘ forth (iso θ)) D.∘ forth (iso ι)
           ≈⟨ D.assoc ⟩
-            fmap H f D.∘ forth (iso θ c) D.∘ forth (iso ι c)
+            fmap H f D.∘ forth (iso θ) D.∘ forth (iso ι)
           ∎
       }

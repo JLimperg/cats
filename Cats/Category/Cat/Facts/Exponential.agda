@@ -14,7 +14,7 @@ open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_�
 open import Cats.Category.Fun using (Fun ; Trans)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Product.Binary using (_×_)
-open import Cats.Trans.Iso using (NatIso)
+open import Cats.Trans.Iso as NatIso using (NatIso)
 open import Cats.Util.Assoc using (assoc!)
 open import Cats.Util.Conv
 
@@ -175,7 +175,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
       lem : ∀ x
         → NatIso (Bifunctor→Functor₁ (Eval ∘ ⟨ Curry′ × Id ⟩) x) (fobj Curry′ x)
       lem x = record
-          { iso = λ y → D.≅.refl
+          { iso = D.≅.refl
           ; forth-natural = λ {a} {b} {f} →
               let open D.≈-Reasoning in
               begin
