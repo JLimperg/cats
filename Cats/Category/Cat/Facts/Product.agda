@@ -8,6 +8,7 @@ open import Cats.Category
 open import Cats.Category.Cat as Cat using (Cat ; Functor ; _⇒_ ; _∘_ ; id ; _≈_)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
+open import Cats.Trans.Iso using (NatIso)
 open import Cats.Util.Logic.Constructive using (_∧_ ; ∧-eliml ; ∧-elimr)
 
 open Functor
@@ -59,24 +60,24 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ⟨,⟩-proj₁ : proj₁ ∘ ⟨ F , G ⟩ ≈ F
       ⟨,⟩-proj₁ = record
           { iso = C.≅.refl
-          ; fmap-≈ = λ _ → C.≈.sym (C.≈.trans C.id-l C.id-r)
+          ; forth-natural = C.≈.trans C.id-l (C.≈.sym C.id-r)
           }
 
 
       ⟨,⟩-proj₂ : proj₂ ∘ ⟨ F , G ⟩ ≈ G
       ⟨,⟩-proj₂ = record
           { iso = D.≅.refl
-          ; fmap-≈ = λ _ → D.≈.sym (D.≈.trans D.id-l D.id-r)
+          ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
           }
 
 
       ⟨,⟩-unique : ∀ {H} → proj₁ ∘ H ≈ F → proj₂ ∘ H ≈ G → H ≈ ⟨ F , G ⟩
       ⟨,⟩-unique {H} eq₁ eq₂ = record
           { iso = iso-intro (iso eq₁) (iso eq₂)
-          ; fmap-≈ = λ f → fmap-≈ eq₁ f , fmap-≈ eq₂ f
+          ; forth-natural = forth-natural eq₁ , forth-natural eq₂
           }
         where
-          open _≈_
+          open NatIso
 
 
 instance

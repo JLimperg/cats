@@ -1,6 +1,7 @@
 module Cats.Trans.Iso where
 
 open import Level using (_⊔_)
+open import Relation.Binary.PropositionalEquality using (_≡_ ; refl)
 
 open import Cats.Category.Base
 open import Cats.Functor using (Functor)
@@ -68,6 +69,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
         { component = λ _ → back iso
         ; natural = back-natural
         }
+
 
   open NatIso public
 

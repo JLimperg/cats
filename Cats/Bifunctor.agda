@@ -11,6 +11,7 @@ open import Cats.Category.Fun using (Fun ; Trans)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
+open import Cats.Trans.Iso using (NatIso)
 open import Cats.Util.Assoc using (assoc!)
 
 import Cats.Category.Constructions.Iso as Iso
@@ -84,7 +85,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       → x C.≅ y
       → Bifunctor→Functor₁ F x ≈ Bifunctor→Functor₁ G y
     Bifunctor→Functor₁-resp {F} {G} {x} {y}
-      record { iso = Fx≅Gx ; fmap-≈ = fmap-≈ } x≅y
+      record { iso = Fx≅Gx ; forth-natural = fnat } x≅y
         = record
         { iso = λ {z} →
             let open E.≅-Reasoning in
@@ -95,35 +96,33 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
             ≈⟨ fobj-resp G (iso-intro x≅y D.≅.refl) ⟩
               fobj G (y , z)
             ∎
-        ; fmap-≈ = λ f →
+        ; forth-natural = λ {c} {d} {f} →
             let open E.≈-Reasoning in
-            E.≈.sym (
-              begin
-                (back Fx≅Gx E.∘ fmap G (back x≅y , D.id) E.∘ E.id) E.∘
-                fmap G (C.id , f) E.∘
-                (E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
-              ≈⟨ E.∘-resp (E.∘-resp-r E.id-r) (E.∘-resp-r (E.∘-resp-l E.id-l)) ⟩
-                (back Fx≅Gx E.∘ fmap G (back x≅y , D.id)) E.∘
-                fmap G (C.id , f) E.∘
-                fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx
+            triangle (fmap G (forth x≅y , f) E.∘ forth Fx≅Gx)
+            ( begin
+                ((E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx) E.∘ fmap F (C.id , f)
               ≈⟨ assoc! E ⟩
-                back Fx≅Gx E.∘ (fmap G (back x≅y , D.id) E.∘
-                fmap G (C.id , f) E.∘
-                fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
-              ≈⟨ E.∘-resp-r (E.∘-resp-l
-                   (E.≈.trans
-                     (E.∘-resp-r (fmap-∘ G))
-                     (fmap-∘ G))) ⟩
-                back Fx≅Gx E.∘
-                fmap G (back x≅y C.∘ C.id C.∘ forth x≅y , D.id D.∘ f D.∘ D.id) E.∘
-                forth Fx≅Gx
-              ≈⟨ E.≈.sym (fmap-≈ _) ⟩
-                fmap F (back x≅y C.∘ C.id C.∘ forth x≅y , D.id D.∘ f D.∘ D.id)
-              ≈⟨ fmap-resp F
-                   ( (C.≈.trans (C.∘-resp-r C.id-l) (back-forth x≅y))
-                   , D.≈.trans D.id-l D.id-r
-                   ) ⟩
-                fmap F (C.id , f)
+                E.id E.∘ fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx E.∘ fmap F (C.id , f)
+              ≈⟨ E.≈.trans E.id-l (E.∘-resp-r fnat) ⟩
+                fmap G (forth x≅y , D.id) E.∘ (fmap G (C.id , f) E.∘ forth Fx≅Gx)
+              ≈⟨ assoc! E ⟩
+                (fmap G (forth x≅y , D.id) E.∘ fmap G (C.id , f)) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
+                fmap G (forth x≅y C.∘ C.id , D.id D.∘ f) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-l (fmap-resp G (C.id-r , D.id-l)) ⟩
+                fmap G (forth x≅y , f) E.∘ forth Fx≅Gx
+              ∎
+            )
+            ( begin
+                fmap G (C.id , f) E.∘ (E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-r (E.∘-resp-l E.id-l) ⟩
+                fmap G (C.id , f) E.∘ fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx
+              ≈⟨ assoc! E ⟩
+                (fmap G (C.id , f) E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
+                fmap G (C.id C.∘ forth x≅y , f D.∘ D.id) E.∘ forth Fx≅Gx
+              ≈⟨ E.∘-resp-l (fmap-resp G (C.id-l , D.id-r)) ⟩
+                fmap G (forth x≅y , f) E.∘ forth Fx≅Gx
               ∎
             )
         }
@@ -168,34 +167,27 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       → transposeBifunctor₁ F ≈ transposeBifunctor₁ G
     transposeBifunctor₁-resp {F} {G} F≈G = record
         { iso = Fun.≈→≅ (Bifunctor→Functor₁-resp F≈G C.≅.refl)
-        ; fmap-≈ = λ f x → sym (
-            begin
-              (back (iso F≈G) E.∘ fmap G (C.id , D.id) E.∘ E.id) E.∘
-              fmap G (f , D.id) E.∘
-              (E.id E.∘ fmap G (C.id , D.id)) E.∘ forth (iso F≈G)
-            ≈⟨ assoc! E ⟩
-              back (iso F≈G) E.∘
-              (fmap G (C.id , D.id) E.∘ E.id E.∘ fmap G (f , D.id) E.∘ E.id E.∘ fmap G (C.id , D.id)) E.∘
-              forth (iso F≈G)
-            ≈⟨ E.∘-resp-r (E.∘-resp-l
-                 (trans
-                   (E.∘-resp-l (fmap-id G))
-                   (E.∘-resp-r (E.∘-resp-r (E.∘-resp-r (E.∘-resp-r (fmap-id G))))))) ⟩
-              back (iso F≈G) E.∘
-              (E.id E.∘ E.id E.∘ fmap G (f , D.id) E.∘ E.id E.∘ E.id) E.∘
-              forth (iso F≈G)
-            ≈⟨ E.∘-resp-r (E.∘-resp-l (trans E.id-l (trans E.id-l
-                 (trans (E.∘-resp-r E.id-l) E.id-r)))) ⟩
-              back (iso F≈G) E.∘ fmap G (f , D.id) E.∘ forth (iso F≈G)
-            ≈⟨ E.≈.sym (fmap-≈ F≈G _) ⟩
-              fmap F (f , D.id)
-            ∎
-          )
+        ; forth-natural = λ {c} {d} {f} x →
+            let open E.≈-Reasoning in
+            triangle (fmap G (f , D.id) E.∘ forth (iso F≈G))
+            ( begin
+                ((E.id E.∘ fmap G (C.id , D.id)) E.∘ forth (iso F≈G)) E.∘ fmap F (f , D.id)
+              ≈⟨ E.∘-resp-l (E.≈.trans (E.∘-resp-l (E.≈.trans E.id-l (fmap-id G))) E.id-l) ⟩
+                forth (iso F≈G) E.∘ fmap F (f , D.id)
+              ≈⟨ forth-natural F≈G ⟩
+                (fmap G (f , D.id) E.∘ forth (iso F≈G))
+              ∎
+            )
+            ( begin
+                fmap G (f , D.id) E.∘ (E.id E.∘ fmap G (C.id , D.id)) E.∘ forth (iso F≈G)
+              ≈⟨ E.∘-resp-r (E.≈.trans (E.∘-resp-l (E.≈.trans E.id-l (fmap-id G))) E.id-l) ⟩
+                fmap G (f , D.id) E.∘ forth (iso F≈G)
+              ∎
+            )
         }
       where
         open E.≈-Reasoning
-        open E.≈ using (sym ; trans)
-        open _≈_ using (iso ; fmap-≈)
+        open NatIso using (iso ; forth-natural)
 
 
     Bifunctor→Functor₂ : Bifunctor C D E → D.Obj → Functor C E

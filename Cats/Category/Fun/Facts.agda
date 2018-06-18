@@ -29,17 +29,13 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   NatIso→≅ : NatIso F G → F ≅ G
   NatIso→≅ i = record
-      { forth = record
-          { component = λ c → forth (iso i)
-          ; natural = forth-natural i
-          }
-      ; back = record
-          { component = λ c → back (iso i)
-          ; natural = back-natural i
-          }
+      { forth = Forth i
+      ; back = Back i
       ; back-forth = λ c → back-forth (iso i)
       ; forth-back = λ c → forth-back (iso i)
       }
+    where
+      open NatIso
 
 
   ≅→NatIso : F ≅ G → NatIso F G
@@ -55,40 +51,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   ≈→≅ : F ≈ G → F ≅ G
-  ≈→≅ record { iso = i ; fmap-≈ = fmap-≈ } = NatIso→≅ record
-      { iso = i
-      ; forth-natural = λ {c} {d} {f} →
-          begin
-            forth i D.∘ fmap F f
-          ≈⟨ D.∘-resp-r (fmap-≈ f) ⟩
-            forth i D.∘ back i D.∘ fmap G f D.∘ forth i
-          ≈⟨ assoc! D ⟩
-            (forth i D.∘ back i) D.∘ fmap G f D.∘ forth i
-          ≈⟨ D.∘-resp-l (forth-back i) ⟩
-            D.id D.∘ fmap G f D.∘ forth i
-          ≈⟨ D.id-l ⟩
-            fmap G f D.∘ forth i
-          ∎
-      }
+  ≈→≅ eq = NatIso→≅ eq
 
 
   ≅→≈ : F ≅ G → F ≈ G
-  ≅→≈ F≅G with ≅→NatIso F≅G
-  ... | ni@record { iso = i } = record
-      { iso = i
-      ; fmap-≈ = λ f → D.≈.sym (
-          begin
-            back i D.∘ fmap G f D.∘ forth i
-          ≈⟨ assoc! D ⟩
-            (back i D.∘ fmap G f) D.∘ forth i
-          ≈⟨ D.∘-resp-l (back-natural ni) ⟩
-            (fmap F f D.∘ back i) D.∘ forth i
-          ≈⟨ assoc! D ⟩
-            fmap F f D.∘ back i D.∘ forth i
-          ≈⟨ D.∘-resp-r (back-forth i)  ⟩
-            fmap F f D.∘ D.id
-          ≈⟨ D.id-r ⟩
-            fmap F f
-          ∎
-        )
-      }
+  ≅→≈ i = ≅→NatIso i

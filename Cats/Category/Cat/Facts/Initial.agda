@@ -26,7 +26,7 @@ module _ {lo la l≈} where
       f-Unique : IsUnique f
       f-Unique f′ = record
           { iso = λ{}
-          ; fmap-≈ = λ{}
+          ; forth-natural = λ{}
           }
 
 

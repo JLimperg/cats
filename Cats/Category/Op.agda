@@ -74,25 +74,18 @@ module _ {lo la l≈ : Level} where
           ; fmap-id = C.≈.reflexive ≡.refl
           ; fmap-∘ = C.≈.reflexive ≡.refl
           }
+      -- TODO This sort of natural iso comes up all the time. Can we abstract it
+      -- out?
       ; back-forth = record
-          { iso = record
-              { forth = C.id
-              ; back = C.id
-              ; back-forth = C.id-l
-              ; forth-back = C.id-l
-              }
-          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-l C.id-r)
+          { iso = Coo.≅.refl
+          ; forth-natural = C.≈.trans C.id-l (C.≈.sym C.id-r)
           }
       ; forth-back = record
-          { iso = record
-              { forth = C.id
-              ; back = C.id
-              ; back-forth = C.id-l
-              ; forth-back = C.id-r
-              }
-          ; fmap-≈ = λ f → ≈.sym (≈.trans C.id-l C.id-r)
+          { iso = C.≅.refl
+          ; forth-natural = C.≈.trans C.id-l (C.≈.sym C.id-r)
           }
       }
     where
       module C = Category C
+      module Coo = Category ((C ᵒᵖ)ᵒᵖ)
       module ≈ = C.≈
