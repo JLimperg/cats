@@ -5,6 +5,8 @@ open import Relation.Binary using
   (Rel ; IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_ ; Setoid)
 open import Relation.Binary.EqReasoning as EqReasoning
 
+import Cats.Util.SetoidReasoning as SetoidR
+
 
 record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   infixr  9 _∘_
@@ -34,7 +36,12 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
 
 
   module ≈ {A B} = IsEquivalence (equiv {A} {B})
-  module ≈-Reasoning {A B} = EqReasoning (Hom A B)
+
+  module ≈-Reasoning {A B} where
+
+    open EqReasoning (Hom A B) public
+
+    triangle = SetoidR.triangle (Hom A B)
 
 
   unassoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
