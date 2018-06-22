@@ -8,5 +8,8 @@ open import Relation.Binary.On public
   renaming (isEquivalence to on-isEquivalence)
 
 
+infixr 9 _∘_
+
+
 _∘_ : ∀ {a b c} {A : Set a} {B : Set b} {C : Set c} → (B → C) → (A → B) → A → C
 f ∘ g = f Fun.∘ g
