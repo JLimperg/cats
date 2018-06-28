@@ -4,11 +4,10 @@ open import Level using (Level ; _⊔_ ; suc)
 open import Relation.Binary using
   (Setoid ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_ ; Rel ; IsEquivalence)
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Category.Sets using (Sets)
 open import Cats.Util.Conv
-
-import Cats.Util.Function as Fun
+open import Cats.Util.Function using () renaming (_∘_ to _⊚_)
 
 
 open Setoid renaming (_≈_ to eq)
@@ -58,8 +57,8 @@ module Build (l l≈ : Level) where
 
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   _∘_ {C = C} f g = record
-      { arr = f ⃗ Fun.∘ g ⃗
-      ; resp = resp f Fun.∘ resp g
+      { arr = f ⃗ ⊚ g ⃗
+      ; resp = resp f ⊚ resp g
       }
 
 

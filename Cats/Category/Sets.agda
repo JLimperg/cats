@@ -5,7 +5,7 @@ open import Level
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Util.Function
 open import Cats.Util.Logic.Constructive
 
