@@ -22,7 +22,7 @@ import Cats.Category.Constructions.Iso
 
 open Functor
 open Trans
-open Cats.Category.Setoids.Build._⇒_
+open Cats.Category.Setoids._⇒_
 open Setoid using (Carrier ; isEquivalence)
 module Iso = Cats.Category.Constructions.Iso.Build._≅_
 

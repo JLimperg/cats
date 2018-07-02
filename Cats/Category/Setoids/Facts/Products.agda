@@ -21,7 +21,7 @@ module BuildBinary l l≈ where
 
 
   open Category (Setoids l l≈)
-  open Setoids.Build._⇒_ using (resp)
+  open Setoids._⇒_ using (resp)
 
 
   _×_ : Obj → Obj → Obj
@@ -69,7 +69,7 @@ instance
 module Build l {I : Set l} where
 
   open Category (Setoids l l)
-  open Setoids.Build._⇒_ using (resp)
+  open Setoids._⇒_ using (resp)
 
 
   Π : (O : I → Obj) → Obj

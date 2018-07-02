@@ -22,7 +22,7 @@ module Build l where
   open Base.Category (Setoids l l)
   open Category (Setoids l l) using (∃!-intro ; Exp ; IsUniqueSuchThat)
   open HasBinaryProducts (hasBinaryProducts l l)
-  open Setoids.Build._⇒_ using (resp)
+  open Setoids._⇒_ using (resp)
 
 
   _↝_ : Obj → Obj → Obj

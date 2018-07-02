@@ -54,7 +54,7 @@ module _ (l l≈ : Level) where
       unit : (arr ⃗) M.unit N.≈ N.unit
       commute : ∀ {n m} → (arr ⃗) (n M.⊕ m) N.≈ (arr ⃗) n N.⊕ (arr ⃗) m
 
-    open Cats.Category.Setoids.Build._⇒_ arr public using (resp)
+    open Cats.Category.Setoids._⇒_ arr public using (resp)
 
   open _⇒_ using (unit ; commute ; resp)
 

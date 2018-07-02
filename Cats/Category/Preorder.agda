@@ -42,7 +42,7 @@ module _ (lc l≈ l≤ : Level) where
       arr : Universe A Setoids.⇒ Universe B
       monotone : ∀ {x y} → x A.∼ y → (arr ⃗) x B.∼ (arr ⃗) y
 
-    open Cats.Category.Setoids.Build._⇒_ arr public using (resp)
+    open Cats.Category.Setoids._⇒_ arr public using (resp)
 
   open _⇒_ using (monotone ; resp)
 

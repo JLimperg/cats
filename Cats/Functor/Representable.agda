@@ -16,7 +16,7 @@ import Relation.Binary.PropositionalEquality as ≡
 module Build {lo la l≈} (C : Category lo la l≈) where
 
   open Category C renaming (Hom to Homset)
-  open Setoids.Build._⇒_ using (arr ; resp)
+  open Setoids._⇒_ using (arr ; resp)
 
   private
     module S = Category (Setoids la l≈)
