@@ -6,7 +6,7 @@ open import Relation.Binary using (Setoid)
 open import Cats.Bifunctor using (Bifunctor)
 open import Cats.Category
 open import Cats.Category.Op using (_ᵒᵖ)
-open import Cats.Category.Setoids as Setoids using (Setoids)
+open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro)
 open import Cats.Util.Assoc using (assoc!)
 open import Cats.Util.SetoidReasoning
 
@@ -27,22 +27,22 @@ module Build {lo la l≈} (C : Category lo la l≈) where
       ; resp = λ h≈i → ∘-resp-r (∘-resp-l h≈i)
       }
 
+
   Hom : Bifunctor (C ᵒᵖ) C (Setoids la l≈)
   Hom = record
       { fobj = λ { (A , B) → Homset A B }
       ; fmap = fmap
       ; fmap-resp = λ where
-          (f≈g , h≈i) x≈y → ∘-resp h≈i (∘-resp x≈y f≈g)
-      ; fmap-id = λ where
-          {A , B} {h} {i} h≈i → ≈.trans id-l (≈.trans id-r h≈i)
+          (f≈g , h≈i) → ≈-intro λ x≈y → ∘-resp h≈i (∘-resp x≈y f≈g)
+      ; fmap-id = ≈-intro λ x≈y → ≈.trans id-l (≈.trans id-r x≈y)
       ; fmap-∘ = λ where
-          {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} {h} {i} h≈i →
+          {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} → ≈-intro λ {x} {y} x≈y →
             begin⟨ Homset A″ B″ ⟩
-              f′ ∘ (g′ ∘ h ∘ g) ∘ f
+              f′ ∘ (g′ ∘ x ∘ g) ∘ f
             ≈⟨ assoc! C ⟩
-              (f′ ∘ g′) ∘ h ∘ g ∘ f
-            ≈⟨ ∘-resp-r (∘-resp-l h≈i) ⟩
-              (f′ ∘ g′) ∘ i ∘ g ∘ f
+              (f′ ∘ g′) ∘ x ∘ g ∘ f
+            ≈⟨ ∘-resp-r (∘-resp-l x≈y) ⟩
+              (f′ ∘ g′) ∘ y ∘ g ∘ f
             ∎
       }
 

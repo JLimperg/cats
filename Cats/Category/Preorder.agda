@@ -6,7 +6,7 @@ open import Relation.Binary as Rel
   using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_ ; Setoid)
 
 open import Cats.Category
-open import Cats.Category.Setoids using (Setoids)
+open import Cats.Category.Setoids using (Setoids ; ≈-intro)
 open import Cats.Util.Conv
 open import Cats.Util.Function as Fun using (_on_)
 
@@ -67,18 +67,6 @@ module _ (lc l≈ l≤ : Level) where
   _≈_ = Setoids._≈_ on _⃗
 
 
-  equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-  equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
-
-
-  ∘-resp : ∀ {A B C} → (_∘_ {A} {B} {C}) Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
-  ∘-resp {A} {B} {C} {f} {g} {h} {i} f≈g h≈i x≈y
-      = C.Eq.trans (f≈g (h≈i x≈y)) (resp g B.Eq.refl)
-    where
-      module B = Rel.Preorder B
-      module C = Rel.Preorder C
-
-
   instance Preorder : Category (suc (lc ⊔ l≈ ⊔ l≤)) (lc ⊔ l≈ ⊔ l≤) (lc ⊔ l≈)
   Preorder = record
       { Obj = Obj
@@ -86,11 +74,11 @@ module _ (lc l≈ l≤ : Level) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; equiv = equiv
-      ; ∘-resp = λ {_} {_} {_} {f} {g} {h} {i} → ∘-resp {x = f} {g} {h} {i}
-      ; id-r = λ {_} {_} {f} → resp f
-      ; id-l = λ {_} {_} {f} → resp f
-      ; assoc = λ {_} {_} {_} {_} {f} {g} {h} → resp (f ∘ g ∘ h)
+      ; equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
+      ; ∘-resp = Setoids.∘-resp
+      ; id-r = Setoids.id-r
+      ; id-l = Setoids.id-l
+      ; assoc = λ { {f = f} {g} {h} → Setoids.assoc {f = f ⃗} {g ⃗} {h ⃗} }
       }
 
 

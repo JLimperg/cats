@@ -78,10 +78,6 @@ module _ (l l≈ : Level) where
   _≈_ = Setoids._≈_ Fun.on _⃗
 
 
-  equiv : ∀ {M N} → IsEquivalence (_≈_ {M} {N})
-  equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
-
-
   _∘_ : ∀ {M N O} → (N ⇒ O) → (M ⇒ N) → (M ⇒ O)
   _∘_ {M} {N} {O} f g = record
       { arr = f ⃗ Setoids.∘ g ⃗
@@ -99,11 +95,11 @@ module _ (l l≈ : Level) where
       ; _≈_ = _≈_
       ; id = id
       ; _∘_ = _∘_
-      ; equiv = equiv
-      ; ∘-resp = λ f≈g h≈i → f≈g Fun.∘ h≈i
-      ; id-r = λ {M} {N} {f} → resp f
-      ; id-l = λ {M} {N} {f} → resp f
-      ; assoc = λ {_} {_} {_} {_} {f} {g} {h} x≈y → resp f (resp g (resp h x≈y))
+      ; equiv = Fun.on-isEquivalence _⃗ Setoids.equiv
+      ; ∘-resp = Setoids.∘-resp
+      ; id-r = Setoids.id-r
+      ; id-l = Setoids.id-l
+      ; assoc = λ { {f = f} {g} {h} → Setoids.assoc {f = f ⃗} {g ⃗} {h ⃗} }
       }
 
 

@@ -4,7 +4,7 @@ open import Data.Empty using (⊥)
 open import Level
 
 open import Cats.Category
-open import Cats.Category.Setoids using (Setoids)
+open import Cats.Category.Setoids using (Setoids ; ≈-intro)
 
 
 module Build {l} {l≈} where
@@ -28,7 +28,7 @@ module Build {l} {l≈} where
   isInitial X = ∃!-intro
       (record { arr = λ() ; resp = λ{} })
       _
-      (λ _ {})
+      λ _ → ≈-intro λ {}
 
 
 open Build

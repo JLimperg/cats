@@ -4,15 +4,15 @@ open import Data.Product using (_,_)
 open import Relation.Binary using (Setoid)
 
 open import Cats.Category
-open import Cats.Category.Setoids as Setoids using (Setoids)
+open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
 open import Cats.Category.Setoids.Facts.Products as Products using
   (hasBinaryProducts)
 open import Cats.Util.Conv
 
 import Relation.Binary.PropositionalEquality as ≡
-import Relation.Binary.SetoidReasoning as SetoidReasoning
 
 import Cats.Category.Base as Base
+import Cats.Util.SetoidReasoning as SetoidReasoning
 
 module Build l where
 
@@ -36,7 +36,7 @@ module Build l where
   eval : ∀ {B C} → (B ↝ C) × B ⇒ C
   eval = record
       { arr = λ { (f , x) → (f ⃗) x }
-      ; resp = λ { (eq₁ , eq₂) → eq₁ eq₂ }
+      ; resp = λ { (eq₁ , eq₂) → ≈-elim eq₁ eq₂ }
       }
 
 
@@ -46,7 +46,7 @@ module Build l where
            { arr = λ b → (f ⃗) (a , b)
            ; resp = λ eqb → resp f (refl , eqb)
            }
-      ; resp = λ eqa eqb → resp f (eqa , eqb)
+      ; resp = λ eqa → ≈-intro λ eqb → resp f (eqa , eqb)
       }
     where
       open Setoid A using (refl)
@@ -54,17 +54,18 @@ module Build l where
 
   curry-correct : ∀ {A B C} (f : A × B ⇒ C)
     → eval ∘ ⟨ curry f × id ⟩ ≈ f
-  curry-correct f = resp f
+  curry-correct f = ≈-intro (resp f)
 
 
   curry-unique : ∀ {A B C} (f : A × B ⇒ C)
     → IsUniqueSuchThat (λ f̃ → eval ∘ ⟨ f̃ × id ⟩ ≈ f) (curry f)
-  curry-unique {A} {B} {C} f {g} eval∘g≈f {a} {a′} a≈a′ {b} {b′} b≈b′
-      = begin⟨ C ⟩
+  curry-unique {A} {B} {C} f {g} eval∘g≈f
+      = ≈-intro λ {a} {a′} a≈a′ → ≈-intro λ {b} {b′} b≈b′ →
+        begin⟨ C ⟩
           ((((curry f) ⃗) a) ⃗) b
-        ≡⟨ ≡.refl ⟩
+        ≡⟨⟩
           (f ⃗) (a , b)
-        ≈⟨ sym C (eval∘g≈f (sym A (a≈a′) , sym B (b≈b′))) ⟩
+        ≈⟨ sym C (≈-elim eval∘g≈f (sym A a≈a′ , sym B b≈b′)) ⟩
           (((g ⃗) a′) ⃗) b′
         ∎
     where
@@ -78,9 +79,8 @@ module Build l where
       ; eval = eval
       ; curry′ = λ f → ∃!-intro
           (curry f)
-          (λ {x} {y} eq → curry-correct f eq)
-          (λ {g} (eval∘g≈f : eval ∘ ⟨ g × id ⟩ ≈ f)
-             → curry-unique f {g} eval∘g≈f)
+          (curry-correct f)
+          (λ {g} eval∘g≈f → curry-unique f {g} eval∘g≈f)
       }
 
 

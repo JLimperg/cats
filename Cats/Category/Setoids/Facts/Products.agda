@@ -5,7 +5,7 @@ open import Relation.Binary using (Setoid)
 open import Relation.Binary.Product.Pointwise using (_×-setoid_)
 
 open import Cats.Category
-open import Cats.Category.Setoids as Setoids using (Setoids)
+open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
 open import Cats.Util.Conv
 
 open Setoid using (Carrier ; refl ; sym ; trans) renaming (_≈_ to _≣_)
@@ -52,8 +52,8 @@ module BuildBinary l l≈ where
   isBinaryProduct : ∀ {A B} → IsBinaryProduct (A × B) projl projr
   isBinaryProduct xl xr = record
     { arr = ⟨ xl , xr ⟩
-    ; prop = (λ eq → resp xl eq) , (λ eq → resp xr eq)
-    ; unique = λ { (eq₁ , eq₂) x≈y → eq₁ x≈y , eq₂ x≈y }
+    ; prop = (≈-intro λ eq → resp xl eq) , (≈-intro λ eq → resp xr eq)
+    ; unique = λ { (eq₁ , eq₂) → ≈-intro λ x≈y → ≈-elim eq₁ x≈y , ≈-elim eq₂ x≈y }
     }
 
 
@@ -97,8 +97,8 @@ module Build l {I : Set l} where
           { arr = λ a i → (x i ⃗) a
           ; resp = λ eq i → resp (x i) eq
           }
-      ; prop = λ i eq → resp (x i) eq
-      ; unique = λ x-candidate eq i → x-candidate i eq
+      ; prop = λ i → ≈-intro λ eq → resp (x i) eq
+      ; unique = λ x-candidate → ≈-intro λ eq i → ≈-elim (x-candidate i) eq
       }
 
 

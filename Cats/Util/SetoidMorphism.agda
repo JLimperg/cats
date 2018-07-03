@@ -28,15 +28,19 @@ module _ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′} w
   infixr 4 _≈_
 
 
-  _≈_ : Rel (A ⇒ B) (l ⊔ l≈ ⊔ l≈′)
-  _≈_ f g = ∀ {x y} → eq A x y → eq B (arr f x) (arr g y)
+  record _≈_ (f g : A ⇒ B) : Set (l ⊔ l≈ ⊔ l≈′) where
+    constructor ≈-intro
+    field
+       ≈-elim : ∀ {x y} → eq A x y → eq B (arr f x) (arr g y)
+
+  open _≈_ public
 
 
   equiv : IsEquivalence _≈_
   equiv = record
-      { refl = λ {f} → resp f
-      ; sym = λ eq x≈y → sym B (eq (sym A x≈y))
-      ; trans = λ eq₁ eq₂ x≈y → trans B (eq₁ x≈y) (eq₂ (refl A))
+      { refl = λ {f} → ≈-intro (resp f)
+      ; sym = λ eq → ≈-intro λ x≈y → sym B (≈-elim eq (sym A x≈y))
+      ; trans = λ eq₁ eq₂ → ≈-intro (λ x≈y → trans B (≈-elim eq₁ x≈y) (≈-elim eq₂ (refl A)))
       }
 
 
@@ -65,26 +69,26 @@ _∘_ f g = record
   → ∀ {l″ l≈″} {C : Setoid l″ l≈″}
   → {f f′ : B ⇒ C} {g g′ : A ⇒ B}
   → f ≈ f′ → g ≈ g′ → f ∘ g ≈ f′ ∘ g′
-∘-resp f≈f′ g≈g′ = f≈f′ ⊚ g≈g′
+∘-resp f≈f′ g≈g′ = ≈-intro (≈-elim f≈f′ ⊚ ≈-elim g≈g′)
 
 
 id-l : ∀ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′}
    → {f : A ⇒ B}
    → id ∘ f ≈ f
-id-l {f = f} = resp f
+id-l {f = f} = ≈-intro (resp f)
 
 
 id-r : ∀ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′}
   → {f : A ⇒ B}
   → f ∘ id ≈ f
-id-r {f = f} = resp f
+id-r {f = f} = ≈-intro (resp f)
 
 
 assoc : ∀ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′}
   → ∀ {l″ l≈″} {C : Setoid l″ l≈″} {l‴ l≈‴} {D : Setoid l‴ l≈‴}
   → {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
   → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
-assoc {f = f} {g} {h} = resp f ⊚ resp g ⊚ resp h
+assoc {f = f} {g} {h} = ≈-intro (resp f ⊚ resp g ⊚ resp h)
 
 
 module _ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′} where
