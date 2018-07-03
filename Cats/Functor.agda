@@ -5,6 +5,10 @@ open import Relation.Binary using (_Preserves_⟶_)
 
 open import Cats.Category.Base
 open import Cats.Util.Function using () renaming (_∘_ to _⊙_)
+open import Cats.Util.SetoidMorphism using (_⇒_ ; IsInjective ; IsSurjective)
+open import Cats.Util.SetoidMorphism.Iso using
+  ( IsIso ; _≅_ ; IsIso→≅ ; Injective∧Surjective→Iso ; Iso→Injective
+  ; Iso→Surjective )
 
 import Cats.Category.Constructions.Iso as Iso
 
@@ -31,6 +35,13 @@ record Functor {lo la l≈ lo′ la′ l≈′}
     fmap-id : ∀ {A} → fmap (C.id {A}) D.≈ D.id
     fmap-∘ : ∀ {A B C} {f : B C.⇒ C} {g : A C.⇒ B}
       → fmap f D.∘ fmap g D.≈ fmap (f C.∘ g)
+
+
+  sfmap : ∀ {a b} → C.Hom a b ⇒ D.Hom (fobj a) (fobj b)
+  sfmap = record
+      { arr = fmap
+      ; resp = fmap-resp
+      }
 
 
   fobj-resp : fobj Preserves C≅._≅_ ⟶ D≅._≅_
@@ -91,3 +102,42 @@ _∘_ {E = E} F G = record
     }
   where
     module E = Category E
+
+
+module _ {lo la l≈ lo′ la′ l≈′}
+  {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+  (F : Functor C D)
+  where
+
+  private
+    module C = Category C
+    module D = Category D
+
+
+  IsFaithful : Set (lo ⊔ la ⊔ l≈ ⊔ l≈′)
+  IsFaithful = ∀ {a b} → IsInjective (sfmap F {a} {b})
+
+
+  IsFull : Set (lo ⊔ la ⊔ la′ ⊔ l≈′)
+  IsFull = ∀ {a b} → IsSurjective (sfmap F {a} {b})
+
+
+  IsEmbedding : Set (lo ⊔ la ⊔ l≈ ⊔ la′ ⊔ l≈′)
+  IsEmbedding = ∀ {a b} → IsIso (sfmap F {a} {b})
+
+
+  Embedding→≅ : IsEmbedding → ∀ {a b} → C.Hom a b ≅ D.Hom (fobj F a) (fobj F b)
+  Embedding→≅ embedding = IsIso→≅ (sfmap F) embedding
+
+
+  Full∧Faithful→Embedding : IsFull → IsFaithful → IsEmbedding
+  Full∧Faithful→Embedding full faithful
+      = Injective∧Surjective→Iso faithful full
+
+
+  Embedding→Full : IsEmbedding → IsFull
+  Embedding→Full embedding = Iso→Surjective embedding
+
+
+  Embedding→Faithful : IsEmbedding → IsFaithful
+  Embedding→Faithful embedding = Iso→Injective embedding
