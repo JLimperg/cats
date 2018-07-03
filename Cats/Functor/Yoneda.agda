@@ -8,7 +8,7 @@ open import Cats.Bifunctor using (transposeBifunctor₂)
 open import Cats.Category
 open import Cats.Category.Cat.Facts.Exponential using (Eval)
 open import Cats.Category.Cat.Facts.Product using (First ; Swap)
-open import Cats.Category.Fun using (Fun ; Trans)
+open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Product.Binary using (_×_)
@@ -60,7 +60,7 @@ module _ {l} {C : Category l l l} where
     forth : Pre.Hom (fobj y c) F Sets.⇒ fobj F c
     forth = record
         { arr = λ f → arr (component f c) C.id
-        ; resp = λ f≈g → ≈-elim (f≈g c) ycc≈.refl
+        ; resp = λ f≈g → ≈-elim (≈-elim f≈g) ycc≈.refl
         }
 
 
@@ -93,12 +93,12 @@ module _ {l} {C : Category l l l} where
     back : fobj F c Sets.⇒ Pre.Hom (fobj y c) F
     back = record
         { arr = back-θ
-        ; resp = λ f≈g c′ → ≈-intro λ x≈y → ≈-elim (fmap-resp F x≈y) f≈g
+        ; resp = λ f≈g → ≈-intro (≈-intro λ x≈y → ≈-elim (fmap-resp F x≈y) f≈g)
         }
 
 
     back-forth : back Sets.∘ forth Sets.≈ Sets.id
-    back-forth = ≈-intro λ {θ} {θ′} θ≈θ′ c′ → ≈-intro λ {f} {g} f≈g →
+    back-forth = ≈-intro λ {θ} {θ′} θ≈θ′ → ≈-intro λ {c′} → ≈-intro λ {f} {g} f≈g →
         begin⟨ fobj F c′ ⟩
           arr (component (arr (back Sets.∘ forth) θ) c′) f
         ≡⟨⟩
@@ -109,7 +109,7 @@ module _ {l} {C : Category l l l} where
           arr (component θ c′) (C.id C.∘ C.id C.∘ f)
         ≈⟨ resp (component θ c′) (C.≈.trans C.id-l C.id-l) ⟩
           arr (component θ c′) f
-        ≈⟨ ≈-elim (θ≈θ′ c′) f≈g ⟩
+        ≈⟨ ≈-elim (≈-elim θ≈θ′) f≈g ⟩
           arr (component θ′ c′) g
         ∎
 
@@ -140,7 +140,7 @@ module _ {l} {C : Category l l l} where
                       ι
                 ≡⟨⟩
                   arr (component (Pre.id Pre.∘ θ Pre.∘ ι) c′) (f C.∘ C.id C.∘ C.id)
-                ≈⟨ ≈-elim (Pre.id-l {f = θ Pre.∘ ι} c′)
+                ≈⟨ ≈-elim (≈-elim (Pre.id-l {f = θ Pre.∘ ι}))
                     (C.≈.trans (C.∘-resp-r C.id-r) C.id-r) ⟩
                   arr (component (θ Pre.∘ ι) c′) f
                 ∎
@@ -154,8 +154,8 @@ module _ {l} {C : Category l l l} where
                   arr (component (θ Pre.∘ τ) c′ Sets.∘ fmap (fobj y c) f) C.id
                 ≡⟨⟩
                   arr (component (θ Pre.∘ τ) c′) (C.id C.∘ C.id C.∘ f)
-                ≈⟨ ≈-elim (Pre.∘-resp-r {f = θ} {τ} {ι}
-                    (Pre.≈.sym {i = ι} {τ} ι≈τ) c′) (C.≈.trans C.id-l C.id-l) ⟩
+                ≈⟨ ≈-elim (≈-elim (Pre.∘-resp-r {f = θ} (Pre.≈.sym {i = ι} {τ} ι≈τ)))
+                    (C.≈.trans C.id-l C.id-l) ⟩
                   arr (component (θ Pre.∘ ι) c′) f
                 ∎
               )

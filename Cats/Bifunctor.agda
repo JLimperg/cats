@@ -7,7 +7,7 @@ open import Relation.Binary using (_Preserves₂_⟶_⟶_)
 open import Cats.Category
 open import Cats.Category.Cat using (_≈_)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts)
-open import Cats.Category.Fun using (Fun ; Trans)
+open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
@@ -146,17 +146,17 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
                   fmap (Bifunctor→Functor₁ F b) g E.∘ fmap F (f , D.id)
                 ∎
             }
-        ; fmap-resp = λ x≈y d → fmap-resp F (x≈y , D.≈.refl)
-        ; fmap-id = λ _ → fmap-id F
+        ; fmap-resp = λ x≈y → ≈-intro (fmap-resp F (x≈y , D.≈.refl))
+        ; fmap-id = ≈-intro (fmap-id F)
         ; fmap-∘ = λ where
-            {f = f} {g} d →
+            {f = f} {g} → ≈-intro (
               begin
                 fmap F (f , D.id) E.∘ fmap F (g , D.id)
               ≈⟨ fmap-∘ F ⟩
                 fmap F (f C.∘ g , D.id D.∘ D.id)
               ≈⟨ fmap-resp F (C.≈.refl , D.id-l) ⟩
                 fmap F (f C.∘ g , D.id)
-              ∎
+              ∎)
         }
       where
         open E.≈-Reasoning
@@ -167,7 +167,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       → transposeBifunctor₁ F ≈ transposeBifunctor₁ G
     transposeBifunctor₁-resp {F} {G} F≈G = record
         { iso = Fun.≈→≅ (Bifunctor→Functor₁-resp F≈G C.≅.refl)
-        ; forth-natural = λ {c} {d} {f} x →
+        ; forth-natural = λ {c} {d} {f} → ≈-intro (
             let open E.≈-Reasoning in
             triangle (fmap G (f , D.id) E.∘ forth (iso F≈G))
             ( begin
@@ -183,7 +183,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
               ≈⟨ E.∘-resp-r (E.≈.trans (E.∘-resp-l (E.≈.trans E.id-l (fmap-id G))) E.id-l) ⟩
                 fmap G (f , D.id) E.∘ forth (iso F≈G)
               ∎
-            )
+            ))
         }
       where
         open E.≈-Reasoning
@@ -228,17 +228,17 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
                   fmap (Bifunctor→Functor₂ F b) g E.∘ fmap F (C.id , f)
                 ∎
             }
-        ; fmap-resp = λ x≈y _ → fmap-resp F (C.≈.refl , x≈y)
-        ; fmap-id = λ _ → fmap-id F
+        ; fmap-resp = λ x≈y → ≈-intro (fmap-resp F (C.≈.refl , x≈y))
+        ; fmap-id = ≈-intro (fmap-id F)
         ; fmap-∘ = λ where
-            {f = f} {g} _ →
+            {f = f} {g} → ≈-intro (
               begin
                 fmap F (C.id , f) E.∘ fmap F (C.id , g)
               ≈⟨ fmap-∘ F ⟩
                 fmap F (C.id C.∘ C.id , f D.∘ g)
               ≈⟨ fmap-resp F (C.id-l , D.≈.refl) ⟩
                 fmap F (C.id , f D.∘ g)
-              ∎
+              ∎)
         }
       where
         open E.≈-Reasoning

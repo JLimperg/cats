@@ -32,15 +32,19 @@ module _ {lo la l≈ lo′ la′ l≈′}
   _⇒_ = Trans
 
 
-  _≈_ : ∀ {F G} → Rel (F ⇒ G) (lo ⊔ l≈′)
-  θ ≈ ι = ∀ c → component θ c D.≈ component ι c
+  record _≈_ {F G} (θ ι : F ⇒ G) : Set (lo ⊔ l≈′) where
+    constructor ≈-intro
+    field
+      ≈-elim : ∀ {c} → component θ c D.≈ component ι c
+
+  open _≈_ public
 
 
   equiv : ∀ {F G} → IsEquivalence (_≈_ {F} {G})
   equiv = record
-      { refl = λ _ → refl
-      ; sym = λ eq c → sym (eq c)
-      ; trans = λ eq₁ eq₂ c → trans (eq₁ c) (eq₂ c)
+      { refl = ≈-intro refl
+      ; sym = λ eq → ≈-intro (sym (≈-elim eq))
+      ; trans = λ eq₁ eq₂ → ≈-intro (trans (≈-elim eq₁) (≈-elim eq₂))
       }
 
 
@@ -52,8 +56,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; id = id
       ; _∘_ = _∘_
       ; equiv = equiv
-      ; ∘-resp = λ θ≈θ′ ι≈ι′ c → D.∘-resp (θ≈θ′ c) (ι≈ι′ c)
-      ; id-r = λ _ → D.id-r
-      ; id-l = λ _ → D.id-l
-      ; assoc = λ _ → D.assoc
+      ; ∘-resp = λ θ≈θ′ ι≈ι′ → ≈-intro (D.∘-resp (≈-elim θ≈θ′) (≈-elim ι≈ι′))
+      ; id-r = ≈-intro D.id-r
+      ; id-l = ≈-intro D.id-l
+      ; assoc = ≈-intro D.assoc
       }

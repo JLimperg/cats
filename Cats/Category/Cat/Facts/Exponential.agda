@@ -11,7 +11,7 @@ open import Cats.Category.Cat as Cat using
   (Cat ; Functor ; _∘_ ; _≈_) renaming
   (id to Id)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_⟩)
-open import Cats.Category.Fun using (Fun ; Trans)
+open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Trans.Iso as NatIso using (NatIso)
@@ -55,7 +55,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
           {F , a} {G , b} (θ , f) → fmap G f C.∘ component θ a
       ; fmap-resp = λ where
           {F , a} {G , b} {θ , f} {ι , g} (θ≈ι , f≈g) →
-            C.∘-resp (fmap-resp G f≈g) (θ≈ι a)
+            C.∘-resp (fmap-resp G f≈g) (≈-elim θ≈ι)
       ; fmap-id = λ { {F , b} → C.≈.trans (C.∘-resp-l (fmap-id F)) C.id-l }
       ; fmap-∘ = λ where
           {F , a} {G , b} {H , c} {θ , f} {ι , g} →
@@ -132,7 +132,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
               fobj Curry′ x
             ∎
           )
-      ; forth-natural = λ {a} {b} {f} x →
+      ; forth-natural = λ {a} {b} {f} → ≈-intro λ {x} →
           -- TODO We need a simplification tactic.
           let open D.≈-Reasoning in
           triangle (forth iso D.∘ component (fmap Curry′ f) x)
@@ -143,7 +143,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
               component (fmap Curry′ f) x
             ≈⟨ ∘-resp-l (trans (∘-resp-r id-l) (trans id-r (trans (∘-resp-r
                  (trans id-r (trans (∘-resp (fmap-id (fobj Curry′ b))
-                    (fmap-id Curry′ x)) id-l))) id-r))) ⟩
+                    (≈-elim (fmap-id Curry′))) id-l))) id-r))) ⟩
               forth iso D.∘ component (fmap Curry′ f) x
             ∎
           )
@@ -153,7 +153,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
               D.id D.∘ D.id
             ≈⟨ ∘-resp-r (trans (∘-resp-r id-r) (trans id-r (trans (∘-resp-r
                  (trans id-r (trans (∘-resp-l (fmap-id (fobj Curry′ a)))
-                    (trans id-l (fmap-id Curry′ x))))) id-r))) ⟩
+                    (trans id-l (≈-elim (fmap-id Curry′)))))) id-r))) ⟩
               fmap F (f , C.id) D.∘ forth iso
             ≈⟨ sym fnat ⟩
               forth iso D.∘ fmap (fobj Curry′ b) C.id D.∘ component (fmap Curry′ f) x
@@ -171,7 +171,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
         → NatIso (Bifunctor→Functor₁ (Eval ∘ ⟨ Curry′ × Id ⟩) x) (fobj Curry′ x)
       lem x = record
           { iso = D.≅.refl
-          ; forth-natural = D.≈.trans D.id-l (D.∘-resp-r (fmap-id Curry′ _))
+          ; forth-natural = D.≈.trans D.id-l (D.∘-resp-r (≈-elim (fmap-id Curry′)))
           }
 
 

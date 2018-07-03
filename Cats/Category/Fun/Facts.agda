@@ -2,7 +2,7 @@ module Cats.Category.Fun.Facts where
 
 open import Cats.Category
 open import Cats.Category.Cat using (_≈_)
-open import Cats.Category.Fun using (Trans ; Fun)
+open import Cats.Category.Fun using (Trans ; Fun ; ≈-intro ; ≈-elim)
 open import Cats.Functor using (Functor)
 open import Cats.Trans.Iso using (NatIso ; iso ; forth-natural ; back-natural)
 open import Cats.Util.Assoc using (assoc!)
@@ -31,8 +31,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
   NatIso→≅ i = record
       { forth = Forth i
       ; back = Back i
-      ; back-forth = λ c → back-forth (iso i)
-      ; forth-back = λ c → forth-back (iso i)
+      ; back-forth = ≈-intro (back-forth (iso i))
+      ; forth-back = ≈-intro (forth-back (iso i))
       }
     where
       open NatIso
@@ -43,8 +43,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
       { iso = λ {c} → record
           { forth = component (forth i) c
           ; back = component (back i) c
-          ; back-forth = back-forth i c
-          ; forth-back = forth-back i c
+          ; back-forth = ≈-elim (back-forth i)
+          ; forth-back = ≈-elim (forth-back i)
           }
       ; forth-natural = natural (forth i)
       }
