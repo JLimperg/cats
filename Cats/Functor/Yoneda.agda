@@ -12,7 +12,7 @@ open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Product.Binary using (_×_)
-open import Cats.Category.Setoids using (Setoids ; ≈-intro ; ≈-elim)
+open import Cats.Category.Setoids using (Setoids ; ≈-intro ; ≈-elim ; ≈-elim′)
 open import Cats.Functor using (Functor ; _∘_)
 open import Cats.Functor.Op using (Op)
 open import Cats.Functor.Representable using (Hom[_])
@@ -60,14 +60,14 @@ module _ {l} {C : Category l l l} where
     forth : Pre.Hom (fobj y c) F Sets.⇒ fobj F c
     forth = record
         { arr = λ f → arr (component f c) C.id
-        ; resp = λ f≈g → ≈-elim (≈-elim f≈g) ycc≈.refl
+        ; resp = λ f≈g → ≈-elim′ (≈-elim f≈g)
         }
 
 
     back-θ-component : Carrier (fobj F c) → (c′ : C.Obj) → C.Hom c′ c Sets.⇒ fobj F c′
     back-θ-component a c′ = record
         { arr = λ h → arr (fmap F h) a
-        ; resp = λ f≈g → ≈-elim (fmap-resp F f≈g) Fc≈.refl
+        ; resp = λ f≈g → ≈-elim′ (fmap-resp F f≈g)
         }
 
 
@@ -80,9 +80,9 @@ module _ {l} {C : Category l l l} where
               arr (back-θ-component a d′ Sets.∘ fmap (fobj y c) f) g
             ≡⟨⟩
               arr (fmap F (C.id C.∘ g C.∘ f)) a
-            ≈⟨ ≈-elim (fmap-resp F (C.≈.trans C.id-l (C.∘-resp-l g≈g′))) Fc≈.refl ⟩
+            ≈⟨ ≈-elim′ (fmap-resp F (C.≈.trans C.id-l (C.∘-resp-l g≈g′))) ⟩
               arr (fmap F (g′ C.∘ f)) a
-            ≈⟨ sym (≈-elim (fmap-∘ F) Fc≈.refl) ⟩
+            ≈⟨ sym (≈-elim′ (fmap-∘ F)) ⟩
               arr (fmap F f Sets.∘ fmap F g′) a
             ≡⟨⟩
               arr (fmap F f Sets.∘ back-θ-component a c′) g′
@@ -103,7 +103,7 @@ module _ {l} {C : Category l l l} where
           arr (component (arr (back Sets.∘ forth) θ) c′) f
         ≡⟨⟩
           arr (fmap F f Sets.∘ component θ c) C.id
-        ≈⟨ ≈-elim (Sets.≈.sym (natural θ)) C.≈.refl ⟩
+        ≈⟨ ≈-elim′ (Sets.≈.sym (natural θ)) ⟩
           arr (component θ c′ Sets.∘ fmap (fobj y c) f) C.id
         ≡⟨⟩
           arr (component θ c′) (C.id C.∘ C.id C.∘ f)
@@ -150,7 +150,7 @@ module _ {l} {C : Category l l l} where
                   arr (fmap F′ f Sets.∘ component θ c Sets.∘ forth c F) τ
                 ≡⟨⟩
                   arr (fmap F′ f Sets.∘ component (θ Pre.∘ τ) c) C.id
-                ≈⟨ S.sym (≈-elim (natural (θ Pre.∘ τ)) C.≈.refl) ⟩
+                ≈⟨ S.sym (≈-elim′ (natural (θ Pre.∘ τ))) ⟩
                   arr (component (θ Pre.∘ τ) c′ Sets.∘ fmap (fobj y c) f) C.id
                 ≡⟨⟩
                   arr (component (θ Pre.∘ τ) c′) (C.id C.∘ C.id C.∘ f)

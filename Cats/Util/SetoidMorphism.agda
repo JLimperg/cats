@@ -33,6 +33,9 @@ module _ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′} w
     field
        ≈-elim : ∀ {x y} → eq A x y → eq B (arr f x) (arr g y)
 
+    ≈-elim′ : ∀ {x} → eq B (arr f x) (arr g x)
+    ≈-elim′ = ≈-elim (refl A)
+
   open _≈_ public
 
 
@@ -40,7 +43,7 @@ module _ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′} w
   equiv = record
       { refl = λ {f} → ≈-intro (resp f)
       ; sym = λ eq → ≈-intro λ x≈y → sym B (≈-elim eq (sym A x≈y))
-      ; trans = λ eq₁ eq₂ → ≈-intro (λ x≈y → trans B (≈-elim eq₁ x≈y) (≈-elim eq₂ (refl A)))
+      ; trans = λ eq₁ eq₂ → ≈-intro (λ x≈y → trans B (≈-elim eq₁ x≈y) (≈-elim′ eq₂))
       }
 
 

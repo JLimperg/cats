@@ -1,7 +1,7 @@
 module Cats.Category.Setoids where
 
 open import Cats.Util.SetoidMorphism public using
-  (_⇒_ ; _≈_ ; ≈-intro ; ≈-elim ; equiv ; _∘_ ; id ; ∘-resp ; assoc ; id-l
+  (_⇒_ ; _≈_ ; ≈-intro ; ≈-elim ; ≈-elim′ ; equiv ; _∘_ ; id ; ∘-resp ; assoc ; id-l
   ; id-r)
 
 open import Level using (_⊔_ ; suc)
