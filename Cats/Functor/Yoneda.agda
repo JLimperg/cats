@@ -13,18 +13,20 @@ open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Setoids using (Setoids ; ≈-intro ; ≈-elim ; ≈-elim′)
-open import Cats.Functor using (Functor ; _∘_)
+open import Cats.Functor using
+  ( Functor ; _∘_ ; IsFull ; IsFaithful ; IsEmbedding ; Embedding→Full
+  ; Embedding→Faithful )
 open import Cats.Functor.Op using (Op)
 open import Cats.Functor.Representable using (Hom[_])
-open import Cats.Util.SetoidReasoning
+open import Cats.Util.SetoidMorphism.Iso using (IsIso-resp)
 
+import Cats.Util.SetoidReasoning as SetoidReasoning
 import Cats.Category.Constructions.Iso
 
 open Functor
 open Trans
 open Cats.Category.Setoids._⇒_
-open Setoid using (Carrier ; isEquivalence)
-module Iso = Cats.Category.Constructions.Iso.Build._≅_
+open Setoid using (Carrier)
 
 
 -- We force C to be at l/l/l. Can we generalise to lo/la/l≈?
@@ -53,8 +55,8 @@ module _ {l} {C : Category l l l} where
   module _ (c : C.Obj) (F : Functor (C ᵒᵖ) (Sets)) where
 
     private
-      module ycc≈ = IsEquivalence (isEquivalence (fobj (fobj y c) c))
-      module Fc≈ = IsEquivalence (isEquivalence (fobj F c))
+      module ycc≈ = Setoid (fobj (fobj y c) c)
+      module Fc≈ = Setoid (fobj F c)
 
 
     forth : Pre.Hom (fobj y c) F Sets.⇒ fobj F c
@@ -88,6 +90,8 @@ module _ {l} {C : Category l l l} where
               arr (fmap F f Sets.∘ back-θ-component a c′) g′
             ∎
         }
+      where
+        open SetoidReasoning
 
 
     back : fobj F c Sets.⇒ Pre.Hom (fobj y c) F
@@ -112,6 +116,8 @@ module _ {l} {C : Category l l l} where
         ≈⟨ ≈-elim (≈-elim θ≈θ′) f≈g ⟩
           arr (component θ′ c′) g
         ∎
+      where
+        open SetoidReasoning
 
 
     forth-back : forth Sets.∘ back Sets.≈ Sets.id
@@ -160,3 +166,38 @@ module _ {l} {C : Category l l l} where
                 ∎
               )
       }
+    where
+      open SetoidReasoning
+
+
+  back≈sfmap : ∀ {a b} → back a (fobj y b) Sets.≈ sfmap y
+  back≈sfmap {a} {b} = ≈-intro λ {f} {g} f≈g → ≈-intro (≈-intro λ {x} {y} x≈y →
+      begin
+        C.id C.∘ f C.∘ x
+      ≈⟨ C.id-l ⟩
+        f C.∘ x
+      ≈⟨ C.∘-resp f≈g x≈y ⟩
+        g C.∘ y
+      ≈⟨ C.≈.sym C.id-r ⟩
+        (g C.∘ y) C.∘ C.id
+      ≈⟨ C.assoc ⟩
+        g C.∘ y C.∘ C.id
+      ∎)
+    where
+      open C.≈-Reasoning
+
+
+  y-Embedding : IsEmbedding y
+  y-Embedding {a} {b} = IsIso-resp back≈sfmap record
+      { back = forth a (fobj y b)
+      ; forth-back = back-forth a (fobj y b)
+      ; back-forth = forth-back a (fobj y b)
+      }
+
+
+  y-Full : IsFull y
+  y-Full = Embedding→Full y y-Embedding
+
+
+  y-Faithful : IsFaithful y
+  y-Faithful = Embedding→Faithful y y-Embedding
