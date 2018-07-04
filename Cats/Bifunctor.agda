@@ -2,11 +2,11 @@ module Cats.Bifunctor where
 
 open import Data.Product using (_,_)
 open import Level using (_⊔_)
-open import Relation.Binary using (_Preserves₂_⟶_⟶_)
+open import Relation.Binary using (IsEquivalence ; _Preserves₂_⟶_⟶_)
 
 open import Cats.Category
-open import Cats.Category.Cat using (_≈_)
-open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts)
+open import Cats.Category.Cat using (_∘_ ; ∘-resp ; _≈_ ; equiv)
+open import Cats.Category.Cat.Facts.Product using (Swap ; hasBinaryProducts)
 open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
@@ -42,9 +42,6 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       module C = Category C
       module D = Category D
       module E = Category E
-      module D↝E = Category (Fun D E)
-      open module HBP {lo} {la} {l≈} =
-        HasBinaryProducts (hasBinaryProducts lo la l≈)
 
 
     biobj : Bifunctor C D E → C.Obj → D.Obj → E.Obj
@@ -190,55 +187,39 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
         open NatIso using (iso ; forth-natural)
 
 
-    Bifunctor→Functor₂ : Bifunctor C D E → D.Obj → Functor C E
-    Bifunctor→Functor₂ F x = record
-        { fobj = λ c → fobj F (c , x)
-        ; fmap = λ f → fmap F (f , D.id)
-        ; fmap-resp = λ x≈y → fmap-resp F (x≈y , D.≈.refl)
-        ; fmap-id = fmap-id F
-        ; fmap-∘ = λ where
-            {f = f} {g} →
-              begin
-                fmap F (f , D.id) E.∘ fmap F (g , D.id)
-              ≈⟨ fmap-∘ F ⟩
-                fmap F (f C.∘ g , D.id D.∘ D.id)
-              ≈⟨ fmap-resp F (C.≈.refl , D.id-l) ⟩
-                fmap F (f C.∘ g , D.id)
-              ∎
-        }
-      where
-        open E.≈-Reasoning
+module _
+  {lo la l≈} {C : Category lo la l≈}
+  {lo′ la′ l≈′} {D : Category lo′ la′ l≈′}
+  {lo″ la″ l≈″} {E : Category lo″ la″ l≈″}
+  where
+
+  private
+    module C = Category C
+    module D = Category D
+    module E = Category E
 
 
-    transposeBifunctor₂ : Bifunctor C D E → Functor D (Fun C E)
-    transposeBifunctor₂ F = record
-        { fobj = Bifunctor→Functor₂ F
-        ; fmap = λ {a} {b} f → record
-            { component = λ _ → fmap F (C.id , f)
-            ; natural = λ {a′} {b′} {g} →
-                begin
-                  fmap F (C.id , f) E.∘ fmap (Bifunctor→Functor₂ F a) g
-                ≈⟨ fmap-∘ F ⟩
-                  fmap F (C.id C.∘ g , f D.∘ D.id)
-                ≈⟨ fmap-resp F
-                     ( (C.≈.trans C.id-l (C.≈.sym C.id-r))
-                     , (D.≈.trans D.id-r (D.≈.sym D.id-l)) ) ⟩
-                  fmap F (g C.∘ C.id , D.id D.∘ f)
-                ≈⟨ E.≈.sym (fmap-∘ F) ⟩
-                  fmap (Bifunctor→Functor₂ F b) g E.∘ fmap F (C.id , f)
-                ∎
-            }
-        ; fmap-resp = λ x≈y → ≈-intro (fmap-resp F (C.≈.refl , x≈y))
-        ; fmap-id = ≈-intro (fmap-id F)
-        ; fmap-∘ = λ where
-            {f = f} {g} → ≈-intro (
-              begin
-                fmap F (C.id , f) E.∘ fmap F (C.id , g)
-              ≈⟨ fmap-∘ F ⟩
-                fmap F (C.id C.∘ C.id , f D.∘ g)
-              ≈⟨ fmap-resp F (C.id-l , D.≈.refl) ⟩
-                fmap F (C.id , f D.∘ g)
-              ∎)
-        }
-      where
-        open E.≈-Reasoning
+  Bifunctor→Functor₂ : Bifunctor C D E → D.Obj → Functor C E
+  Bifunctor→Functor₂ F x = Bifunctor→Functor₁ (F ∘ Swap) x
+
+
+  Bifunctor→Functor₂-resp : ∀ {F G x y}
+    → F ≈ G
+    → x D.≅ y
+    → Bifunctor→Functor₂ F x ≈ Bifunctor→Functor₂ G y
+  Bifunctor→Functor₂-resp {F} {G} F≈G x≅y
+      = Bifunctor→Functor₁-resp {F = F ∘ Swap} {G = G ∘ Swap} (∘-resp F≈G refl) x≅y
+    where
+      open IsEquivalence equiv
+
+
+  transposeBifunctor₂ : Bifunctor C D E → Functor D (Fun C E)
+  transposeBifunctor₂ F = transposeBifunctor₁ (F ∘ Swap)
+
+
+  transposeBifunctor₂-resp : ∀ {F G}
+    → F ≈ G → transposeBifunctor₂ F ≈ transposeBifunctor₂ G
+  transposeBifunctor₂-resp {F} {G} F≈G
+      = transposeBifunctor₁-resp {F = F ∘ Swap} {G = G ∘ Swap} (∘-resp F≈G refl)
+    where
+      open IsEquivalence equiv
