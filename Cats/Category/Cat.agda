@@ -13,7 +13,7 @@ open import Cats.Category
 open import Cats.Category.Zero
 open import Cats.Category.One
 open import Cats.Trans.Iso as NatIso using (NatIso ; iso ; forth-natural)
-open import Cats.Util.Assoc using (assoc!)
+open import Cats.Util.Simp using (simp!)
 
 open Functor
 open Category._≅_
@@ -60,11 +60,11 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; forth-natural = λ {_} {_} {f} →
           begin
             (fmap G (forth H≅I) E.∘ forth F≅G) E.∘ fmap F (fmap H f)
-          ≈⟨ assoc! E ⟩
+          ≈⟨ simp! E ⟩
             fmap G (forth H≅I) E.∘ forth F≅G E.∘ fmap F (fmap H f)
           ≈⟨ E.∘-resp-r fnat-GH ⟩
             fmap G (forth H≅I) E.∘ fmap G (fmap H f) E.∘ forth F≅G
-          ≈⟨ assoc! E ⟩
+          ≈⟨ simp! E ⟩
             (fmap G (forth H≅I) E.∘ fmap G (fmap H f)) E.∘ forth F≅G
           ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
             fmap G (forth H≅I D.∘ fmap H f) E.∘ forth F≅G
@@ -72,7 +72,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
             fmap G (fmap I f D.∘ forth H≅I) E.∘ forth F≅G
           ≈⟨ E.∘-resp-l (E.≈.sym (fmap-∘ G)) ⟩
             (fmap G (fmap I f) E.∘ fmap G (forth H≅I)) E.∘ forth F≅G
-          ≈⟨ assoc! E ⟩
+          ≈⟨ simp! E ⟩
             fmap G (fmap I f) E.∘ fmap G (forth H≅I) E.∘ forth F≅G
           ∎
       }

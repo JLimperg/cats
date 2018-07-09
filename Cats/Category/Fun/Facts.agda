@@ -5,7 +5,6 @@ open import Cats.Category.Cat using (_≈_)
 open import Cats.Category.Fun using (Trans ; Fun ; ≈-intro ; ≈-elim)
 open import Cats.Functor using (Functor)
 open import Cats.Trans.Iso using (NatIso ; iso ; forth-natural ; back-natural)
-open import Cats.Util.Assoc using (assoc!)
 
 open import Level using (_⊔_)
 

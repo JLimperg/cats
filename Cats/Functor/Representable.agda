@@ -7,7 +7,7 @@ open import Cats.Bifunctor using (Bifunctor)
 open import Cats.Category
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro)
-open import Cats.Util.Assoc using (assoc!)
+open import Cats.Util.Simp using (simp!)
 open import Cats.Util.SetoidReasoning
 
 import Relation.Binary.PropositionalEquality as ≡
@@ -39,7 +39,7 @@ module Build {lo la l≈} (C : Category lo la l≈) where
           {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} → ≈-intro λ {x} {y} x≈y →
             begin⟨ Homset A″ B″ ⟩
               f′ ∘ (g′ ∘ x ∘ g) ∘ f
-            ≈⟨ assoc! C ⟩
+            ≈⟨ simp! C ⟩
               (f′ ∘ g′) ∘ x ∘ g ∘ f
             ≈⟨ ∘-resp-r (∘-resp-l x≈y) ⟩
               (f′ ∘ g′) ∘ y ∘ g ∘ f

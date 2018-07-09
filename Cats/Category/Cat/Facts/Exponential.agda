@@ -15,8 +15,8 @@ open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Trans.Iso as NatIso using (NatIso)
-open import Cats.Util.Assoc using (assoc!)
 open import Cats.Util.Conv
+open import Cats.Util.Simp using (simp!)
 
 import Cats.Category.Base as Base
 import Cats.Category.Constructions.Unique as Unique
@@ -63,16 +63,16 @@ module _ {lo la l≈ lo′ la′ l≈′}
               (fmap H f C.∘ component θ b) C.∘ (fmap G g C.∘ component ι a)
             ≈⟨ C.∘-resp-l (C.≈.sym (natural θ)) ⟩
               (component θ c C.∘ fmap G f) C.∘ (fmap G g C.∘ component ι a)
-            ≈⟨ assoc! C ⟩
+            ≈⟨ simp! C ⟩
               component θ c C.∘ (fmap G f C.∘ fmap G g) C.∘ component ι a
             ≈⟨ C.∘-resp-r (C.∘-resp-l (fmap-∘ G)) ⟩
               component θ c C.∘ (fmap G (f B.∘ g)) C.∘ component ι a
-            ≈⟨ assoc! C ⟩
+            ≈⟨ simp! C ⟩
               (component θ c C.∘ fmap G (f B.∘ g)) C.∘ component ι a
             ≈⟨ C.∘-resp-l (natural θ) ⟩
               (fmap H (f B.∘ g) C.∘ component θ a) C.∘ component ι a
-            ≈⟨ assoc! C ⟩
-              fmap H (f B.∘ g) C.∘ component (θ B↝C.∘ ι) a
+            ≈⟨ simp! C ⟩
+              fmap H (f B.∘ g) C.∘ component θ a C.∘ component ι a
             ∎
       }
     where
