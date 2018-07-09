@@ -5,7 +5,6 @@ open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_ ; refl)
 open import Relation.Nullary using (Dec ; yes ; no)
 
-open import Category.Monad using (RawMonad)
 open import Data.Bool using (Bool ; true ; false ; not)
 open import Data.List as List using (List ; [] ; _∷_)
 open import Data.Maybe as Maybe using (Maybe ; just ; nothing)
@@ -14,20 +13,15 @@ open import Data.Unit using (⊤ ; tt)
 open import Data.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Data.String using (String)
 open import Function using () renaming (_∘_ to _⊚_)
-open import Reflection
 
 open import Cats.Category.Base using (Category)
+open import Cats.Util.Monad using (RawMonad)
+open import Cats.Util.Reflection
 
 open RawMonad {{...}}
 
 instance
   maybeMonad = Maybe.monad
-
-  tcMonad : RawMonad {lzero} TC
-  tcMonad = record
-    { return = returnTC
-    ; _>>=_ = bindTC
-    }
 
   sumMonad : ∀ {a b} {A : Set a} → RawMonad {a ⊔ b} (A ⊎_)
   sumMonad = record
@@ -47,12 +41,6 @@ Error A = String ⊎ A
 
 error : ∀ {a} {A : Set a} → String → Error A
 error = inj₁
-
-
-argD : Term → Arg Term
-argD = arg (arg-info visible relevant)
-
-
 
 
 data CompTree {o a} {O : Set o} (A : O → O → Set a) : O → O → Set (o ⊔ a) where
@@ -130,54 +118,6 @@ matchGoal t with removeHiddenArguments t
 ... | def (quote Category._≈_) (arg _ _ ∷ arg _ lhs ∷ arg _ rhs ∷ [])
     = return (collectTree lhs , collectTree rhs)
 ... | _ = error "match-goal: no equality at top level"
-
-
-sequence : ∀ {f} {M : Set f → Set f} {A} {{_ : RawMonad M}} → List (M A) → M (List A)
-sequence [] = return []
-sequence (x ∷ xs)
-    = x >>= λ x' →
-      sequence xs >>= λ xs' →
-      return (x' ∷ xs')
-
-
-void : ∀ {f} {M : Set f → Set f} {{_ : RawMonad M}} → ∀ {A} → M A → M (Lift ⊤)
-void m = m >>= λ _ → return (lift tt)
-
-
-mapM : ∀ {a f} {M : Set f → Set f} {{_ : RawMonad M}}
-  → ∀ {A : Set a} {B} → (A → M B) → List A → M (List B)
-mapM f = sequence ⊚ List.map f
-
-
-mapM′ : ∀ {a f} {M : Set f → Set f} {{_ : RawMonad M}}
-  → ∀ {A : Set a} {B} → (A → M B) → List A → M (Lift ⊤)
-mapM′ f = void ⊚ mapM f
-
-
-fromArg : ∀ {A} → Arg A → A
-fromArg (arg _ x) = x
-
-
-fromAbs : ∀ {A} → Abs A → A
-fromAbs (abs _ x) = x
-
-
--- This may or may not loop if there are metas in the input term that cannot be
--- solved when this tactic is called.
-{-# TERMINATING #-}
-blockOnAnyMeta : Term → TC (Lift ⊤)
-blockOnAnyMeta (var x args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
-blockOnAnyMeta (con c args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
-blockOnAnyMeta (def f args) = mapM′ (blockOnAnyMeta ⊚ fromArg) args
-blockOnAnyMeta (lam v t) = blockOnAnyMeta (fromAbs t)
-blockOnAnyMeta (pat-lam cs args) = return _ -- TODO
-blockOnAnyMeta (pi a b) =
-    blockOnAnyMeta (fromArg a) >>= λ _ →
-    blockOnAnyMeta (fromAbs b)
-blockOnAnyMeta (sort s) = return _
-blockOnAnyMeta (lit l) = return _
-blockOnAnyMeta (meta x x₁) = blockOnMeta x
-blockOnAnyMeta unknown = return _
 
 
 macro
