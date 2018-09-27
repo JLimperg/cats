@@ -61,15 +61,15 @@ module _ {l} {C : Category l l l} where
 
     forth : Pre.Hom (fobj y c) F Sets.⇒ fobj F c
     forth = record
-        { arr = λ f → arr (component f c) C.id
-        ; resp = λ f≈g → ≈-elim′ (≈-elim f≈g)
+        { arr = λ f → {!!}
+        ; resp = λ f≈g → {!!}
         }
 
 
     back-θ-component : Carrier (fobj F c) → (c′ : C.Obj) → C.Hom c′ c Sets.⇒ fobj F c′
     back-θ-component a c′ = record
-        { arr = λ h → arr (fmap F h) a
-        ; resp = λ f≈g → ≈-elim′ (fmap-resp F f≈g)
+        { arr = λ h → {!!}
+        ; resp = λ f≈g → {!!}
         }
 
 
@@ -80,13 +80,7 @@ module _ {l} {C : Category l l l} where
             let open Setoid (fobj F d′) using (sym) in
             begin⟨ fobj F d′ ⟩
               arr (back-θ-component a d′ Sets.∘ fmap (fobj y c) f) g
-            ≡⟨⟩
-              arr (fmap F (C.id C.∘ g C.∘ f)) a
-            ≈⟨ ≈-elim′ (fmap-resp F (C.≈.trans C.id-l (C.∘-resp-l g≈g′))) ⟩
-              arr (fmap F (g′ C.∘ f)) a
-            ≈⟨ sym (≈-elim′ (fmap-∘ F)) ⟩
-              arr (fmap F f Sets.∘ fmap F g′) a
-            ≡⟨⟩
+            ≈⟨ {!!} ⟩
               arr (fmap F f Sets.∘ back-θ-component a c′) g′
             ∎
         }
@@ -97,7 +91,7 @@ module _ {l} {C : Category l l l} where
     back : fobj F c Sets.⇒ Pre.Hom (fobj y c) F
     back = record
         { arr = back-θ
-        ; resp = λ f≈g → ≈-intro (≈-intro λ x≈y → ≈-elim (fmap-resp F x≈y) f≈g)
+        ; resp = λ f≈g → ≈-intro (≈-intro λ x≈y → {!!})
         }
 
 
@@ -105,15 +99,7 @@ module _ {l} {C : Category l l l} where
     back-forth = ≈-intro λ {θ} {θ′} θ≈θ′ → ≈-intro λ {c′} → ≈-intro λ {f} {g} f≈g →
         begin⟨ fobj F c′ ⟩
           arr (component (arr (back Sets.∘ forth) θ) c′) f
-        ≡⟨⟩
-          arr (fmap F f Sets.∘ component θ c) C.id
-        ≈⟨ ≈-elim′ (Sets.≈.sym (natural θ)) ⟩
-          arr (component θ c′ Sets.∘ fmap (fobj y c) f) C.id
-        ≡⟨⟩
-          arr (component θ c′) (C.id C.∘ C.id C.∘ f)
-        ≈⟨ resp (component θ c′) (C.≈.trans C.id-l C.id-l) ⟩
-          arr (component θ c′) f
-        ≈⟨ ≈-elim (≈-elim θ≈θ′) f≈g ⟩
+        ≈⟨ {!!} ⟩
           arr (component θ′ c′) g
         ∎
       where
@@ -121,7 +107,7 @@ module _ {l} {C : Category l l l} where
 
 
     forth-back : forth Sets.∘ back Sets.≈ Sets.id
-    forth-back = ≈-intro λ x≈y → ≈-elim (fmap-id F) x≈y
+    forth-back = ≈-intro λ x≈y → {!!}
 
 
     iso : fobj Hom[ Presheaves ] (fobj y c , F) Sets.≅ fobj F c
@@ -144,24 +130,14 @@ module _ {l} {C : Category l l l} where
                   arr (forth c′ F′ Sets.∘ fmap Hom[ Presheaves ]
                          (fmap (First {D = Presheaves ᵒᵖ} (Op y)) (f , θ)))
                       ι
-                ≡⟨⟩
-                  arr (component (Pre.id Pre.∘ θ Pre.∘ ι) c′) (f C.∘ C.id C.∘ C.id)
-                ≈⟨ ≈-elim (≈-elim (Pre.id-l {f = θ Pre.∘ ι}))
-                    (C.≈.trans (C.∘-resp-r C.id-r) C.id-r) ⟩
+                ≈⟨ {!!} ⟩
                   arr (component (θ Pre.∘ ι) c′) f
                 ∎
               )
 
               ( begin⟨ fobj F′ c′ ⟩
                   arr (fmap F′ f Sets.∘ component θ c Sets.∘ forth c F) τ
-                ≡⟨⟩
-                  arr (fmap F′ f Sets.∘ component (θ Pre.∘ τ) c) C.id
-                ≈⟨ S.sym (≈-elim′ (natural (θ Pre.∘ τ))) ⟩
-                  arr (component (θ Pre.∘ τ) c′ Sets.∘ fmap (fobj y c) f) C.id
-                ≡⟨⟩
-                  arr (component (θ Pre.∘ τ) c′) (C.id C.∘ C.id C.∘ f)
-                ≈⟨ ≈-elim (≈-elim (Pre.∘-resp-r {f = θ} (Pre.≈.sym {i = ι} {τ} ι≈τ)))
-                    (C.≈.trans C.id-l C.id-l) ⟩
+                ≈⟨ {!!} ⟩
                   arr (component (θ Pre.∘ ι) c′) f
                 ∎
               )
@@ -171,18 +147,7 @@ module _ {l} {C : Category l l l} where
 
 
   back≈sfmap : ∀ {a b} → back a (fobj y b) Sets.≈ sfmap y
-  back≈sfmap {a} {b} = ≈-intro λ {f} {g} f≈g → ≈-intro (≈-intro λ {x} {y} x≈y →
-      begin
-        C.id C.∘ f C.∘ x
-      ≈⟨ C.id-l ⟩
-        f C.∘ x
-      ≈⟨ C.∘-resp f≈g x≈y ⟩
-        g C.∘ y
-      ≈⟨ C.≈.sym C.id-r ⟩
-        (g C.∘ y) C.∘ C.id
-      ≈⟨ C.assoc ⟩
-        g C.∘ y C.∘ C.id
-      ∎)
+  back≈sfmap {a} {b} = ≈-intro λ {f} {g} f≈g → ≈-intro (≈-intro λ {x} {y} x≈y → {!!})
     where
       open C.≈-Reasoning
 
