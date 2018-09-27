@@ -31,13 +31,12 @@ fromAbs : ∀ {A} → Abs A → A
 fromAbs (abs _ x) = x
 
 
+blockOnAnyMeta-clause : Clause → TC (Lift {ℓ = zero} ⊤)
+
 -- This may or may not loop if there are metas in the input term that cannot be
 -- solved when this tactic is called.
 {-# TERMINATING #-}
 blockOnAnyMeta : Term → TC (Lift ⊤)
-
-blockOnAnyMeta-clause : Clause → TC (Lift {ℓ = zero} ⊤)
-
 blockOnAnyMeta (var x args) = mapM′ (blockOnAnyMeta ∘ fromArg) args
 blockOnAnyMeta (con c args) = mapM′ (blockOnAnyMeta ∘ fromArg) args
 blockOnAnyMeta (def f args) = mapM′ (blockOnAnyMeta ∘ fromArg) args
@@ -48,7 +47,9 @@ blockOnAnyMeta (pat-lam cs args) = do
 blockOnAnyMeta (pi a b) = do
     blockOnAnyMeta (fromArg a)
     blockOnAnyMeta (fromAbs b)
-blockOnAnyMeta (sort s) = return _
+blockOnAnyMeta (sort (set t)) = blockOnAnyMeta t
+blockOnAnyMeta (sort (lit n)) = return _
+blockOnAnyMeta (sort unknown) = return _
 blockOnAnyMeta (lit l) = return _
 blockOnAnyMeta (meta x _) = blockOnMeta x
 blockOnAnyMeta unknown = return _
