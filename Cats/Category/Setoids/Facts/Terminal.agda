@@ -14,8 +14,8 @@ module Build {l} {l≈} where
 
   One : Obj
   One = record
-      { Carrier = Lift ⊤
-      ; _≈_ = λ _ _ → Lift ⊤
+      { Carrier = Lift l ⊤
+      ; _≈_ = λ _ _ → Lift l≈ ⊤
       }
 
 

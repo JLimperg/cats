@@ -15,9 +15,9 @@ LCategory l = Category l l l
 Lift : ∀ {lo la l≈ lo′ la′ l≈′} → Category lo la l≈
   → Category (lo ⊔ lo′) (la ⊔ la′) (l≈ ⊔ l≈′)
 Lift {lo′ = lo′} {la′} {l≈′} C = record
-    { Obj = L.Lift {ℓ = lo′} C.Obj
-    ; _⇒_ = λ A B → L.Lift {ℓ = la′} (lower A C.⇒ lower B)
-    ; _≈_ = λ f g → L.Lift {ℓ = l≈′} (lower f C.≈ lower g)
+    { Obj = L.Lift lo′ C.Obj
+    ; _⇒_ = λ A B → L.Lift la′ (lower A C.⇒ lower B)
+    ; _≈_ = λ f g → L.Lift l≈′ (lower f C.≈ lower g)
     ; id = lift C.id
     ; _∘_ = λ f g → lift (lower f C.∘ lower g)
     ; equiv = record

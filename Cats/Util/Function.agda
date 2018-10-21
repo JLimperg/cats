@@ -4,7 +4,7 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡
 
 open import Function as Fun public using (id ; _on_)
-open import Relation.Binary.On public
+open import Relation.Binary.Construct.On public
   renaming (isEquivalence to on-isEquivalence)
 
 

@@ -8,7 +8,7 @@ open import Cats.Category
 
 Zero : ∀ lo la l≈ → Category lo la l≈
 Zero lo la l≈ = record
-    { Obj = Lift ⊥
+    { Obj = Lift lo ⊥
     ; _⇒_ = λ()
     ; _≈_ = λ {}
     ; id = λ{}

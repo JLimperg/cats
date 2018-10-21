@@ -8,9 +8,9 @@ open import Cats.Category
 
 One : ∀ lo la l≈ → Category lo la l≈
 One lo la l≈ = record
-    { Obj = Lift ⊤
-    ; _⇒_ = λ _ _ → Lift ⊤
-    ; _≈_ = λ _ _ → Lift ⊤
+    { Obj = Lift lo ⊤
+    ; _⇒_ = λ _ _ → Lift la ⊤
+    ; _≈_ = λ _ _ → Lift l≈ ⊤
     ; id = lift tt
     ; _∘_ = λ _ _ → lift tt
     ; equiv

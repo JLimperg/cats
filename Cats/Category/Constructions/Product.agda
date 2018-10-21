@@ -373,7 +373,7 @@ HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
         ; isProduct = isProduct′
         }
       where
-        O : Lift {ℓ = lp} Bool → _
+        O : Lift lp Bool → _
         O (lift true) = A
         O (lift false) = B
 

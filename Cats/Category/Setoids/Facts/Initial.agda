@@ -14,7 +14,7 @@ module Build {l} {l≈} where
 
   Zero : Obj
   Zero = record
-      { Carrier = Lift ⊥
+      { Carrier = Lift l ⊥
       ; _≈_ = λ()
       ; isEquivalence = record
           { refl = λ{}

@@ -21,7 +21,7 @@ module _ {f} {M : Set f → Set f} {{_ : RawMonad M}} where
   sequence (mx ∷ mxs) = ⦇ mx ∷ sequence mxs ⦈
 
 
-  void : ∀ {A} → M A → M (Lift ⊤)
+  void : ∀ {A} → M A → M (Lift f ⊤)
   void m = m >>= λ _ → return _
 
 
@@ -29,5 +29,5 @@ module _ {f} {M : Set f → Set f} {{_ : RawMonad M}} where
   mapM f = sequence ∘ map f
 
 
-  mapM′ : ∀ {a} {A : Set a} {B} → (A → M B) → List A → M (Lift ⊤)
+  mapM′ : ∀ {a} {A : Set a} {B} → (A → M B) → List A → M (Lift f ⊤)
   mapM′ f = void ∘ mapM f
