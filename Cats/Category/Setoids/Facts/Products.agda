@@ -2,7 +2,7 @@ module Cats.Category.Setoids.Facts.Products where
 
 open import Data.Product as P using (_,_ ; <_,_>)
 open import Relation.Binary using (Setoid)
-open import Relation.Binary.Product.Pointwise using (_×-setoid_)
+open import Relation.Binary.Product.Pointwise using (×-setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
@@ -25,7 +25,7 @@ module BuildBinary l l≈ where
 
 
   _×_ : Obj → Obj → Obj
-  _×_ = _×-setoid_
+  _×_ = ×-setoid
 
 
   projl : ∀ {A B} → A × B ⇒ A

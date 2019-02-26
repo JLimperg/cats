@@ -2,7 +2,7 @@ module Cats.Category.Product.Binary where
 
 open import Level using (_⊔_)
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
-open import Relation.Binary.Product.Pointwise using (_×-Rel_ ; _×-isEquivalence_)
+open import Relation.Binary.Product.Pointwise using (×-isEquivalence ; Pointwise)
 
 
 open import Cats.Category.Base
@@ -32,7 +32,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) (l≈ ⊔ l≈′)
-  _≈_ = C._≈_ ×-Rel D._≈_
+  _≈_ = Pointwise C._≈_ D._≈_
 
 
   id : {A : Obj} → A ⇒ A
@@ -44,7 +44,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-  equiv = C.equiv ×-isEquivalence D.equiv
+  equiv = ×-isEquivalence C.equiv D.equiv
 
 
   ∘-resp : ∀ {A B C} → _∘_ {A} {B} {C} Preserves₂ _≈_ ⟶ _≈_ ⟶ _≈_
