@@ -28,6 +28,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
     module D = Functor D
 
 
+  -- We could define cones in terms of wedges (and limits in terms of ends).
   record Cone : Set (lo ⊔ la ⊔ la′ ⊔ lo′ ⊔ l≈′) where
     field
       Apex : Z.Obj

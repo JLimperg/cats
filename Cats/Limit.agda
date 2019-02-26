@@ -22,7 +22,6 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   record Limit (D : Functor J Z) : Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) where
-    open Category (Cones D)
     field
       cone : Cone D
       isLimit : IsLimit cone
