@@ -92,6 +92,13 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     factorizer proj = isProduct P proj ⃗
 
 
+    factorizer-unique : ∀ {X} (fact : X ⇒ P ᴼ)
+      → {x : ∀ i → X ⇒ O i}
+      → (∀ i → x i ≈ proj P i ∘ fact)
+      → factorizer x ≈ fact
+    factorizer-unique fact {x} eq = ∃!′.unique (isProduct P x) eq
+
+
     factorizer-proj : ∀ {X} {x : ∀ i → X ⇒ O i} {i}
       → proj P i ∘ factorizer x ≈ x i
     factorizer-proj {x = x} {i} = ≈.sym (∃!′.prop (isProduct P x) i)
@@ -100,17 +107,15 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     factorizer-resp : ∀ {X} {x y : ∀ i → X ⇒ O i}
       → (∀ i → x i ≈ y i)
       → factorizer x ≈ factorizer y
-    factorizer-resp {x = x} {y} eq
-        = ∃!′.unique (isProduct P x)
-            (λ i → ≈.trans (eq i) (≈.sym factorizer-proj))
+    factorizer-resp {x = x} {y} eq = factorizer-unique (factorizer y)
+      λ i → ≈.trans (eq _) (≈.sym factorizer-proj)
 
 
     factorizer-∘ : ∀ {X} {x : ∀ i → X ⇒ O i} {Z} {f : Z ⇒ X}
       → factorizer x ∘ f ≈ factorizer (λ i → x i ∘ f)
-    factorizer-∘ {x = x} {f = f} = ≈.sym (
-          ∃!′.unique (isProduct P (λ i → x i ∘ f))
-            (λ i → ≈.sym (≈.trans unassoc (∘-resp-l factorizer-proj)))
-        )
+    factorizer-∘ {x = x} {f = f} = ≈.sym
+      (factorizer-unique (factorizer x ∘ f)
+        λ _ → ≈.sym (≈.trans unassoc (∘-resp-l factorizer-proj)))
 
 
   module _ {li} {I : Set li}
@@ -168,14 +173,17 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         ∎
 
 
+open Build public using (IsProduct ; IsBinaryProduct ; Product ; BinaryProduct)
+
+
 record HasProducts {lo la l≈} li (C : Category lo la l≈)
   : Set (suc li ⊔ lo ⊔ la ⊔ l≈ )
   where
-  private open module Bld = Build C using (Product)
+  private module Bld = Build C
   open Category C
 
   field
-    Π′ : {I : Set li} (O : I → Obj) → Product O
+    Π′ : {I : Set li} (O : I → Obj) → Product C O
 
 
   module _ {I : Set li} where
@@ -245,14 +253,14 @@ HasProducts→HasTerminal {C = C} record { Π′ = Π }
 record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   : Set (lo ⊔ la ⊔ l≈)
   where
-  private open module Bld = Build C using (BinaryProduct ; Product)
+  private module Bld = Build C
   open Category C
   open ≈-Reasoning
 
   infixr 2 _×_ _×′_ ⟨_×_⟩ ⟨_,_⟩
 
   field
-    _×′_ : ∀ A B → BinaryProduct A B
+    _×′_ : ∀ A B → BinaryProduct C A B
 
 
   _×_ : Obj → Obj → Obj
@@ -339,17 +347,9 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   ⟨×⟩-∘ : ∀ {A A′ A″ B B′ B″}
     → {f : A′ ⇒ A″} {f′ : A ⇒ A′} {g : B′ ⇒ B″} {g′ : B ⇒ B′}
     → ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩ ≈ ⟨ f ∘ f′ × g ∘ g′ ⟩
-  ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} {f} {f′} {g} {g′}
-      = begin
-          ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩
-        ≈⟨ Bld.times-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″) ⟩
-          Bld.times (A ×′ B) (A″ ×′ B″)
-            (λ i →
-              Bool-elim {A = λ i → Bool-elim A′ B′ i ⇒ Bool-elim A″ B″ i} f g i ∘
-              Bool-elim {A = λ i → Bool-elim A B i ⇒ Bool-elim A′ B′ i} f′ g′ i)
-        ≈⟨ Bld.times-resp (A ×′ B) (A″ ×′ B″) (Bool-elim ≈.refl ≈.refl) ⟩
-          ⟨ f ∘ f′ × g ∘ g′ ⟩
-        ∎
+  ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} {f} {f′} {g} {g′} = ≈.trans
+    (Bld.times-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″))
+    (Bld.times-resp (A ×′ B) (A″ ×′ B″) (Bool-elim ≈.refl ≈.refl))
 
 
 -- The following is conceptually trivial, but we have to dig quite deep to
@@ -362,8 +362,7 @@ HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
   where
     open Category C
     open Unique.Build C
-    open Build C
-    open Product using (proj ; isProduct)
+    open Product using (proj)
     open ∃!′ using (arr ; prop ; unique)
 
     _×_ : ∀ A B → Build.BinaryProduct C A B
@@ -381,7 +380,7 @@ HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
 
         proj′ = Bool-elim (proj (Π O) (lift true)) (proj (Π O) (lift false))
 
-        isProduct′ : IsProduct (Bool-elim A B) prod′ proj′
+        isProduct′ : IsProduct C (Bool-elim A B) prod′ proj′
         isProduct′ {X} x = record
             { arr = arr′ ⃗
             ; prop = Bool-elim (prop arr′ (lift true)) (prop arr′ (lift false))
@@ -389,7 +388,7 @@ HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
                 (λ { (lift true) → eq true ; (lift false) → eq false})
             }
           where
-            arr′ = isProduct (Π O)
+            arr′ = Product.isProduct (Π O)
               λ { (lift true) → x true ; (lift false) → x false}
 
 
@@ -412,7 +411,6 @@ module _ {lo la l≈ lo′ la′ l≈′}
   where
 
   open Category C
-  open Build using (IsProduct ; IsBinaryProduct)
   open Functor
 
 
