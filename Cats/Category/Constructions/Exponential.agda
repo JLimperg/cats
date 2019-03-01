@@ -121,6 +121,12 @@ record HasExponentials {lo la l≈}
   eval-curry {B = B} {C} = Bld.eval-curry (B ↝′ C)
 
 
+  curry-unique : ∀ {A B C} {f : A × B ⇒ C} {g}
+    → eval ∘ ⟨ g × id ⟩ ≈ f
+    → curry f ≈ g
+  curry-unique {B = B} {C} = Bld.curry-unique (B ↝′ C)
+
+
   curry∘uncurry : ∀ {A B C} {f : A ⇒ B ↝ C}
     → curry (uncurry f) ≈ f
   curry∘uncurry {B = B} {C} = Bld.curry∘uncurry (B ↝′ C)
