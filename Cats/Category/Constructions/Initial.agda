@@ -44,5 +44,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       Zero : Obj
       isInitial : IsInitial Zero
 
+    Zero⇒ : ∀ {X} → Zero ⇒ X
+    Zero⇒ {X} = ∃!′.arr (isInitial X)
+
+    Zero⇒-unique : ∀ {X} {f : Zero ⇒ X} → Zero⇒ ≈ f
+    Zero⇒-unique {X} = ∃!′.unique (isInitial X) _
+
 
 open Build public

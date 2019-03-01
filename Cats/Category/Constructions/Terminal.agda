@@ -44,5 +44,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
       One : Obj
       isTerminal : IsTerminal One
 
+    ⇒One : ∀ {X} → X ⇒ One
+    ⇒One {X} = ∃!′.arr (isTerminal X)
+
+    ⇒One-unique : ∀ {X} {f : X ⇒ One} → ⇒One ≈ f
+    ⇒One-unique {X} = ∃!′.unique (isTerminal X) _
+
 
 open Build public
