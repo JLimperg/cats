@@ -66,3 +66,6 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
             ≈⟨ assoc ⟩
               g ∘ e ∘ j
             ∎
+
+
+open Build public

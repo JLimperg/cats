@@ -39,11 +39,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
 
 
-record HasInitial {lo la l≈} (Cat : Category lo la l≈)
-  : Set (lo ⊔ la ⊔ l≈) where
-  open Category Cat
-  open Build Cat
+  record HasInitial : Set (lo ⊔ la ⊔ l≈) where
+    field
+      Zero : Obj
+      isInitial : IsInitial Zero
 
-  field
-    Zero : Obj
-    isInitial : IsInitial Zero
+
+open Build public

@@ -19,7 +19,7 @@ import Cats.Category.Fun.Facts as Fun
 
 open Functor
 open Trans
-open Iso.Build._≅_
+open Iso.Iso
 
 
 module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where

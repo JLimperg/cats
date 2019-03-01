@@ -39,11 +39,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
 
 
-record HasTerminal {lo la l≈} (Cat : Category lo la l≈)
-  : Set (lo ⊔ la ⊔ l≈) where
-  open Category Cat
-  open Build Cat
+  record HasTerminal : Set (lo ⊔ la ⊔ l≈) where
+    field
+      One : Obj
+      isTerminal : IsTerminal One
 
-  field
-    One : Obj
-    isTerminal : IsTerminal One
+
+open Build public

@@ -12,3 +12,6 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
   IsEpi : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
   IsEpi {A} {B} f = ∀ {C} {g h : B ⇒ C} → g ∘ f ≈ h ∘ f → g ≈ h
+
+
+open Build public

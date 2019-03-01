@@ -12,3 +12,6 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
   IsMono : ∀ {A B} → A ⇒ B → Set (lo ⊔ la ⊔ l≈)
   IsMono {A} f = ∀ {C} {g h : C ⇒ A} → f ∘ g ≈ f ∘ h → g ≈ h
+
+
+open Build public

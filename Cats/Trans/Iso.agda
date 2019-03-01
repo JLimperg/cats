@@ -11,7 +11,7 @@ open import Cats.Trans using (Trans ; component ; natural)
 import Cats.Category.Constructions.Iso as Iso
 
 open Functor
-open Iso.Build._≅_
+open Iso.Iso
 
 
 module _ {lo la l≈ lo′ la′ l≈′}

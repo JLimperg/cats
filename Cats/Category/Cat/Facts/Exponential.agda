@@ -24,7 +24,7 @@ import Cats.Category.Constructions.Iso as Iso
 
 open Functor
 open Trans
-open Iso.Build._≅_
+open Iso.Iso
 
 
 infixr 1 _↝_

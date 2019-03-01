@@ -137,3 +137,6 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         ≈⟨ id-r ⟩
           h
         ∎
+
+
+open Build public renaming (_≅_ to Iso)

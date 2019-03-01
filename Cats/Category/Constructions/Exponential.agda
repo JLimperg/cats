@@ -135,3 +135,6 @@ record HasExponentials {lo la l≈}
     → {f : (B ↝ C) × Y ⇒ Z} {g : A × B ⇒ C}
     → curry f ∘ curry g ≈ curry (f ∘ ⟨ curry g × id ⟩)
   curry∘curry {B = B} {C} {Y} {Z} = Bld.curry∘curry (B ↝′ C) (Y ↝′ Z)
+
+
+open Build public

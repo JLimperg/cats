@@ -63,3 +63,6 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     → P h
     → g ≈ h
   ∃!→≈ (∃!-intro _ _ unique) = IsUniqueSuchThat→≈ unique
+
+
+open Build public

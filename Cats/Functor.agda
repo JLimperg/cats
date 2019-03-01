@@ -12,7 +12,7 @@ open import Cats.Util.SetoidMorphism.Iso using
 
 import Cats.Category.Constructions.Iso as Iso
 
-open Iso.Build._≅_
+open Iso.Iso
 
 
 infixr 9 _∘_
@@ -21,7 +21,8 @@ infixr 9 _∘_
 record Functor {lo la l≈ lo′ la′ l≈′}
   (C : Category lo la l≈)
   (D : Category lo′ la′ l≈′)
-  : Set (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′) where
+  : Set (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′)
+  where
   private
     module C = Category C
     module C≅ = Iso.Build C
@@ -81,11 +82,11 @@ id {C = C} = record
     { fobj = λ x → x
     ; fmap = λ f → f
     ; fmap-resp = λ eq → eq
-    ; fmap-id = C.≈.refl
-    ; fmap-∘ = C.≈.refl
+    ; fmap-id = ≈.refl
+    ; fmap-∘ = ≈.refl
     }
   where
-    module C = Category C
+    open Category C
 
 
 _∘_ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
@@ -97,11 +98,11 @@ _∘_ {E = E} F G = record
     { fobj = fobj F ⊙ fobj G
     ; fmap = fmap F ⊙ fmap G
     ; fmap-resp = fmap-resp F ⊙ fmap-resp G
-    ; fmap-id = E.≈.trans (fmap-resp F (fmap-id G)) (fmap-id F)
-    ; fmap-∘ = E.≈.trans (fmap-∘ F) (fmap-resp F (fmap-∘ G))
+    ; fmap-id = ≈.trans (fmap-resp F (fmap-id G)) (fmap-id F)
+    ; fmap-∘ = ≈.trans (fmap-∘ F) (fmap-resp F (fmap-∘ G))
     }
   where
-    module E = Category E
+    open Category E
 
 
 module _ {lo la l≈ lo′ la′ l≈′}
