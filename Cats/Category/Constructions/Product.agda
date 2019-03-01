@@ -138,6 +138,11 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     times-resp {x} {y} eq = factorizer-resp P′ (λ i → ∘-resp-l (eq i))
 
 
+  times-id : ∀ {li} {I : Set li} {O : I → Obj} (P : Product O)
+    → times P P (λ _ → id) ≈ id
+  times-id P = factorizer-unique P id λ _ → ≈.trans id-l (≈.sym id-r)
+
+
   times-∘ : ∀ {li} {I : Set li}
     → {O O′ O″ : I → Obj}
     → (P : Product O) (P′ : Product O′) (P″ : Product O″)
@@ -155,6 +160,16 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     ≈⟨ factorizer-resp P″ (λ i → unassoc) ⟩
       times P P″ (λ i → y i ∘ x i)
     ∎
+
+
+  times-factorizer : ∀ {li} {I : Set li}
+    → {O O′ : I → Obj}
+    → (P : Product O) (P′ : Product O′)
+    → ∀ {X} {x : ∀ i → X ⇒ O i} {y : ∀ i → O i ⇒ O′ i}
+    → times P P′ y ∘ factorizer P x ≈ factorizer P′ (λ i → y i ∘ x i)
+  times-factorizer P P′
+    = ≈.trans (factorizer-∘ P′)
+        (factorizer-resp P′ λ i → ≈.trans assoc (∘-resp-r (factorizer-proj P)))
 
 
   proj-cancel : ∀ {li} {I : Set li} {O : I → Obj} {P proj}
@@ -218,6 +233,12 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
     factorizer-resp {O} = Bld.factorizer-resp (Π′ O)
 
 
+    factorizer-unique : ∀ {O : I → Obj} {X} {x : ∀ i → X ⇒ O i} {u}
+      → (∀ i → x i ≈ proj i ∘ u)
+      → factorizer x ≈ u
+    factorizer-unique {O} eq = Bld.factorizer-unique (Π′ O) _ eq
+
+
     factorizer-∘ : ∀ {O : I → Obj} {X} {x : ∀ i → X ⇒ O i} {Z} {f : Z ⇒ X}
       → factorizer x ∘ f ≈ factorizer (λ i → x i ∘ f)
     factorizer-∘ {O} = Bld.factorizer-∘ (Π′ O)
@@ -234,9 +255,19 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
     times-resp {O} {O′} = Bld.times-resp (Π′ O) (Π′ O′)
 
 
+    times-id : ∀ {O : I → Obj} → times {O} (λ _ → id) ≈ id
+    times-id {O} = Bld.times-id (Π′ O)
+
+
     times-∘ : ∀ {O O′ O″ : I → Obj} {x : ∀ i → O i ⇒ O′ i} {y : ∀ i → O′ i ⇒ O″ i}
       → times y ∘ times x ≈ times (λ i → y i ∘ x i)
     times-∘ {O} {O′} {O″} = Bld.times-∘ (Π′ O) (Π′ O′) (Π′ O″)
+
+
+    times-factorizer : ∀ {O O′ : I → Obj} {X}
+      → {x : ∀ i → X ⇒ O i} {y : ∀ i → O i ⇒ O′ i}
+      → times y ∘ factorizer x ≈ factorizer (λ i → y i ∘ x i)
+    times-factorizer {O} {O′} = Bld.times-factorizer (Π′ O) (Π′ O′)
 
 
 HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
@@ -313,6 +344,14 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   ⟨,⟩-projr {A} {B} = Bld.factorizer-proj (A ×′ B)
 
 
+  ⟨,⟩-unique : ∀ {A B Z} {f : Z ⇒ A} {g : Z ⇒ B} {u}
+    → f ≈ projl ∘ u
+    → g ≈ projr ∘ u
+    → ⟨ f , g ⟩ ≈ u
+  ⟨,⟩-unique {A} {B} eql eqr
+    = Bld.factorizer-unique (A ×′ B) _ (Bool-elim eql eqr)
+
+
   ⟨,⟩-∘ : ∀ {A B Y Z} {f : Y ⇒ Z} {g : Z ⇒ A} {h : Z ⇒ B}
     → ⟨ g , h ⟩ ∘ f ≈ ⟨ g ∘ f , h ∘ f ⟩
   ⟨,⟩-∘ {A} {B} {Y} {Z} {f} {g} {h}
@@ -344,12 +383,24 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   ⟨×⟩-projr {A} {A′} {B} {B′} = Bld.times-proj (A ×′ B) (A′ ×′ B′)
 
 
+  ⟨×⟩-id : ∀ {A B} → ⟨ id {A} × id {B} ⟩ ≈ id
+  ⟨×⟩-id {A} {B} = Bld.factorizer-unique (A ×′ B) id
+    (Bool-elim (≈.trans id-l (≈.sym id-r)) (≈.trans id-l (≈.sym id-r)))
+
+
   ⟨×⟩-∘ : ∀ {A A′ A″ B B′ B″}
     → {f : A′ ⇒ A″} {f′ : A ⇒ A′} {g : B′ ⇒ B″} {g′ : B ⇒ B′}
     → ⟨ f × g ⟩ ∘ ⟨ f′ × g′ ⟩ ≈ ⟨ f ∘ f′ × g ∘ g′ ⟩
   ⟨×⟩-∘ {A} {A′} {A″} {B} {B′} {B″} {f} {f′} {g} {g′} = ≈.trans
     (Bld.times-∘ (A ×′ B) (A′ ×′ B′) (A″ ×′ B″))
     (Bld.times-resp (A ×′ B) (A″ ×′ B″) (Bool-elim ≈.refl ≈.refl))
+
+
+  ⟨×⟩-⟨,⟩ : ∀ {A B C B′ C′} {f : A ⇒ B} {g : A ⇒ C} {f′ : B ⇒ B′} {g′ : C ⇒ C′}
+    → ⟨ f′ × g′ ⟩ ∘ ⟨ f , g ⟩ ≈ ⟨ f′ ∘ f , g′ ∘ g ⟩
+  ⟨×⟩-⟨,⟩ {A} {B} {C} {B′} {C′} = ≈.trans
+    (Bld.times-factorizer (B ×′ C) (B′ ×′ C′))
+    (Bld.factorizer-resp (B′ ×′ C′) (Bool-elim ≈.refl ≈.refl))
 
 
 -- The following is conceptually trivial, but we have to dig quite deep to
