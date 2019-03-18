@@ -118,6 +118,10 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         λ _ → ≈.sym (≈.trans unassoc (∘-resp-l factorizer-proj)))
 
 
+    factorizer-id : factorizer (proj P) ≈ id
+    factorizer-id = factorizer-unique id λ i → ≈.sym id-r
+
+
   module _ {li} {I : Set li}
     {O : I → Obj}  (P : Product O)
     {O′ : I → Obj} (P′ : Product O′)
@@ -244,6 +248,10 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
     factorizer-∘ {O} = Bld.factorizer-∘ (Π′ O)
 
 
+    factorizer-id : ∀ {O} → factorizer {O} proj ≈ id
+    factorizer-id {O} = Bld.factorizer-id (Π′ O)
+
+
     times-proj : ∀ {O O′ : I → Obj} {x : ∀ i → O i ⇒ O′ i} {i}
       → proj i ∘ times x ≈ x i ∘ proj i
     times-proj {O} {O′} = Bld.times-proj (Π′ O) (Π′ O′)
@@ -363,6 +371,10 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
         ≈⟨ Bld.factorizer-resp (A ×′ B) (Bool-elim ≈.refl ≈.refl) ⟩
           ⟨ g ∘ f , h ∘ f ⟩
         ∎
+
+
+  ⟨,⟩-id : ∀ {A B} → ⟨ projl , projr ⟩ ≈ id {A × B}
+  ⟨,⟩-id {A} {B} = ⟨,⟩-unique (≈.sym id-r) (≈.sym id-r)
 
 
   ⟨×⟩-resp : ∀ {A A′ B B′} {f f′ : A ⇒ A′} {g g′ : B ⇒ B′}
