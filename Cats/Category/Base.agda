@@ -10,8 +10,9 @@ import Cats.Util.SetoidReasoning as SetoidR
 
 record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
   infixr  9 _∘_
+  infixl  9 _∙_
   infix   4 _≈_
-  infixr  -1 _⇒_
+  infixr -1 _⇒_
 
   field
     Obj : Set lo
@@ -25,6 +26,10 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
     id-l : ∀ {A B} {f : A ⇒ B} → id ∘ f ≈ f
     assoc : ∀ {A B C D} {f : C ⇒ D} {g : B ⇒ C} {h : A ⇒ B}
       → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
+
+
+  _∙_ : ∀ {A B C} → A ⇒ B → B ⇒ C → A ⇒ C
+  f ∙ g = g ∘ f
 
 
   Hom′ : (A B : Obj) → Set la
