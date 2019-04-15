@@ -27,6 +27,10 @@ record Category lo la l≈ : Set (suc (lo ⊔ la ⊔ l≈)) where
       → (f ∘ g) ∘ h ≈ f ∘ (g ∘ h)
 
 
+  Hom′ : (A B : Obj) → Set la
+  Hom′ A B = A ⇒ B
+
+
   Hom : (A B : Obj) → Setoid la l≈
   Hom A B = record
       { Carrier = A ⇒ B
