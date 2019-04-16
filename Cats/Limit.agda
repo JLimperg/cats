@@ -28,8 +28,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   instance
-    HasObj-Limit : ∀ D → HasObj (Limit D) _ _ _
-    HasObj-Limit D = record { Cat = Cones D ; _ᴼ = Limit.cone }
+    HasObj-Limit : ∀ {D} → HasObj (Limit D) _ _ _
+    HasObj-Limit {D} = record { Cat = Cones D ; _ᴼ = Limit.cone }
 
 
   module _ {D : Functor J Z} where

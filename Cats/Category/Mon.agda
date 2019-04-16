@@ -52,7 +52,7 @@ module _ (l l≈ : Level) where
     field
       arr : M.Universe Setoids.⇒ N.Universe
       unit : (arr ⃗) M.unit N.≈ N.unit
-      commute : ∀ {n m} → (arr ⃗) (n M.⊕ m) N.≈ (arr ⃗) n N.⊕ (arr ⃗) m
+      commute : ∀ {n m : M.Carrier} → (arr ⃗) (n M.⊕ m) N.≈ (arr ⃗) n N.⊕ (arr ⃗) m
 
     open Cats.Category.Setoids._⇒_ arr public using (resp)
 
@@ -60,8 +60,8 @@ module _ (l l≈ : Level) where
 
 
   instance
-    HasArrow-⇒ : ∀ M N → HasArrow (M ⇒ N) _ _ _
-    HasArrow-⇒ M N = record { Cat = Setoids l l≈ ; _⃗ = _⇒_.arr }
+    HasArrow-⇒ : ∀ {M N} → HasArrow (M ⇒ N) _ _ _
+    HasArrow-⇒ = record { Cat = Setoids l l≈ ; _⃗ = _⇒_.arr }
 
 
   id : ∀ {M} → M ⇒ M

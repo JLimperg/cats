@@ -11,7 +11,9 @@ open import Cats.Category.Setoids.Facts.Terminal using (hasTerminal)
 
 
 instance
-  isCCC : ∀ l → IsCCC (Setoids l l)
-  isCCC l = record { hasFiniteProducts = record {} } -- [1]
+  -- TODO move to Cats.Category.Setoids.Facts.Products
+  hasFiniteProducts : ∀ {l l≈} → HasFiniteProducts (Setoids l l≈)
+  hasFiniteProducts = record {}
 
--- [1] For no discernible reason, `record {}` doesn't work.
+  isCCC : ∀ {l} → IsCCC (Setoids l l)
+  isCCC = record {}

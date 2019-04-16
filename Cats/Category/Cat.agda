@@ -112,18 +112,17 @@ module _ {lo la l≈ lo′ la′ l≈′}
       module X = Category X
 
 
-instance
-  Cat : ∀ lo la l≈
-    → Category (suc (lo ⊔ la ⊔ l≈)) (lo ⊔ la ⊔ l≈) (lo ⊔ la ⊔ l≈)
-  Cat lo la l≈ = record
-      { Obj = Category lo la l≈
-      ; _⇒_ = _⇒_
-      ; _≈_ = _≈_
-      ; id = id
-      ; _∘_ = _∘_
-      ; equiv = equiv
-      ; ∘-resp = ∘-resp
-      ; id-r = id-r
-      ; id-l = id-l
-      ; assoc = λ {_} {_} {_} {_} {F} {G} {H} → assoc F G H
-      }
+Cat : ∀ lo la l≈
+  → Category (suc (lo ⊔ la ⊔ l≈)) (lo ⊔ la ⊔ l≈) (lo ⊔ la ⊔ l≈)
+Cat lo la l≈ = record
+    { Obj = Category lo la l≈
+    ; _⇒_ = _⇒_
+    ; _≈_ = _≈_
+    ; id = id
+    ; _∘_ = _∘_
+    ; equiv = equiv
+    ; ∘-resp = ∘-resp
+    ; id-r = id-r
+    ; id-l = id-l
+    ; assoc = λ {_} {_} {_} {_} {F} {G} {H} → assoc F G H
+    }

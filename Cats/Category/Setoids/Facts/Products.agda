@@ -1,8 +1,8 @@
 module Cats.Category.Setoids.Facts.Products where
 
 open import Data.Product as P using (_,_ ; <_,_>)
+open import Data.Product.Relation.Pointwise.NonDependent using (×-setoid)
 open import Relation.Binary using (Setoid)
-open import Relation.Binary.Product.Pointwise using (×-setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
@@ -62,8 +62,8 @@ module BuildBinary l l≈ where
 
 
 instance
-  hasBinaryProducts : ∀ l l≈ → HasBinaryProducts (Setoids l l≈)
-  hasBinaryProducts l l≈ .HasBinaryProducts._×′_ = BuildBinary._×′_ l l≈
+  hasBinaryProducts : ∀ {l l≈} → HasBinaryProducts (Setoids l l≈)
+  hasBinaryProducts {l} {l≈} .HasBinaryProducts._×′_ = BuildBinary._×′_ l l≈
 
 
 module Build l {I : Set l} where
@@ -107,5 +107,5 @@ module Build l {I : Set l} where
 
 
 instance
-  hasProducts : ∀ l → HasProducts l (Setoids l l)
-  hasProducts l = record { Π′ = Build.Π′ l }
+  hasProducts : ∀ {l} → HasProducts l (Setoids l l)
+  hasProducts {l} = record { Π′ = Build.Π′ l }

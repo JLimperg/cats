@@ -176,8 +176,8 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
 
 
 instance
-  hasExponentials : ∀ l → HasExponentials (Cat l l l)
-  hasExponentials l = record
+  hasExponentials : ∀ {l} → HasExponentials (Cat l l l)
+  hasExponentials {l} = record
       { _↝′_ = λ B C → record
           { Cᴮ = B ↝ C
           ; eval = Eval

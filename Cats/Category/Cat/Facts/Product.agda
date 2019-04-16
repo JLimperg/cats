@@ -81,8 +81,8 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
 instance
-  hasBinaryProducts : ∀ lo la l≈ → HasBinaryProducts (Cat lo la l≈)
-  hasBinaryProducts lo la l≈ .HasBinaryProducts._×′_ C D
+  hasBinaryProducts : ∀ {lo la l≈} → HasBinaryProducts (Cat lo la l≈)
+  hasBinaryProducts {lo} {la} {l≈} .HasBinaryProducts._×′_ C D
       = mkBinaryProduct proj₁ proj₂ isBinaryProduct
     where
       open module Catt = Category (Cat lo la l≈) using

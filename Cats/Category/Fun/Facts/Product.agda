@@ -90,10 +90,16 @@ module Build {lo la l≈ lo′ la′ l≈′}
   _×′_ : (F G : Obj) → BinaryProduct F G
   F ×′ G = mkBinaryProduct projl projr isBinaryProduct
 
+private
+  open module Build′ {lo la l≈ lo′ la′ l≈′}
+    {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+    = Build C D
+    public
 
-  instance
-    hasBinaryProducts : HasBinaryProducts (Fun C D)
-    hasBinaryProducts = record { _×′_ = _×′_ }
 
-
-open Build {{...}} public
+instance
+  hasBinaryProducts : ∀ {lo la l≈ lo′ la′ l≈′}
+    → {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+    → {{D× : HasBinaryProducts D}}
+    → HasBinaryProducts (Fun C D)
+  hasBinaryProducts = record { _×′_ = _×′_ }

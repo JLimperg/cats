@@ -11,9 +11,9 @@ open import Cats.Category.Constructions.CCC using (IsCCC)
 
 
 instance
-  hasFiniteProducts : ∀ lo la l≈ → HasFiniteProducts (Cat lo la l≈)
-  hasFiniteProducts _ _ _ = record {}
+  hasFiniteProducts : ∀ {lo la l≈} → HasFiniteProducts (Cat lo la l≈)
+  hasFiniteProducts = record {}
 
 
-  isCCC : ∀ l → IsCCC (Cat l l l)
-  isCCC _ = record {}
+  isCCC : ∀ {l} → IsCCC (Cat l l l)
+  isCCC = record {}

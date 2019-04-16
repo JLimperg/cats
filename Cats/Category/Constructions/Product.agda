@@ -192,7 +192,8 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         ∎
 
 
-open Build public using (IsProduct ; IsBinaryProduct ; Product ; BinaryProduct)
+open Build public using
+  (IsProduct ; IsBinaryProduct ; Product ; BinaryProduct ; HasObj-Product)
 
 
 record HasProducts {lo la l≈} li (C : Category lo la l≈)
@@ -208,7 +209,7 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
   module _ {I : Set li} where
 
     Π : ∀ (O : I → Obj) → Obj
-    Π O = Π′ O ᴼ
+    Π O = Product.prod (Π′ O)
 
 
     syntax Π (λ i → O) = Π[ i ] O
@@ -284,7 +285,7 @@ HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
 HasProducts→HasTerminal {C = C} record { Π′ = Π }
     = let P = Π {I = ⊥} λ() in
       record
-        { One = P ᴼ
+        { One = Product.prod P
         ; isTerminal = Build.nullaryProduct-Terminal C P
         }
 
@@ -439,7 +440,7 @@ HasProducts→HasBinaryProducts {lp} {C = C} record { Π′ = Π }
         O (lift true) = A
         O (lift false) = B
 
-        prod′ = Π O ᴼ
+        prod′ = Product.prod (Π O)
 
         proj′ = Bool-elim (proj (Π O) (lift true)) (proj (Π O) (lift false))
 

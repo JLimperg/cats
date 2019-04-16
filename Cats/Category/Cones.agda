@@ -13,7 +13,7 @@ import Cats.Category.Constructions.Iso as Iso
 import Cats.Util.Function as Fun
 
 
-module _ {lo la l≈ lo′ la′ l≈′}
+module Build {lo la l≈ lo′ la′ l≈′}
   {J : Category lo la l≈}
   {Z : Category lo′ la′ l≈′}
   (D : Functor J Z)
@@ -123,6 +123,17 @@ module _ {lo la l≈ lo′ la′ l≈′}
       }
     where
       open _≅_
+
+
+open Build public hiding (HasObj-Cone ; HasArrow-⇒)
+
+private
+  open module Build′ {lo la l≈ lo′ la′ l≈′}
+    {J : Category lo la l≈}
+    {Z : Category lo′ la′ l≈′}
+    {D : Functor J Z}
+    = Build D
+    public using (HasObj-Cone ; HasArrow-⇒)
 
 
 apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}

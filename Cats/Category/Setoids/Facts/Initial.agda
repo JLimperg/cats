@@ -35,8 +35,8 @@ open Build
 
 
 instance
-  hasInitial : ∀ l l≈ → HasInitial (Setoids l l≈)
-  hasInitial l l≈ = record
+  hasInitial : ∀ {l l≈} → HasInitial (Setoids l l≈)
+  hasInitial = record
       { Zero = Zero
       ; isInitial = isInitial
       }

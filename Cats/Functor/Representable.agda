@@ -8,9 +8,10 @@ open import Cats.Category
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro)
 open import Cats.Util.Simp using (simp!)
-open import Cats.Util.SetoidReasoning
 
 import Relation.Binary.PropositionalEquality as ≡
+
+import Cats.Util.SetoidReasoning as SetoidReasoning
 
 
 module Build {lo la l≈} (C : Category lo la l≈) where
@@ -37,7 +38,8 @@ module Build {lo la l≈} (C : Category lo la l≈) where
       ; fmap-id = ≈-intro λ x≈y → ≈.trans id-l (≈.trans id-r x≈y)
       ; fmap-∘ = λ where
           {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} → ≈-intro λ {x} {y} x≈y →
-            begin⟨ Homset A″ B″ ⟩
+            let open SetoidReasoning (Homset A″ B″) in
+            begin
               f′ ∘ (g′ ∘ x ∘ g) ∘ f
             ≈⟨ simp! C ⟩
               (f′ ∘ g′) ∘ x ∘ g ∘ f

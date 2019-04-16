@@ -6,8 +6,8 @@ open import Cats.Category.One using (One)
 
 
 instance
-  hasTerminal : ∀ lo la l≈ → HasTerminal (Cat lo la l≈)
-  hasTerminal lo la l≈ = record
+  hasTerminal : ∀ {lo la l≈} → HasTerminal (Cat lo la l≈)
+  hasTerminal {lo} {la} {l≈} = record
       { One = One lo la l≈
       ; isTerminal = _
       }

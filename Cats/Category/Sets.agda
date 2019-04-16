@@ -27,7 +27,7 @@ module _ {l} {A B : Set l} where
       }
 
 
-instance Sets : ∀ l → Category (suc l) l l
+Sets : ∀ l → Category (suc l) l l
 Sets l = record
     { Obj = Set l
     ; _⇒_ = λ A B → A → B

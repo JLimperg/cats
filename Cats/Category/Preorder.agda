@@ -11,7 +11,7 @@ open import Cats.Util.Conv
 open import Cats.Util.Function as Fun using (_on_)
 
 
-module _ (lc l≈ l≤ : Level) where
+module _ {lc l≈ l≤ : Level} where
 
   infixr 9 _∘_
   infixr 4 _≈_
@@ -48,8 +48,8 @@ module _ (lc l≈ l≤ : Level) where
 
 
   instance
-    HasArrow-⇒ : ∀ A B → HasArrow (A ⇒ B) _ _ _
-    HasArrow-⇒ A B = record { Cat = Setoids lc l≈ ; _⃗ = _⇒_.arr }
+    HasArrow-⇒ : ∀ {A B} → HasArrow (A ⇒ B) _ _ _
+    HasArrow-⇒ = record { Cat = Setoids lc l≈ ; _⃗ = _⇒_.arr }
 
 
   id : ∀ {A} → A ⇒ A
@@ -67,7 +67,7 @@ module _ (lc l≈ l≤ : Level) where
   _≈_ = Setoids._≈_ on _⃗
 
 
-  instance Preorder : Category (suc (lc ⊔ l≈ ⊔ l≤)) (lc ⊔ l≈ ⊔ l≤) (lc ⊔ l≈)
+  Preorder : Category (suc (lc ⊔ l≈ ⊔ l≤)) (lc ⊔ l≈ ⊔ l≤) (lc ⊔ l≈)
   Preorder = record
       { Obj = Obj
       ; _⇒_ = _⇒_

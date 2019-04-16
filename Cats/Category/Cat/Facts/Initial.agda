@@ -31,8 +31,8 @@ module _ {lo la l≈} where
 
 
 instance
-  hasInitial : ∀ lo la l≈ → HasInitial (Cat lo la l≈)
-  hasInitial lo la l≈ = record
+  hasInitial : ∀ {lo la l≈} → HasInitial (Cat lo la l≈)
+  hasInitial {lo} {la} {l≈} = record
       { Zero = Zero lo la l≈
       ; isInitial = Zero-Initial
       }

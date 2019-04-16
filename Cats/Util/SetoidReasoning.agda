@@ -1,24 +1,17 @@
-module Cats.Util.SetoidReasoning where
-
-open import Relation.Binary.SetoidReasoning public
-
 open import Relation.Binary using (Setoid)
-open import Relation.Binary.EqReasoning as EqR using (_IsRelatedTo_)
+
+module Cats.Util.SetoidReasoning {c ℓ} (S : Setoid c ℓ) where
+
+open import Relation.Binary.Reasoning.Setoid S public
+-- We can't use Relation.Binary.Reasoning.MultiSetoid due to
+-- https://github.com/agda/agda-stdlib/issues/715
+
+open Setoid S
 
 
-infixr 2 _≡⟨⟩_
-
-
-_≡⟨⟩_ : ∀ {c l} {S : Setoid  c l} → ∀ x {y} → _IsRelatedTo_ S x y → _IsRelatedTo_ S x y
-_≡⟨⟩_ {S = S} = EqR._≡⟨⟩_ S
-
-
-triangle : ∀ {l l′} (S : Setoid l l′) →
-  let open Setoid S in
+triangle :
   ∀ m {x y}
   → x ≈ m
   → y ≈ m
   → x ≈ y
-triangle S m x≈m y≈m = trans x≈m (sym y≈m)
-  where
-    open Setoid S
+triangle m x≈m y≈m = trans x≈m (sym y≈m)

@@ -27,8 +27,8 @@ open Build
 
 
 instance
-  hasTerminal : ∀ l l≈ → HasTerminal (Setoids l l≈)
-  hasTerminal l l≈ = record
+  hasTerminal : ∀ {l l≈} → HasTerminal (Setoids l l≈)
+  hasTerminal = record
       { One = One
       ; isTerminal = isTerminal
       }

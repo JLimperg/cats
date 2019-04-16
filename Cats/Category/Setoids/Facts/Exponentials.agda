@@ -21,8 +21,8 @@ module Build l where
 
   open Base.Category (Setoids l l)
   open Category (Setoids l l) using (∃!-intro ; Exp ; IsUniqueSuchThat)
-  open HasBinaryProducts (hasBinaryProducts l l)
   open Setoids._⇒_ using (resp)
+  open HasBinaryProducts (hasBinaryProducts {l} {l})
 
 
   _↝_ : Obj → Obj → Obj
@@ -61,15 +61,15 @@ module Build l where
     → IsUniqueSuchThat (λ f̃ → eval ∘ ⟨ f̃ × id ⟩ ≈ f) (curry f)
   curry-unique {A} {B} {C} f {g} eval∘g≈f
       = ≈-intro λ {a} {a′} a≈a′ → ≈-intro λ {b} {b′} b≈b′ →
-        begin⟨ C ⟩
+        let open SetoidReasoning C in
+        begin
           ((((curry f) ⃗) a) ⃗) b
         ≡⟨⟩
           (f ⃗) (a , b)
-        ≈⟨ sym C (≈-elim eval∘g≈f (sym A a≈a′ , sym B b≈b′)) ⟩
+        ≈˘⟨ ≈-elim eval∘g≈f (sym A a≈a′ , sym B b≈b′) ⟩
           (((g ⃗) a′) ⃗) b′
         ∎
     where
-      open SetoidReasoning
       open Setoid using (sym)
 
 
@@ -85,5 +85,5 @@ module Build l where
 
 
 instance
-  hasExponentials : ∀ l → HasExponentials (Setoids l l)
-  hasExponentials l = record { _↝′_ = Build._↝′_ l }
+  hasExponentials : ∀ {l} → HasExponentials (Setoids l l)
+  hasExponentials {l} = record { _↝′_ = Build._↝′_ l }

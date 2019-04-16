@@ -1,8 +1,9 @@
 module Cats.Category.Product.Binary where
 
+open import Data.Product.Relation.Pointwise.NonDependent using
+  (×-isEquivalence ; Pointwise)
 open import Level using (_⊔_)
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
-open import Relation.Binary.Product.Pointwise using (×-isEquivalence ; Pointwise)
 
 
 open import Cats.Category.Base

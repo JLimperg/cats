@@ -95,7 +95,7 @@ module _ {lo la l≈} (C : Category lo la l≈) (X : Category.Obj C) where
   ∘-assoc = ≈-i C.assoc
 
 
-  instance _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈
+  _/_ : Category (la ⊔ lo) (l≈ ⊔ la) l≈
   _/_ = record
       { Obj = Obj
       ; _⇒_ = _⇒_
