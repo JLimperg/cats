@@ -7,8 +7,7 @@ open import Relation.Binary using (Setoid ; IsEquivalence)
 open import Cats.Util.SetoidMorphism as Mor using
   ( _⇒_ ; arr ; resp ; _≈_ ; ≈-intro ; ≈-elim ; ≈-elim′ ; _∘_ ; ∘-resp ; id
   ; IsInjective ; IsSurjective )
-
-import Cats.Util.SetoidReasoning as SetoidReasoning
+open import Cats.Util.SetoidReasoning
 
 
 private
@@ -62,17 +61,15 @@ IsIso-resp : ∀ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l�
 IsIso-resp {A = A} {B = B} {f} {g} f≈g i = record
     { back = back i
     ; forth-back = ≈-intro λ {x} {y} x≈y →
-        let open SetoidReasoning B in
-        begin
+        begin⟨ B ⟩
           arr g (arr (back i) x)
         ≈˘⟨ ≈-elim f≈g (resp (back i) (B.sym x≈y)) ⟩
           arr f (arr (back i) y)
-          ≈⟨ ≈-elim′ (forth-back i) ⟩
+        ≈⟨ ≈-elim′ (forth-back i) ⟩
           y
         ∎
     ; back-forth = ≈-intro λ {x} {y} x≈y →
-        let open SetoidReasoning A in
-        begin
+        begin⟨ A ⟩
           arr (back i) (arr g x)
         ≈⟨ resp (back i) (B.sym (≈-elim f≈g (A.sym x≈y))) ⟩
           arr (back i) (arr f y)
@@ -142,8 +139,7 @@ module _ {l l≈} {A : Setoid l l≈} {l′ l≈′} {B : Setoid l′ l≈′} w
 
   Iso→Injective : {f : A ⇒ B} → IsIso f → IsInjective f
   Iso→Injective {f} i {a} {b} fa≈fb =
-      let open SetoidReasoning A in
-      begin
+      begin⟨ A ⟩
         a
       ≈˘⟨ ≈-elim′ (back-forth i) ⟩
         arr (back i) (arr f a)

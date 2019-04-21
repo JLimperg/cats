@@ -8,11 +8,11 @@ open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-el
 open import Cats.Category.Setoids.Facts.Products as Products using
   (hasBinaryProducts)
 open import Cats.Util.Conv
+open import Cats.Util.SetoidReasoning
 
 import Relation.Binary.PropositionalEquality as ≡
 
 import Cats.Category.Base as Base
-import Cats.Util.SetoidReasoning as SetoidReasoning
 
 module Build l where
 
@@ -61,12 +61,11 @@ module Build l where
     → IsUniqueSuchThat (λ f̃ → eval ∘ ⟨ f̃ × id ⟩ ≈ f) (curry f)
   curry-unique {A} {B} {C} f {g} eval∘g≈f
       = ≈-intro λ {a} {a′} a≈a′ → ≈-intro λ {b} {b′} b≈b′ →
-        let open SetoidReasoning C in
-        begin
+        begin⟨ C ⟩
           ((((curry f) ⃗) a) ⃗) b
         ≡⟨⟩
           (f ⃗) (a , b)
-        ≈˘⟨ ≈-elim eval∘g≈f (sym A a≈a′ , sym B b≈b′) ⟩
+        ≈˘⟨ ≈-elim eval∘g≈f (A .sym a≈a′ , B .sym b≈b′) ⟩
           (((g ⃗) a′) ⃗) b′
         ∎
     where

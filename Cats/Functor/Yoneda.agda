@@ -19,8 +19,8 @@ open import Cats.Functor using
 open import Cats.Functor.Op using (Op)
 open import Cats.Functor.Representable using (Hom[_])
 open import Cats.Util.SetoidMorphism.Iso using (IsIso-resp)
+open import Cats.Util.SetoidReasoning
 
-import Cats.Util.SetoidReasoning as SetoidReasoning
 import Cats.Category.Constructions.Iso
 
 open Functor
@@ -77,8 +77,7 @@ module _ {l} {C : Category l l l} where
     back-θ a = record
         { component = back-θ-component a
         ; natural = λ {c′} {d′} {f} → ≈-intro λ {g} {g′} g≈g′ →
-            let open SetoidReasoning (fobj F d′) in
-            begin
+            begin⟨ fobj F d′ ⟩
               arr (back-θ-component a d′ Sets.∘ fmap (fobj y c) f) g
             ≡⟨⟩
               arr (fmap F (C.id C.∘ g C.∘ f)) a
@@ -101,8 +100,7 @@ module _ {l} {C : Category l l l} where
 
     back-forth : back Sets.∘ forth Sets.≈ Sets.id
     back-forth = ≈-intro λ {θ} {θ′} θ≈θ′ → ≈-intro λ {c′} → ≈-intro λ {f} {g} f≈g →
-        let open SetoidReasoning (fobj F c′) in
-        begin
+        begin⟨ fobj F c′ ⟩
           arr (component (arr (back Sets.∘ forth) θ) c′) f
         ≡⟨⟩
           arr (fmap F f Sets.∘ component θ c) C.id
@@ -135,9 +133,8 @@ module _ {l} {C : Category l l l} where
       { iso = λ { {c , F} → iso c F }
       ; forth-natural = λ where
           {c , F} {c′ , F′} {f , θ} → ≈-intro λ {ι} {τ} ι≈τ →
-            let open SetoidReasoning (fobj F′ c′) in
-            triangle (arr (component (θ Pre.∘ ι) c′) f)
-              ( begin
+            triangle (fobj F′ c′) (arr (component (θ Pre.∘ ι) c′) f)
+              ( begin⟨ fobj F′ c′ ⟩
                   arr (forth c′ F′ Sets.∘ fmap Hom[ Presheaves ]
                          (fmap (First {D = Presheaves ᵒᵖ} (Op y)) (f , θ)))
                       ι
@@ -149,7 +146,7 @@ module _ {l} {C : Category l l l} where
                 ∎
               )
 
-              ( begin
+              ( begin⟨ fobj F′ c′ ⟩
                   arr (fmap F′ f Sets.∘ component θ c Sets.∘ forth c F) τ
                 ≡⟨⟩
                   arr (fmap F′ f Sets.∘ component (θ Pre.∘ τ) c) C.id
@@ -166,8 +163,8 @@ module _ {l} {C : Category l l l} where
 
 
   back≈sfmap : ∀ {a b} → back a (fobj y b) Sets.≈ sfmap y
-  back≈sfmap {a} {b} = ≈-intro λ {f} {g} f≈g → ≈-intro (≈-intro λ {x} {y} x≈y →
-      begin
+  back≈sfmap = ≈-intro λ {f} {g} f≈g → ≈-intro (≈-intro λ {x} {y} x≈y →
+      begin⟨ C.Hom _ _ ⟩
         C.id C.∘ f C.∘ x
       ≈⟨ C.id-l ⟩
         f C.∘ x
@@ -178,8 +175,6 @@ module _ {l} {C : Category l l l} where
       ≈⟨ C.assoc ⟩
         g C.∘ y C.∘ C.id
       ∎)
-    where
-      open C.≈-Reasoning
 
 
   y-Embedding : IsEmbedding y
