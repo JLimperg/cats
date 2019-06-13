@@ -11,7 +11,7 @@ open import Cats.Category.Cat as Cat using
   (Cat ; Functor ; _∘_ ; _≈_) renaming
   (id to Id)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_⟩)
-open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
+open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Trans.Iso as NatIso using (NatIso)
@@ -27,16 +27,6 @@ open Trans
 open Iso.Iso
 
 
-infixr 1 _↝_
-
-
-_↝_ : ∀ {lo la l≈ lo′ la′ l≈′}
-  → Category lo la l≈
-  → Category lo′ la′ l≈′
-  → Category (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la ⊔ la′ ⊔ l≈′) (lo ⊔ l≈′)
-_↝_ = Fun
-
-
 module _ {lo la l≈ lo′ la′ l≈′}
   {B : Category lo la l≈} {C : Category lo′ la′ l≈′}
   where
@@ -44,7 +34,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
   private
     module B = Category B
     module C = Category C
-    module B↝C = Category (Fun B C)
+    module B↝C = Category (B ↝ C)
 
 
   Eval : Bifunctor (B ↝ C) B C
@@ -87,7 +77,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
     module B = Category B
     module C = Category C
     module D = Category D
-    module C↝D = Category (Fun C D)
+    module C↝D = Category (C ↝ D)
 
 
   Curry : Bifunctor B C D → Functor B (C ↝ D)

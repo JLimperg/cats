@@ -2,7 +2,7 @@ module Cats.Category.Fun.Facts.Terminal where
 
 open import Cats.Category
 open import Cats.Category.Constructions.Terminal using (HasTerminal)
-open import Cats.Category.Fun as Fun using (Fun)
+open import Cats.Category.Fun as Fun using (_↝_)
 open import Cats.Functor using (Functor)
 open import Cats.Functor.Const using (Const)
 
@@ -17,7 +17,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
   private
     module D = Category D
     module D⊤ = HasTerminal D⊤
-    open Category (Fun C D) hiding (HasTerminal)
+    open Category (C ↝ D) hiding (HasTerminal)
 
 
   One : Obj
@@ -42,7 +42,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
     }
 
 
-  hasTerminal : HasTerminal (Fun C D)
+  hasTerminal : HasTerminal (C ↝ D)
   hasTerminal = record
     { One = One
     ; isTerminal = isTerminal

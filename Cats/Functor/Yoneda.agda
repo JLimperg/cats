@@ -8,7 +8,7 @@ open import Cats.Bifunctor using (transposeBifunctor₂)
 open import Cats.Category
 open import Cats.Category.Cat.Facts.Exponential using (Eval)
 open import Cats.Category.Cat.Facts.Product using (First ; Swap)
-open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
+open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Fun.Facts using (NatIso→≅)
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Product.Binary using (_×_)
@@ -37,10 +37,10 @@ module _ {l} {C : Category l l l} where
     Sets = Setoids l l
 
     Presheaves : Category _ _ _
-    Presheaves = Fun (C ᵒᵖ) Sets
+    Presheaves = C ᵒᵖ ↝ Sets
 
     Funs : Category _ _ _
-    Funs = Fun ((C ᵒᵖ) × Presheaves) Sets
+    Funs = (C ᵒᵖ) × Presheaves ↝ Sets
 
     module C = Category C
     module Sets = Category Sets

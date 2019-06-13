@@ -15,6 +15,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
   where
 
   infixr 4 _≈_
+  infixr -1 _↝_
 
 
   private
@@ -61,3 +62,5 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; id-l = ≈-intro D.id-l
       ; assoc = ≈-intro D.assoc
       }
+
+  _↝_ = Fun

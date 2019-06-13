@@ -3,7 +3,7 @@ module Cats.Category.Fun.Facts.Product where
 open import Data.Product using (_,_)
 
 open import Cats.Category
-open import Cats.Category.Fun as Fun using (Fun)
+open import Cats.Category.Fun as Fun using (_↝_)
 open import Cats.Category.Constructions.Product using (HasBinaryProducts)
 open import Cats.Functor using (Functor)
 open import Cats.Trans using (Trans)
@@ -24,7 +24,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
     module D = Category D
     module D× = HasBinaryProducts D×
     open D.≈
-    open Category (Fun C D)
+    open Category (C ↝ D)
 
 
   _×_ : (F G : Obj) → Obj
@@ -101,5 +101,5 @@ instance
   hasBinaryProducts : ∀ {lo la l≈ lo′ la′ l≈′}
     → {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
     → {{D× : HasBinaryProducts D}}
-    → HasBinaryProducts (Fun C D)
+    → HasBinaryProducts (C ↝ D)
   hasBinaryProducts = record { _×′_ = _×′_ }

@@ -7,7 +7,7 @@ open import Relation.Binary using (IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Cats.Category
 open import Cats.Category.Cat using (_∘_ ; ∘-resp ; _≈_ ; equiv)
 open import Cats.Category.Cat.Facts.Product using (Swap ; hasBinaryProducts)
-open import Cats.Category.Fun using (Fun ; Trans ; ≈-intro ; ≈-elim)
+open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
@@ -125,7 +125,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
         }
 
 
-    transposeBifunctor₁ : Bifunctor C D E → Functor C (Fun D E)
+    transposeBifunctor₁ : Bifunctor C D E → Functor C (D ↝ E)
     transposeBifunctor₁ F = record
         { fobj = Bifunctor→Functor₁ F
         ; fmap = λ {a} {b} f → record
@@ -213,7 +213,7 @@ module _
       open IsEquivalence equiv
 
 
-  transposeBifunctor₂ : Bifunctor C D E → Functor D (Fun C E)
+  transposeBifunctor₂ : Bifunctor C D E → Functor D (C ↝ E)
   transposeBifunctor₂ F = transposeBifunctor₁ (F ∘ Swap)
 
 
