@@ -1,2 +1,3 @@
 **.agdai
+**/stack.yaml.lock
 /Everything.agda
