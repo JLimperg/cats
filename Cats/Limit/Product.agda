@@ -46,11 +46,11 @@ module _ {lo la l≈ li}
     → Cones.IsTerminal (productData→cone proj)
   terminal {P} {proj} isProduct c = record
       { arr = record
-          { θ = θ
+          { arr = θ
           ; commute = commute
           }
       ; unique = λ where
-          {record { θ = θ′ ; commute = commute′ }} _ →
+          {record { arr = θ′ ; commute = commute′ }} _ →
             ∃!′.unique prod (λ i → ≈.sym (commute′ i))
       }
     where
@@ -74,7 +74,7 @@ module _ {lo la l≈ li}
       ; unique = uniq
       }
     where
-      open Cats.Category.Cones._⇒_ using (θ ; commute)
+      open Cats.Category.Cones._⇒_ using (arr ; commute)
 
       P = proj₁ (cone→productData c)
       proj = proj₂ (cone→productData c)
@@ -83,7 +83,7 @@ module _ {lo la l≈ li}
       u = term (productData→cone x)
 
       f : X ⇒ P
-      f = θ (u ⃗)
+      f = arr (u ⃗)
 
       prop : ∀ i → x i ≈ proj i ∘ f
       prop i = ≈.sym (commute (u ⃗) _)
@@ -93,7 +93,7 @@ module _ {lo la l≈ li}
         where
           f′ : productData→cone x Cones.⇒ c
           f′ = record
-              { θ = g
+              { arr = g
               ; commute = λ i → ≈.sym (eq i)
               }
 

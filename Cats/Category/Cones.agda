@@ -49,33 +49,33 @@ module Build {lo la l≈ lo′ la′ l≈′}
       module A = Cone A ; module B = Cone B
 
     field
-      θ : A.Apex Z.⇒ B.Apex
-      commute : ∀ j → B.arr j Z.∘ θ Z.≈ A.arr j
+      arr : A.Apex Z.⇒ B.Apex
+      commute : ∀ j → B.arr j Z.∘ arr Z.≈ A.arr j
 
 
   instance
     HasArrow-⇒ : ∀ {A B} → HasArrow (A ⇒ B) lo′ la′ l≈′
-    HasArrow-⇒ = record { Cat = Z ; _⃗ = _⇒_.θ }
+    HasArrow-⇒ = record { Cat = Z ; _⃗ = _⇒_.arr }
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈′
-  _≈_ = Z._≈_ Fun.on _⇒_.θ
+  _≈_ = Z._≈_ Fun.on _⇒_.arr
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
-  equiv = Fun.on-isEquivalence _⇒_.θ Z.equiv
+  equiv = Fun.on-isEquivalence _⇒_.arr Z.equiv
 
 
   id : ∀ {A} → A ⇒ A
   id = record
-      { θ = Z.id
+      { arr = Z.id
       ; commute = λ j → Z.id-r
       }
 
 
   _∘_ : ∀ {A B C} → B ⇒ C → A ⇒ B → A ⇒ C
   _∘_ {A} {B} {C} f g = record
-      { θ = f ⃗ Z.∘ g ⃗
+      { arr = f ⃗ Z.∘ g ⃗
       ; commute = λ j →
           begin
             arr C j Z.∘ f ⃗ Z.∘ g ⃗
