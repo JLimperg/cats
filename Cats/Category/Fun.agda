@@ -9,7 +9,7 @@ open import Level
 open import Cats.Category
 open import Cats.Functor using (Functor)
 
-module _ {lo la l≈ lo′ la′ l≈′}
+module Build {lo la l≈ lo′ la′ l≈′}
   (C : Category lo la l≈)
   (D : Category lo′ la′ l≈′)
   where
@@ -64,3 +64,12 @@ module _ {lo la l≈ lo′ la′ l≈′}
       }
 
   _↝_ = Fun
+
+
+open Build public using (Fun ; _↝_)
+
+
+open module Build′
+  {lo la l≈ lo′ la′ l≈′} {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+  = Build C D public
+  hiding (Fun ; _↝_)

@@ -7,7 +7,7 @@ open import Relation.Binary using (IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Cats.Category
 open import Cats.Category.Cat using (_∘_ ; ∘-resp ; _≈_ ; equiv)
 open import Cats.Category.Cat.Facts.Product using (Swap ; hasBinaryProducts)
-open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
+open import Cats.Category.Fun using (_↝_ ; Trans; ≈-intro)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
