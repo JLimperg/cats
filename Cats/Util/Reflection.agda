@@ -1,6 +1,6 @@
 module Cats.Util.Reflection where
 
-open import Reflection public
+open import Reflection as Base hiding (return ; _>>_ ; _>>=_) public
 
 open import Data.List using ([])
 open import Data.Unit using (⊤)
@@ -13,8 +13,8 @@ open import Cats.Util.Monad using (RawMonad ; _>>=_ ; _>>_ ; return ; mapM′)
 instance
   tcMonad : ∀ {l} → RawMonad {l} TC
   tcMonad = record
-      { return = returnTC
-      ; _>>=_ = bindTC
+      { return = Base.return
+      ; _>>=_ = Base._>>=_
       }
 
 

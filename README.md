@@ -9,5 +9,5 @@ expect anything to be 'production-ready' in any sense.
 
 ## Dependencies
 
-- Agda 2.6.0
-- agda-stdlib 1.0.1
+- Agda 2.6.0.1
+- agda-stdlib 1.1
