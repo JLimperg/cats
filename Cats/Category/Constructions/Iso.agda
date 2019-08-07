@@ -14,6 +14,9 @@ import Cats.Category.Constructions.Mono as Mono
 
 module Build {lo la l≈} (Cat : Category lo la l≈) where
 
+  infix 4 _≅_
+
+
   private open module Cat = Category Cat
   open Cat.≈-Reasoning
   open Epi.Build Cat
