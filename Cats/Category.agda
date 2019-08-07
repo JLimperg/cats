@@ -1,7 +1,5 @@
 module Cats.Category where
 
-open import Level
-
 import Cats.Category.Base as Base
 import Cats.Category.Constructions.CCC as CCC
 import Cats.Category.Constructions.Epi as Epi
@@ -12,10 +10,10 @@ import Cats.Category.Constructions.Initial as Initial
 import Cats.Category.Constructions.Mono as Mono
 import Cats.Category.Constructions.Product as Product
 import Cats.Category.Constructions.Terminal as Terminal
+import Cats.Category.Constructions.Thin as Thin
 import Cats.Category.Constructions.Unique as Unique
 
 
-Category : ∀ lo la l≈ → Set (suc (lo ⊔ la ⊔ l≈))
 Category = Base.Category
 
 
@@ -41,3 +39,4 @@ open Product public using
   ; HasProducts→HasBinaryProducts
   ; HasProducts→HasTerminal )
 open Terminal public using (HasTerminal)
+open Thin public using (Thin ; StronglyThin ; StronglyThin→Thin)
