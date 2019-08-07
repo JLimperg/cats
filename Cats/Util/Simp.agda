@@ -8,15 +8,12 @@ open import Function using () renaming (_∘_ to _⊚_)
 open import Level using (_⊔_) renaming (zero to lzero)
 open import Relation.Binary.PropositionalEquality as ≡ using
   (_≡_ ; inspect ; [_])
+open import Category.Monad using (RawMonad)
 
 open import Cats.Category.Base
 open import Cats.Util.Reflection
 
-_>>=_ = bindTC
-return = returnTC
-
-_>>_ : ∀ {a} {A : Set a} {b} {B : Set b} → TC A → TC B → TC B
-ma >> mb = ma >>= λ _ → mb
+open RawMonad (tcMonad {lzero})
 
 
 module _ {lo la l≈} (C : Category lo la l≈) where
