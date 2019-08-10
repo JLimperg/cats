@@ -1,21 +1,25 @@
 module Cats.Category.Fun.Facts where
 
+open import Cats.Category.Fun.Facts.Product public using (hasBinaryProducts)
+open import Cats.Category.Fun.Facts.Terminal public using (hasTerminal)
+
+open import Level using (_⊔_)
+
 open import Cats.Category
 open import Cats.Category.Cat using (_≈_)
 open import Cats.Category.Fun using (Trans ; Fun ; ≈-intro ; ≈-elim)
 open import Cats.Functor using (Functor)
-open import Cats.Trans.Iso using (NatIso ; iso ; forth-natural ; back-natural)
+open import Cats.Trans.Iso using (NatIso)
 
-open import Level using (_⊔_)
 
-open Functor
-open Trans
 open Category._≅_
+open Functor
+open NatIso
+open Trans
 
 
 module _ {lo la l≈ lo′ la′ l≈′}
-  {C : Category lo la l≈}
-  {D : Category lo′ la′ l≈′}
+  {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
   {F G : Functor C D}
   where
 
