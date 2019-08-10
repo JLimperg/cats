@@ -8,6 +8,8 @@ open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
 open import Cats.Util.Conv
 
+import Cats.Category.Setoids.Facts.Terminal
+
 open Setoid using (Carrier ; refl ; sym ; trans) renaming (_≈_ to _≣_)
 
 
@@ -109,3 +111,6 @@ module Build l {I : Set l} where
 instance
   hasProducts : ∀ {l} → HasProducts l (Setoids l l)
   hasProducts {l} = record { Π′ = Build.Π′ l }
+
+  hasFiniteProducts : ∀ {l l≈} → HasFiniteProducts (Setoids l l≈)
+  hasFiniteProducts = record {}
