@@ -1,11 +1,11 @@
 module Cats.Category.Setoids.Facts where
 
 
-open import Cats.Category.Setoids.Facts.Exponentials public using
+open import Cats.Category.Setoids.Facts.Exponential public using
   (hasExponentials)
 open import Cats.Category.Setoids.Facts.Initial public using
   (hasInitial)
-open import Cats.Category.Setoids.Facts.Products public using
+open import Cats.Category.Setoids.Facts.Product public using
   (hasProducts ; hasBinaryProducts ; hasFiniteProducts)
 open import Cats.Category.Setoids.Facts.Terminal public using
   (hasTerminal)

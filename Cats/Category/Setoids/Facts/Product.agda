@@ -1,4 +1,4 @@
-module Cats.Category.Setoids.Facts.Products where
+module Cats.Category.Setoids.Facts.Product where
 
 open import Data.Product as P using (_,_ ; <_,_>)
 open import Data.Product.Relation.Pointwise.NonDependent using (×-setoid)

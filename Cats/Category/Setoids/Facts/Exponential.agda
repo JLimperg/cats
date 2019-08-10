@@ -1,11 +1,11 @@
-module Cats.Category.Setoids.Facts.Exponentials where
+module Cats.Category.Setoids.Facts.Exponential where
 
 open import Data.Product using (_,_)
 open import Relation.Binary using (Setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
-open import Cats.Category.Setoids.Facts.Products as Products using
+open import Cats.Category.Setoids.Facts.Product as Products using
   (hasBinaryProducts)
 open import Cats.Util.Conv
 open import Cats.Util.SetoidReasoning
