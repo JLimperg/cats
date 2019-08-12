@@ -1,7 +1,9 @@
 module Cats.Category.Fun.Facts where
 
-open import Cats.Category.Fun.Facts.Product public using (hasBinaryProducts)
-open import Cats.Category.Fun.Facts.Terminal public using (hasTerminal)
+open import Cats.Category.Fun.Facts.Product public using
+  (hasBinaryProducts ; hasFiniteProducts)
+open import Cats.Category.Fun.Facts.Terminal public using
+  (hasTerminal)
 
 open import Level using (_⊔_)
 

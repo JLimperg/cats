@@ -8,6 +8,8 @@ open import Cats.Category.Constructions.Product using (HasBinaryProducts)
 open import Cats.Functor using (Functor)
 open import Cats.Trans using (Trans)
 
+import Cats.Category.Fun.Facts.Terminal as Terminal
+
 open Functor
 open Trans
 
@@ -103,3 +105,11 @@ instance
     → {{D× : HasBinaryProducts D}}
     → HasBinaryProducts (C ↝ D)
   hasBinaryProducts = record { _×′_ = _×′_ }
+
+
+  hasFiniteProducts : ∀ {lo la l≈ lo′ la′ l≈′}
+    → {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+    → {{D× : HasFiniteProducts D}}
+    → HasFiniteProducts (C ↝ D)
+  hasFiniteProducts = record { hasTerminal = Terminal.hasTerminal }
+                      -- record {} doesn't work for some reason.
