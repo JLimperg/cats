@@ -1,5 +1,8 @@
 module Cats.Category.Presheaves.Facts where
 
+open import Cats.Category.Presheaves.Facts.Exponential public using
+  ( hasExponentials )
+
 open import Cats.Category
 open import Cats.Category.Presheaves
 
@@ -23,3 +26,8 @@ module _ {lo la l≈} {C : Category lo la l≈} {l l′} where
 
     hasFiniteProducts : HasFiniteProducts (Presheaves C l l′)
     hasFiniteProducts = Fun.hasFiniteProducts
+
+
+isCCC : ∀ {l} {C : Category l l l} → IsCCC (Presheaves C l l)
+isCCC = record { hasFiniteProducts = Fun.hasFiniteProducts }
+-- record {} complains about ambiguity. Don't know if this is my fault or a bug.
