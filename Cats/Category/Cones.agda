@@ -3,7 +3,9 @@ module Cats.Category.Cones where
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level using (_⊔_)
 
-open import Cats.Category.Base
+open import Cats.Category
+open import Cats.Category.Cat using (Cat)
+open import Cats.Category.Fun as Fun using (Fun ; Trans)
 open import Cats.Functor using (Functor) renaming (_∘_ to _∘F_)
 open import Cats.Util.Conv
 
@@ -11,6 +13,10 @@ import Relation.Binary.PropositionalEquality as ≡
 
 import Cats.Category.Constructions.Iso as Iso
 import Cats.Util.Function as Fun
+
+open Functor
+open Trans
+open Fun._≈_
 
 
 module Build {lo la l≈ lo′ la′ l≈′}
@@ -35,6 +41,8 @@ module Build {lo la l≈ lo′ la′ l≈′}
       arr : ∀ j → Apex Z.⇒ D.fobj j
       commute : ∀ {i j} (α : i J.⇒ j) → arr j Z.≈ D.fmap α Z.∘ arr i
 
+  open Cone public
+
 
   instance
     HasObj-Cone : HasObj Cone lo′ la′ l≈′
@@ -53,13 +61,16 @@ module Build {lo la l≈ lo′ la′ l≈′}
       commute : ∀ j → B.arr j Z.∘ arr Z.≈ A.arr j
 
 
+  open _⇒_ public
+
+
   instance
     HasArrow-⇒ : ∀ {A B} → HasArrow (A ⇒ B) lo′ la′ l≈′
     HasArrow-⇒ = record { Cat = Z ; _⃗ = _⇒_.arr }
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) l≈′
-  _≈_ = Z._≈_ Fun.on _⇒_.arr
+  _≈_ = Z._≈_ Fun.on arr
 
 
   equiv : ∀ {A B} → IsEquivalence (_≈_ {A} {B})
@@ -88,8 +99,6 @@ module Build {lo la l≈ lo′ la′ l≈′}
           ∎
       }
     where
-      open Cone using (arr)
-      open _⇒_ using (commute)
       open Z.≈-Reasoning
 
 
@@ -136,6 +145,7 @@ private
     public using (HasObj-Cone ; HasArrow-⇒)
 
 
+-- TODO better name
 apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → {Y : Category lo la l≈}
   → {Z : Category lo′ la′ l≈′}
@@ -145,23 +155,103 @@ apFunctor : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → Cone D
   → Cone (F ∘F D)
 apFunctor {Y = Y} {Z} F {J} {D} c = record
-    { Apex = fobj F Apex
-    ; arr = λ j → fmap F (arr j)
+    { Apex = fobj F (c .Apex)
+    ; arr = λ j → fmap F (c .arr j)
     ; commute = λ {i} {j} α → Z.≈.sym (
         begin
-          fmap (F ∘F D) α Z.∘ fmap F (arr i)
-        ≡⟨ ≡.refl ⟩
-          fmap F (fmap D α) Z.∘ fmap F (arr i)
+          fmap F (fmap D α) Z.∘ fmap F (c .arr i)
         ≈⟨ fmap-∘ F ⟩
-          fmap F (fmap D α Y.∘ arr i)
-        ≈⟨ fmap-resp F (Y.≈.sym (commute α)) ⟩
-          fmap F (arr j)
+          fmap F (fmap D α Y.∘ c .arr i)
+        ≈⟨ fmap-resp F (Y.≈.sym (c .commute α)) ⟩
+          fmap F (c .arr j)
         ∎
       )
     }
   where
     module Y = Category Y
     module Z = Category Z
-    open Cone c
     open Z.≈-Reasoning
-    open Functor
+
+
+ConesF : ∀ {lo la l≈ lo′ la′ l≈′}
+  → {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+  → Functor (Fun C D) (Cat (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la′ ⊔ l≈′) l≈′)
+ConesF {C = C} {D} = record
+  { fobj = Cones
+  ; fmap = λ {F} {G} ϑ → record
+    { fobj = λ c → trans ϑ c
+    ; fmap = λ f → record
+      { arr = f .arr
+      ; commute = λ j → D.≈.trans D.assoc (D.∘-resp-r (commute f j))
+      }
+    ; fmap-resp = λ x → x
+    ; fmap-id = D.≈.refl
+    ; fmap-∘ = D.≈.refl
+    }
+  ; fmap-resp = λ ϑ≈ι → record
+    { iso = record
+      { forth = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (D.≈.sym (≈-elim ϑ≈ι)))
+        }
+      ; back = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (≈-elim ϑ≈ι))
+        }
+      ; back-forth = D.id-l
+      ; forth-back = D.id-l
+      }
+    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+    }
+  ; fmap-id = record
+    { iso = record
+      { forth = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r (D.≈.sym D.id-l)
+        }
+      ; back = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r D.id-l
+        }
+      ; back-forth = D.id-l
+      ; forth-back = D.id-l
+      }
+    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+    }
+  ; fmap-∘ = record
+    { iso = record
+      { forth = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r D.assoc
+        }
+      ; back = record
+        { arr = D.id
+        ; commute = λ j → D.≈.trans D.id-r D.unassoc
+        }
+      ; back-forth = D.id-l
+      ; forth-back = D.id-l
+      }
+    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+    }
+  }
+  where
+    module D = Category D
+
+    trans : {F G : Functor C D} → Trans F G → Cone F → Cone G
+    trans {F} {G} θ c = record
+      { Apex = c .Apex
+      ; arr = λ j → component θ j D.∘ c .arr j
+      ; commute = λ {i} {j} α →
+          let open D.≈-Reasoning in
+          begin
+            component θ j D.∘ c .arr j
+          ≈⟨ D.∘-resp-r (c .commute α) ⟩
+            component θ j D.∘ fmap F α D.∘ c .arr i
+          ≈⟨ D.unassoc ⟩
+            (component θ j D.∘ fmap F α) D.∘ c .arr i
+          ≈⟨ D.∘-resp-l (natural θ) ⟩
+            (fmap G α D.∘ component θ i) D.∘ c .arr i
+          ≈⟨ D.assoc ⟩
+            fmap G α D.∘ component θ i D.∘ c .arr i
+          ∎
+      }
