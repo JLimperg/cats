@@ -7,7 +7,7 @@ open import Relation.Binary using (IsEquivalence)
 open import Cats.Bifunctor using
   (Bifunctor ; Bifunctor→Functor₁ ; transposeBifunctor₁ ; transposeBifunctor₁-resp)
 open import Cats.Category
-open import Cats.Category.Cat as Cat using
+open import Cats.Category.Cat as Cat′ using
   (Cat ; Functor ; _∘_ ; _≈_) renaming
   (id to Id)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_⟩)
@@ -27,6 +27,17 @@ open Trans
 open Iso.Iso
 
 
+private
+  module Cat≈ {lo la l≈ lo′ la′ l≈′}
+    {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+    = IsEquivalence (Cat′.equiv {C = C} {D})
+
+
+  module Fun {lo la l≈ lo′ la′ l≈′}
+    {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
+    = Category (C ↝ D)
+
+
 module _ {lo la l≈ lo′ la′ l≈′}
   {B : Category lo la l≈} {C : Category lo′ la′ l≈′}
   where
@@ -34,7 +45,6 @@ module _ {lo la l≈ lo′ la′ l≈′}
   private
     module B = Category B
     module C = Category C
-    module B↝C = Category (B ↝ C)
 
 
   Eval : Bifunctor (B ↝ C) B C
@@ -56,12 +66,12 @@ module _ {lo la l≈ lo′ la′ l≈′}
             ≈⟨ simp! C ⟩
               component θ c C.∘ (fmap G f C.∘ fmap G g) C.∘ component ι a
             ≈⟨ C.∘-resp-r (C.∘-resp-l (fmap-∘ G)) ⟩
-              component θ c C.∘ (fmap G (f B.∘ g)) C.∘ component ι a
-            ≈⟨ simp! C ⟩
+              component θ c C.∘ fmap G (f B.∘ g) C.∘ component ι a
+            ≈⟨ C.unassoc ⟩
               (component θ c C.∘ fmap G (f B.∘ g)) C.∘ component ι a
             ≈⟨ C.∘-resp-l (natural θ) ⟩
               (fmap H (f B.∘ g) C.∘ component θ a) C.∘ component ι a
-            ≈⟨ simp! C ⟩
+            ≈⟨ C.assoc ⟩
               fmap H (f B.∘ g) C.∘ component θ a C.∘ component ι a
             ∎
       }
@@ -77,7 +87,6 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
     module B = Category B
     module C = Category C
     module D = Category D
-    module C↝D = Category (C ↝ D)
 
 
   Curry : Bifunctor B C D → Functor B (C ↝ D)
@@ -112,11 +121,11 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
     → Curry′ ≈ Curry F
   Curry-unique {F} {Curry′} eq@record { iso = iso ; forth-natural = fnat } = record
       { iso = λ {x} →
-          let open C↝D.≅-Reasoning in
-          C↝D.≅.sym (
+          let open Fun.≅-Reasoning in
+          Fun.≅.sym (
             begin
               fobj (Curry F) x
-            ≈⟨ NatIso.iso (Curry-resp (sym-Cat eq)) ⟩
+            ≈⟨ NatIso.iso (Curry-resp (Cat≈.sym eq)) ⟩
               fobj (Curry (Eval ∘ ⟨ Curry′ × Id ⟩)) x
             ≈⟨ NatIso→≅ (lem x) ⟩
               fobj Curry′ x
@@ -131,9 +140,10 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
                  (fmap (fobj Curry′ b) C.id D.∘ component (fmap Curry′ B.id) x) D.∘ D.id) D.∘
                D.id D.∘ D.id) D.∘
               component (fmap Curry′ f) x
-            ≈⟨ ∘-resp-l (trans (∘-resp-r id-l) (trans id-r (trans (∘-resp-r
-                 (trans id-r (trans (∘-resp (fmap-id (fobj Curry′ b))
-                    (≈-elim (fmap-id Curry′))) id-l))) id-r))) ⟩
+            ≈⟨ D.∘-resp-l (D.≈.trans (D.∘-resp-r D.id-l) (D.≈.trans D.id-r
+                (D.≈.trans (D.∘-resp-r (D.≈.trans D.id-r (D.≈.trans
+                  (D.∘-resp (fmap-id (fobj Curry′ b))
+                    (≈-elim (fmap-id Curry′))) D.id-l))) D.id-r))) ⟩
               forth iso D.∘ component (fmap Curry′ f) x
             ∎
           )
@@ -141,22 +151,19 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
               fmap F (f , C.id) D.∘
               (forth iso D.∘ (fmap (fobj Curry′ a) C.id D.∘ component (fmap Curry′ B.id) x) D.∘ D.id) D.∘
               D.id D.∘ D.id
-            ≈⟨ ∘-resp-r (trans (∘-resp-r id-r) (trans id-r (trans (∘-resp-r
-                 (trans id-r (trans (∘-resp-l (fmap-id (fobj Curry′ a)))
-                    (trans id-l (≈-elim (fmap-id Curry′)))))) id-r))) ⟩
+            ≈⟨ D.∘-resp-r (D.≈.trans (D.∘-resp-r D.id-r) (D.≈.trans D.id-r
+                (D.≈.trans (D.∘-resp-r (D.≈.trans D.id-r (D.≈.trans
+                  (D.∘-resp-l (fmap-id (fobj Curry′ a)))
+                    (D.≈.trans D.id-l (≈-elim (fmap-id Curry′)))))) D.id-r))) ⟩
               fmap F (f , C.id) D.∘ forth iso
-            ≈⟨ sym fnat ⟩
+            ≈⟨ D.≈.sym fnat ⟩
               forth iso D.∘ fmap (fobj Curry′ b) C.id D.∘ component (fmap Curry′ f) x
-            ≈⟨ ∘-resp-r (trans (∘-resp-l (fmap-id (fobj Curry′ b))) id-l) ⟩
+            ≈⟨ D.∘-resp-r (D.≈.trans (D.∘-resp-l (fmap-id (fobj Curry′ b))) D.id-l) ⟩
               forth iso D.∘ component (fmap Curry′ f) x
             ∎
           )
       }
     where
-      open D using (id-l ; id-r ; ∘-resp ; ∘-resp-l ; ∘-resp-r)
-      open D.≈ using (sym ; trans)
-      open IsEquivalence Cat.equiv using () renaming (sym to sym-Cat)
-
       lem : ∀ x
         → NatIso (Bifunctor→Functor₁ (Eval ∘ ⟨ Curry′ × Id ⟩) x) (fobj Curry′ x)
       lem x = record
@@ -174,9 +181,7 @@ instance
           ; curry′ = λ F → record
               { arr = Curry F
               ; prop = Curry-correct {F = F}
-              ; unique = λ {g} eq →
-                  let open IsEquivalence Cat.equiv using (sym) in
-                  sym (Curry-unique eq)
+              ; unique = λ {g} eq → Cat≈.sym (Curry-unique eq)
               }
           }
       }
