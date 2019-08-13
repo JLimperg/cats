@@ -172,6 +172,23 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
           }
 
 
+  -- We get the following lemmas for free from HasExponentials, but only when
+  -- all the categories are at the same (single) level.
+
+  Uncurry : Functor B (C ↝ D) → Bifunctor B C D
+  Uncurry F = Eval ∘ ⟨ F × Id ⟩
+
+
+  Curry∘Uncurry : {F : Functor B (C ↝ D)}
+    → Curry (Uncurry F) ≈ F
+  Curry∘Uncurry {F} = Cat≈.sym (Curry-unique {Curry′ = F} Cat≈.refl)
+
+
+  Uncurry∘Curry : {F : Bifunctor B C D}
+    → Uncurry (Curry F) ≈ F
+  Uncurry∘Curry {F} = Curry-correct {F = F}
+
+
 instance
   hasExponentials : ∀ {l} → HasExponentials (Cat l l l)
   hasExponentials {l} = record
