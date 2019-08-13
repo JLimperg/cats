@@ -47,7 +47,7 @@ module _ {lo la l≈ li}
   terminal {P} {proj} isProduct c = record
       { arr = record
           { arr = θ
-          ; commute = commute
+          ; commute = λ j → ≈.sym (∃!′.prop prod j)
           }
       ; unique = λ where
           {record { arr = θ′ ; commute = commute′ }} _ →
@@ -59,9 +59,6 @@ module _ {lo la l≈ li}
 
       θ : c ᴼ ⇒ P
       θ = prod ⃗
-
-      commute : ∀ j → arr (productData→cone proj) j ∘ θ ≈ arr c j
-      commute j = ≈.sym (∃!′.prop prod j)
 
 
   product : ∀ {c}
