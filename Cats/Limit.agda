@@ -2,7 +2,7 @@ module Cats.Limit where
 
 open import Level
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Category.Cones as Cones using
   (Cone ; Cones ; ConesF ; cone-iso→obj-iso)
 open import Cats.Category.Constructions.Unique using (∃!′)
@@ -75,11 +75,11 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   module _ {D : Functor J Z} where
 
-    unique : (l m : Limit D) → l ᴼ Cs.≅ m ᴼ
+    unique : (l m : Limit D) → Iso.Build._≅_ (Cones D) (l ᴼ) (m ᴼ)
     unique l m = Terminal.terminal-unique (Cones D) (isLimit l) (isLimit m)
 
 
-    obj-unique : (l m : Limit D) → l ᴼ ᴼ Z.≅ m ᴼ ᴼ
+    obj-unique : (l m : Limit D) → Iso.Build._≅_ Z (l ᴼ ᴼ) (m ᴼ ᴼ)
     obj-unique l m = cone-iso→obj-iso _ (unique l m)
 
 

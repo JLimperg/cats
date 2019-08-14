@@ -7,7 +7,6 @@ open import Cats.Category
 open import Cats.Category.Cones as Cones using (Cone)
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro ; ≈-elim)
 open import Cats.Functor using (Functor)
-open import Cats.Limit using (Complete)
 
 open Cone
 open Cones._⇒_

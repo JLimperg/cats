@@ -3,7 +3,7 @@ module Cats.Category.Zero where
 open import Data.Empty using (⊥ ; ⊥-elim)
 open import Level
 
-open import Cats.Category
+open import Cats.Category.Base
 
 
 Zero : ∀ lo la l≈ → Category lo la l≈

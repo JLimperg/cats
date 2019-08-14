@@ -6,8 +6,9 @@ open import Cats.Trans public using (Trans ; component ; natural ; id ; _∘_)
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Functor using (Functor)
+
 
 module Build {lo la l≈ lo′ la′ l≈′}
   (C : Category lo la l≈)

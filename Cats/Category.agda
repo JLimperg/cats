@@ -12,6 +12,7 @@ import Cats.Category.Constructions.Product as Product
 import Cats.Category.Constructions.Terminal as Terminal
 import Cats.Category.Constructions.Thin as Thin
 import Cats.Category.Constructions.Unique as Unique
+import Cats.Limit as Limit
 
 
 Category = Base.Category
@@ -34,6 +35,7 @@ module Category {lo la l≈} (Cat : Base.Category lo la l≈) where
 open CCC public using (IsCCC)
 open Exponential public using (HasExponentials)
 open Initial public using (HasInitial)
+open Limit public using (_HasLimitsOf_ ; Complete)
 open Product public using
   ( HasProducts ; HasBinaryProducts ; HasFiniteProducts
   ; HasProducts→HasBinaryProducts

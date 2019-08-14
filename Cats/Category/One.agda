@@ -3,7 +3,7 @@ module Cats.Category.One where
 open import Data.Unit using (⊤ ; tt)
 open import Level
 
-open import Cats.Category
+open import Cats.Category.Base
 
 
 One : ∀ lo la l≈ → Category lo la l≈

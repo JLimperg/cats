@@ -3,7 +3,7 @@ module Cats.Category.Cones where
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Level using (_⊔_)
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Category.Cat using (Cat)
 open import Cats.Category.Fun as Fun using (Fun ; Trans)
 open import Cats.Functor using (Functor) renaming (_∘_ to _∘F_)

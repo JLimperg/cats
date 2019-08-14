@@ -9,14 +9,20 @@ open import Relation.Binary using
   (IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
-open import Cats.Category
+open import Cats.Category.Base
 open import Cats.Category.Zero
 open import Cats.Category.One
 open import Cats.Trans.Iso as NatIso using (NatIso ; iso ; forth-natural)
 open import Cats.Util.Simp using (simp!)
 
+import Cats.Category.Constructions.Iso as Iso
+
 open Functor
-open Category._≅_
+open Iso.Build._≅_
+
+
+private
+  module ≅ {lo la l≈} (C : Category lo la l≈) = Iso.Build.≅ C
 
 
 _⇒_ : ∀ {lo la l≈ lo′ la′ l≈′}
@@ -56,7 +62,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
     record { iso = F≅G ; forth-natural = fnat-GH }
     record { iso = H≅I ; forth-natural = fnat-HI }
       = record
-      { iso = E.≅.trans F≅G (fobj-resp G H≅I)
+      { iso = ≅.trans E F≅G (fobj-resp G H≅I)
       ; forth-natural = λ {_} {_} {f} →
           begin
             (fmap G (forth H≅I) E.∘ forth F≅G) E.∘ fmap F (fmap H f)
@@ -84,7 +90,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   id-r : {F : C ⇒ D} → F ∘ id ≈ F
   id-r {F} = record
-      { iso = D.≅.refl
+      { iso = ≅.refl D
       ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
       }
     where
@@ -93,7 +99,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
   id-l : {F : C ⇒ D} → id ∘ F ≈ F
   id-l {F} = record
-      { iso = D.≅.refl
+      { iso = ≅.refl D
       ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
       }
     where
@@ -105,7 +111,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
     → (F : E ⇒ X) (G : D ⇒ E) (H : C ⇒ D)
     → (F ∘ G) ∘ H ≈ F ∘ (G ∘ H)
   assoc {E = E} {X} _ _ _ = record
-      { iso = X.≅.refl
+      { iso = ≅.refl X
       ; forth-natural = X.≈.trans X.id-l (X.≈.sym X.id-r)
       }
     where
