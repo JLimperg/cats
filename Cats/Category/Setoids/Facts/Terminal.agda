@@ -1,34 +1,21 @@
 module Cats.Category.Setoids.Facts.Terminal where
 
-open import Data.Unit using (⊤)
 open import Level
+open import Relation.Binary using (Setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids using (Setoids)
 
-
-module Build {l} {l≈} where
-
-  open Category (Setoids l l≈)
+import Data.Unit as Unit
 
 
-  One : Obj
-  One = record
-      { Carrier = Lift l ⊤
-      ; _≈_ = λ _ _ → Lift l≈ ⊤
-      }
-
-
-  isTerminal : IsTerminal One
-  isTerminal X = ∃!-intro _ _ _
-
-
-open Build
+⊤ : ∀ {l l′} → Setoid l l′
+⊤ = record
+  { Carrier = Lift _ Unit.⊤
+  ; _≈_ = λ _ _ → Lift _ Unit.⊤
+  }
 
 
 instance
   hasTerminal : ∀ {l l≈} → HasTerminal (Setoids l l≈)
-  hasTerminal = record
-      { One = One
-      ; isTerminal = isTerminal
-      }
+  hasTerminal = record { ⊤ = ⊤ }

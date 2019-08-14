@@ -285,7 +285,7 @@ HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
 HasProducts→HasTerminal {C = C} record { Π′ = Π }
     = let P = Π {I = ⊥} λ() in
       record
-        { One = Product.prod P
+        { ⊤ = Product.prod P
         ; isTerminal = Build.nullaryProduct-Terminal C P
         }
 

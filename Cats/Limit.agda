@@ -36,7 +36,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
 
   IsLimit : {D : Functor J Z} → Cone D → Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′)
-  IsLimit {D} = Terminal.IsTerminal (Cones D)
+  IsLimit {D} = Terminal.IsTerminal {C = Cones D}
 
 
   record Limit (D : Functor J Z) : Set (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) where
@@ -76,7 +76,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
   module _ {D : Functor J Z} where
 
     unique : (l m : Limit D) → Iso.Build._≅_ (Cones D) (l ᴼ) (m ᴼ)
-    unique l m = Terminal.terminal-unique (Cones D) (isLimit l) (isLimit m)
+    unique l m = Terminal.terminal-unique (isLimit l) (isLimit m)
 
 
     obj-unique : (l m : Limit D) → Iso.Build._≅_ Z (l ᴼ ᴼ) (m ᴼ ᴼ)

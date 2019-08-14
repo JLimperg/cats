@@ -11,6 +11,6 @@ open import Cats.Category.Sets using (Sets)
 instance
   hasTerminal : ∀ {l} → HasTerminal (Sets l)
   hasTerminal = record
-    { One = Lift _ ⊤
+    { ⊤ = Lift _ ⊤
     ; isTerminal = λ X → record { unique = λ _ _ → refl }
     }

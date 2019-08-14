@@ -1,42 +1,32 @@
 module Cats.Category.Setoids.Facts.Initial where
 
-open import Data.Empty using (⊥)
 open import Level
+open import Relation.Binary using (Setoid)
 
 open import Cats.Category
 open import Cats.Category.Setoids using (Setoids ; ≈-intro)
 
-
-module Build {l} {l≈} where
-
-  open Category (Setoids l l≈)
+import Data.Empty as Empty
 
 
-  Zero : Obj
-  Zero = record
-      { Carrier = Lift l ⊥
-      ; _≈_ = λ()
-      ; isEquivalence = record
-          { refl = λ{}
-          ; sym = λ{}
-          ; trans = λ{}
-          }
+⊥ : ∀ {l l′} → Setoid l l′
+⊥ = record
+  { Carrier = Lift _ Empty.⊥
+  ; _≈_ = λ()
+  ; isEquivalence = record
+      { refl = λ{}
+      ; sym = λ{}
+      ; trans = λ{}
       }
-
-
-  isInitial : IsInitial Zero
-  isInitial X = ∃!-intro
-      (record { arr = λ() ; resp = λ{} })
-      _
-      λ _ → ≈-intro λ {}
-
-
-open Build
+  }
 
 
 instance
   hasInitial : ∀ {l l≈} → HasInitial (Setoids l l≈)
   hasInitial = record
-      { Zero = Zero
-      ; isInitial = isInitial
+    { ⊥ = ⊥
+    ; isInitial = λ X → record
+      { arr = record { arr = λ() ; resp = λ{} }
+      ; unique = λ _ → ≈-intro λ{}
       }
+    }

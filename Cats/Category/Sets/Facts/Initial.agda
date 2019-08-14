@@ -10,10 +10,9 @@ open import Cats.Category.Sets using (Sets)
 instance
   hasInitial : ∀ {l} → HasInitial (Sets l)
   hasInitial = record
-    { Zero = Lift _ ⊥
+    { ⊥ = Lift _ ⊥
     ; isInitial = λ X → record
       { arr = λ()
-      ; prop = _
       ; unique = λ { _ () }
       }
     }

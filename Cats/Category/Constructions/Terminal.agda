@@ -17,38 +17,43 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
 
   IsTerminal : Obj → Set (lo ⊔ la ⊔ l≈)
-  IsTerminal One = ∀ X → ∃! X One
-
-
-  terminal→id-unique : ∀ {A} → IsTerminal A → IsUnique (id {A})
-  terminal→id-unique {A} term id′ with term A
-  ... | ∃!-intro id″ _ id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
-
-
-  terminal-unique : ∀ {A B} → IsTerminal A → IsTerminal B → A ≅ B
-  terminal-unique {A} {B} A-term B-term = record
-      { forth = ∃!′.arr (B-term A)
-      ; back = ∃!′.arr (A-term B)
-      ; back-forth = ≈.sym (terminal→id-unique A-term _)
-      ; forth-back = ≈.sym (terminal→id-unique B-term _)
-      }
-
-
-  X⇒Terminal-unique : ∀ {One} → IsTerminal One → ∀ {X} {f g : X ⇒ One} → f ≈ g
-  X⇒Terminal-unique term {X} {f} {g} with term X
-  ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
+  IsTerminal ⊤ = ∀ X → ∃! X ⊤
 
 
   record HasTerminal : Set (lo ⊔ la ⊔ l≈) where
     field
-      One : Obj
-      isTerminal : IsTerminal One
-
-    ⇒One : ∀ {X} → X ⇒ One
-    ⇒One {X} = ∃!′.arr (isTerminal X)
-
-    ⇒One-unique : ∀ {X} {f : X ⇒ One} → ⇒One ≈ f
-    ⇒One-unique {X} = ∃!′.unique (isTerminal X) _
+      ⊤ : Obj
+      isTerminal : IsTerminal ⊤
 
 
-open Build public
+    ! : ∀ X → X ⇒ ⊤
+    ! X = ∃!′.arr (isTerminal X)
+
+
+    !-unique : ∀ {X} (f : X ⇒ ⊤) → ! X ≈ f
+    !-unique {X} f = ∃!′.unique (isTerminal X) _
+
+
+    ⇒⊤-unique : ∀ {X} (f g : X ⇒ ⊤) → f ≈ g
+    ⇒⊤-unique f g = ≈.trans (≈.sym (!-unique f)) (!-unique g)
+
+
+    ⊤-unique : ∀ {X} → IsTerminal X → X ≅ ⊤
+    ⊤-unique {X} term = record
+      { forth = ! X
+      ; back = term ⊤ .∃!′.arr
+      ; back-forth = ≈.trans (≈.sym (term X .∃!′.unique _)) (term X .∃!′.unique _)
+      ; forth-back = ⇒⊤-unique _ _
+      }
+
+
+  terminal-unique : ∀ {X Y} → IsTerminal X → IsTerminal Y → X ≅ Y
+  terminal-unique X-term Y-term
+    = HasTerminal.⊤-unique (record { isTerminal = Y-term }) X-term
+
+
+open Build public using (HasTerminal)
+
+private
+  open module Build′ {lo la l≈} {C : Category lo la l≈}
+    = Build C public using (IsTerminal ; terminal-unique)

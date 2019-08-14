@@ -17,38 +17,43 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
 
 
   IsInitial : Obj → Set (lo ⊔ la ⊔ l≈)
-  IsInitial Zero = ∀ X → ∃! Zero X
-
-
-  initial→id-unique : ∀ {A} → IsInitial A → IsUnique (id {A})
-  initial→id-unique {A} init id′ with init A
-  ... | ∃!-intro id″ _ id″-uniq = ≈.trans (≈.sym (id″-uniq _)) (id″-uniq _)
-
-
-  initial-unique : ∀ {A B} → IsInitial A → IsInitial B → A ≅ B
-  initial-unique {A} {B} A-init B-init = record
-      { forth = ∃!′.arr (A-init B)
-      ; back = ∃!′.arr (B-init A)
-      ; back-forth = ≈.sym (initial→id-unique A-init _)
-      ; forth-back = ≈.sym (initial→id-unique B-init _)
-      }
-
-
-  Initial⇒X-unique : ∀ {Zero} → IsInitial Zero → ∀ {X} {f g : Zero ⇒ X} → f ≈ g
-  Initial⇒X-unique init {X} {f} {g} with init X
-  ... | ∃!-intro x _ x-uniq = ≈.trans (≈.sym (x-uniq _)) (x-uniq _)
+  IsInitial ⊥ = ∀ X → ∃! ⊥ X
 
 
   record HasInitial : Set (lo ⊔ la ⊔ l≈) where
     field
-      Zero : Obj
-      isInitial : IsInitial Zero
-
-    Zero⇒ : ∀ {X} → Zero ⇒ X
-    Zero⇒ {X} = ∃!′.arr (isInitial X)
-
-    Zero⇒-unique : ∀ {X} {f : Zero ⇒ X} → Zero⇒ ≈ f
-    Zero⇒-unique {X} = ∃!′.unique (isInitial X) _
+      ⊥ : Obj
+      isInitial : IsInitial ⊥
 
 
-open Build public
+    ¡ : ∀ X → ⊥ ⇒ X
+    ¡ X = ∃!′.arr (isInitial X)
+
+
+    ¡-unique : ∀ {X} (f : ⊥ ⇒ X) → ¡ X ≈ f
+    ¡-unique {X} f = ∃!′.unique (isInitial X) _
+
+
+    ⊥⇒-unique : ∀ {X} (f g : ⊥ ⇒ X) → f ≈ g
+    ⊥⇒-unique f g = ≈.trans (≈.sym (¡-unique f)) (¡-unique g)
+
+
+    ⊥-unique : ∀ {X} → IsInitial X → X ≅ ⊥
+    ⊥-unique {X} init = record
+      { forth = init ⊥ .∃!′.arr
+      ; back = ¡ X
+      ; back-forth = ≈.trans (≈.sym (init X .∃!′.unique _)) (init X .∃!′.unique _)
+      ; forth-back = ⊥⇒-unique _ _
+      }
+
+
+  initial-unique : ∀ {X Y} → IsInitial X → IsInitial Y → X ≅ Y
+  initial-unique X-init Y-init
+    = HasInitial.⊥-unique (record { isInitial = Y-init }) X-init
+
+
+open Build public using (HasInitial)
+
+private
+  open module Build′ {lo la l≈} {C : Category lo la l≈}
+    = Build C public using (IsInitial ; initial-unique)
