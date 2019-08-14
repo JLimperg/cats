@@ -5,6 +5,7 @@ open import Level
 open import Cats.Category.Base
 open import Cats.Category.Cones as Cones using
   (Cone ; Cones ; ConesF ; cone-iso→obj-iso)
+open import Cats.Category.Constructions.Terminal using (HasTerminal)
 open import Cats.Category.Constructions.Unique using (∃!′)
 open import Cats.Category.Fun as Fun using (Trans ; _↝_)
 open import Cats.Functor using (Functor)
@@ -44,17 +45,20 @@ module _ {lo la l≈ lo′ la′ l≈′}
       cone : Cone D
       isLimit : IsLimit cone
 
-    ! : ∀ (cone′ : Cone D) → cone′ Cs.⇒ cone
-    ! cone′ = isLimit cone′ .∃!′.arr
+
+    private
+      hasTerminal : HasTerminal (Cones D)
+      hasTerminal = record { ⊤ = cone ; isTerminal = isLimit }
+
+
+    open HasTerminal hasTerminal public using
+      ( ! ; !-unique ) renaming
+      ( ⊤-unique to cone-unique
+      ; ⇒⊤-unique to ⇒cone-unique )
 
 
     !! : ∀ (cone′ : Cone D) → Apex cone′ Z.⇒ Apex cone
-    !! cone′ = (! cone′) .arr
-
-
-    !-unique : ∀ {cone′ : Cone D} (f : cone′ Cs.⇒ cone)
-      → ! cone′ Cs.≈ f
-    !-unique {cone′} f = isLimit cone′ .∃!′.unique {f} _
+    !! cone′ = ! cone′ .arr
 
 
     !!-unique : ∀ {cone′ : Cone D} (f : cone′ Cs.⇒ cone)
