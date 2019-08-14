@@ -173,85 +173,89 @@ apFunctor {Y = Y} {Z} F {J} {D} c = record
     open Z.≈-Reasoning
 
 
-ConesF : ∀ {lo la l≈ lo′ la′ l≈′}
-  → {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
-  → Functor (Fun C D) (Cat (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la′ ⊔ l≈′) l≈′)
-ConesF {C = C} {D} = record
-  { fobj = Cones
-  ; fmap = λ {F} {G} ϑ → record
-    { fobj = λ c → trans ϑ c
-    ; fmap = λ f → record
-      { arr = f .arr
-      ; commute = λ j → D.≈.trans D.assoc (D.∘-resp-r (commute f j))
-      }
-    ; fmap-resp = λ x → x
-    ; fmap-id = D.≈.refl
-    ; fmap-∘ = D.≈.refl
-    }
-  ; fmap-resp = λ ϑ≈ι → record
-    { iso = record
-      { forth = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (D.≈.sym (≈-elim ϑ≈ι)))
-        }
-      ; back = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (≈-elim ϑ≈ι))
-        }
-      ; back-forth = D.id-l
-      ; forth-back = D.id-l
-      }
-    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
-    }
-  ; fmap-id = record
-    { iso = record
-      { forth = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r (D.≈.sym D.id-l)
-        }
-      ; back = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r D.id-l
-        }
-      ; back-forth = D.id-l
-      ; forth-back = D.id-l
-      }
-    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
-    }
-  ; fmap-∘ = record
-    { iso = record
-      { forth = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r D.assoc
-        }
-      ; back = record
-        { arr = D.id
-        ; commute = λ j → D.≈.trans D.id-r D.unassoc
-        }
-      ; back-forth = D.id-l
-      ; forth-back = D.id-l
-      }
-    ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
-    }
-  }
+module _ {lo la l≈ lo′ la′ l≈′}
+  {C : Category lo la l≈} {D : Category lo′ la′ l≈′}
   where
-    module D = Category D
 
-    trans : {F G : Functor C D} → Trans F G → Cone F → Cone G
-    trans {F} {G} θ c = record
-      { Apex = c .Apex
-      ; arr = λ j → component θ j D.∘ c .arr j
-      ; commute = λ {i} {j} α →
-          let open D.≈-Reasoning in
-          begin
-            component θ j D.∘ c .arr j
-          ≈⟨ D.∘-resp-r (c .commute α) ⟩
-            component θ j D.∘ fmap F α D.∘ c .arr i
-          ≈⟨ D.unassoc ⟩
-            (component θ j D.∘ fmap F α) D.∘ c .arr i
-          ≈⟨ D.∘-resp-l (natural θ) ⟩
-            (fmap G α D.∘ component θ i) D.∘ c .arr i
-          ≈⟨ D.assoc ⟩
-            fmap G α D.∘ component θ i D.∘ c .arr i
-          ∎
+  module D = Category D
+
+
+  trans : {F G : Functor C D} → Trans F G → Cone F → Cone G
+  trans {F} {G} θ c = record
+    { Apex = c .Apex
+    ; arr = λ j → component θ j D.∘ c .arr j
+    ; commute = λ {i} {j} α →
+      let open D.≈-Reasoning in
+      begin
+      component θ j D.∘ c .arr j
+      ≈⟨ D.∘-resp-r (c .commute α) ⟩
+      component θ j D.∘ fmap F α D.∘ c .arr i
+      ≈⟨ D.unassoc ⟩
+      (component θ j D.∘ fmap F α) D.∘ c .arr i
+      ≈⟨ D.∘-resp-l (natural θ) ⟩
+      (fmap G α D.∘ component θ i) D.∘ c .arr i
+      ≈⟨ D.assoc ⟩
+      fmap G α D.∘ component θ i D.∘ c .arr i
+      ∎
+    }
+
+
+  ConesF : Functor (Fun C D) (Cat (lo ⊔ la ⊔ lo′ ⊔ la′ ⊔ l≈′) (lo ⊔ la′ ⊔ l≈′) l≈′)
+  ConesF = record
+    { fobj = Cones
+    ; fmap = λ {F} {G} ϑ → record
+      { fobj = λ c → trans ϑ c
+      ; fmap = λ f → record
+        { arr = f .arr
+        ; commute = λ j → D.≈.trans D.assoc (D.∘-resp-r (commute f j))
+        }
+      ; fmap-resp = λ x → x
+      ; fmap-id = D.≈.refl
+      ; fmap-∘ = D.≈.refl
       }
+    ; fmap-resp = λ ϑ≈ι → record
+      { iso = record
+        { forth = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (D.≈.sym (≈-elim ϑ≈ι)))
+          }
+        ; back = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r (D.∘-resp-l (≈-elim ϑ≈ι))
+          }
+        ; back-forth = D.id-l
+        ; forth-back = D.id-l
+        }
+      ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+      }
+    ; fmap-id = record
+      { iso = record
+        { forth = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r (D.≈.sym D.id-l)
+          }
+        ; back = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r D.id-l
+          }
+        ; back-forth = D.id-l
+        ; forth-back = D.id-l
+        }
+      ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+      }
+    ; fmap-∘ = record
+      { iso = record
+        { forth = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r D.assoc
+          }
+        ; back = record
+          { arr = D.id
+          ; commute = λ j → D.≈.trans D.id-r D.unassoc
+          }
+        ; back-forth = D.id-l
+        ; forth-back = D.id-l
+        }
+      ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
+      }
+    }

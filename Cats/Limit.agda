@@ -46,6 +46,9 @@ module _ {lo la l≈ lo′ la′ l≈′}
       isLimit : IsLimit cone
 
 
+    open Cone cone using () renaming (arr to proj)
+
+
     private
       hasTerminal : HasTerminal (Cones D)
       hasTerminal = record { ⊤ = cone ; isTerminal = isLimit }
@@ -57,13 +60,17 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; ⇒⊤-unique to ⇒cone-unique )
 
 
-    !! : ∀ (cone′ : Cone D) → Apex cone′ Z.⇒ Apex cone
+    !! : (cone′ : Cone D) → cone′ .Cone.Apex Z.⇒ cone .Cone.Apex
     !! cone′ = ! cone′ .arr
 
 
-    !!-unique : ∀ {cone′ : Cone D} (f : cone′ Cs.⇒ cone)
+    !!-unique : {cone′ : Cone D} (f : cone′ Cs.⇒ cone)
       → !! cone′ Z.≈ f .arr
     !!-unique f = !-unique f
+
+
+    arr∘!! : ∀ cone′ {j} → proj j Z.∘ !! cone′ Z.≈ cone′ .Cone.arr j
+    arr∘!! cone′ = ! cone′ .commute _
 
 
     open Cone cone public
@@ -87,6 +94,55 @@ module _ {lo la l≈ lo′ la′ l≈′}
     obj-unique l m = cone-iso→obj-iso _ (unique l m)
 
 
+  module _ {F G : Functor J Z} where
+
+    trans : (ϑ : Trans F G) (l : Limit F) (m : Limit G)
+      → l .Apex Z.⇒ m .Apex
+    trans ϑ l m = !! m (ConesF .fmap ϑ .fobj (l .cone))
+
+
+    arr∘trans : ∀ ϑ l m c
+      →   m .arr c Z.∘ trans ϑ l m
+      Z.≈ ϑ .component c Z.∘ l .arr c
+    arr∘trans ϑ l m c = arr∘!! m (ConesF .fmap ϑ .fobj (l .cone))
+
+
+    trans-resp : ∀ {ϑ ι} l m
+      → ϑ Fun.≈ ι
+      → trans ϑ l m Z.≈ trans ι l m
+    trans-resp {ϑ} {ι} l m ϑ≈ι = !!-unique m record
+      { commute = λ j → Z.≈.trans (arr∘trans ι l m j)
+          (Z.∘-resp-l (Z.≈.sym (≈-elim ϑ≈ι)))
+      }
+
+  trans-id : {F : Functor J Z} (l : Limit F)
+    → trans Fun.id l l Z.≈ Z.id
+  trans-id l = !!-unique l record
+    { commute = λ j → Z.≈.trans Z.id-r (Z.≈.sym Z.id-l)
+    }
+
+
+  trans-∘ : {F G H : Functor J Z} (ϑ : Trans G H) (ι : Trans F G)
+    → ∀ l m n
+    → trans ϑ m n Z.∘ trans ι l m Z.≈ trans (ϑ Fun.∘ ι) l n
+  trans-∘ {F} {G} {H} ϑ ι l m n = Z.≈.sym (!!-unique n record
+      { commute = λ j → let open Z.≈-Reasoning in
+        begin
+          n .arr j Z.∘ trans ϑ m n Z.∘ trans ι l m
+        ≈⟨ Z.unassoc ⟩
+          (n .arr j Z.∘ trans ϑ m n) Z.∘ trans ι l m
+        ≈⟨ Z.∘-resp-l (arr∘trans ϑ m n j ) ⟩
+          (ϑ .component j Z.∘ m .arr j) Z.∘ trans ι l m
+        ≈⟨ Z.assoc ⟩
+          ϑ .component j Z.∘ m .arr j Z.∘ trans ι l m
+        ≈⟨ Z.∘-resp-r (arr∘trans ι l m j) ⟩
+          ϑ .component j Z.∘ ι .component j Z.∘ l .arr j
+        ≈⟨ Z.unassoc ⟩
+          (ϑ Fun.∘ ι) .component j Z.∘ l .arr j
+        ∎
+      })
+
+
 record _HasLimitsOf_
   {lo la l≈} (C : Category lo la l≈) {lo′ la′ l≈′} (J : Category lo′ la′ l≈′)
   : Set (lo ⊔ la ⊔ l≈ ⊔ lo′ ⊔ la′ ⊔ l≈′ )
@@ -107,43 +163,10 @@ record _HasLimitsOf_
   limF : Functor (J ↝ C) C
   limF = record
     { fobj = λ F → lim F
-    ; fmap = λ {F} {G} ϑ → !! (lim′ _) (ConesF .fmap ϑ .fobj (lim′ _ .cone))
-    ; fmap-resp = λ {F} {G} {ϑ} {ι} ϑ≈ι → !!-unique (lim′ _) record
-      { commute = λ j → C.≈.trans
-          (commute (! (lim′ G) (ConesF .fmap ι .fobj (cone (lim′ F)))) j)
-          (C.∘-resp-l (C.≈.sym (≈-elim ϑ≈ι)))
-      }
-    ; fmap-id = !!-unique (lim′ _) record
-        { commute = λ j → C.≈.trans C.id-r (C.≈.sym C.id-l)
-        }
-    ; fmap-∘ = λ {F} {G} {H} {ϑ} {ι} → C.≈.sym (!!-unique (lim′ _) record
-        { commute = λ j → let open C.≈-Reasoning in
-          begin
-            lim′ H .cone .arr j C.∘
-            !! (lim′ H) (ConesF .fmap ϑ .fobj (lim′ G .cone)) C.∘
-            !! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))
-          ≈⟨ C.unassoc ⟩
-            (lim′ H .cone .arr j C.∘
-            !! (lim′ H) (ConesF .fmap ϑ .fobj (lim′ G .cone))) C.∘
-            !! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))
-          ≈⟨ C.∘-resp-l
-              (commute (! (lim′ H) (ConesF .fmap ϑ .fobj (lim′ G .cone))) j) ⟩
-            ConesF .fmap ϑ .fobj (lim′ G .cone) .arr j C.∘
-            !! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))
-          ≡⟨⟩
-            (component ϑ j C.∘ lim′ G .cone .arr j) C.∘
-            !! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))
-          ≈⟨ C.assoc ⟩
-            component ϑ j C.∘ lim′ G .cone .arr j C.∘
-            !! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))
-          ≈⟨ C.∘-resp-r (commute (! (lim′ G) (ConesF .fmap ι .fobj (lim′ F .cone))) j) ⟩
-            component ϑ j C.∘ ConesF .fmap ι .fobj (lim′ F .cone) .arr j
-          ≡⟨⟩
-            component ϑ j C.∘ (component ι j C.∘ lim′ F .cone .arr j)
-          ≈⟨ C.unassoc ⟩
-            component (ϑ J↝C.∘ ι) j C.∘ lim′ F .cone .arr j
-          ∎
-        })
+    ; fmap = λ {F} {G} ϑ → trans ϑ (lim′ _) (lim′ _)
+    ; fmap-resp = λ ϑ≈ι → trans-resp (lim′ _) (lim′ _) ϑ≈ι
+    ; fmap-id = trans-id (lim′ _)
+    ; fmap-∘ = trans-∘ _ _ (lim′ _) (lim′ _) (lim′ _)
     }
 
 
