@@ -5,6 +5,8 @@ open import Cats.Category.Setoids.Facts.Exponential public using
   (hasExponentials)
 open import Cats.Category.Setoids.Facts.Initial public using
   (hasInitial)
+open import Cats.Category.Setoids.Facts.Limit public using
+  (complete)
 open import Cats.Category.Setoids.Facts.Product public using
   (hasProducts ; hasBinaryProducts ; hasFiniteProducts)
 open import Cats.Category.Setoids.Facts.Terminal public using
