@@ -12,7 +12,7 @@ open import Cats.Category.Cat as Cat′ using
   (id to Id)
 open import Cats.Category.Cat.Facts.Product using (hasBinaryProducts ; ⟨_×_⟩)
 open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
-open import Cats.Category.Fun.Facts using (NatIso→≅)
+open import Cats.Category.Fun.Facts.Iso using (≈→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Trans.Iso as NatIso using (NatIso)
 open import Cats.Util.Conv
@@ -127,7 +127,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
               fobj (Curry F) x
             ≈⟨ NatIso.iso (Curry-resp (Cat≈.sym eq)) ⟩
               fobj (Curry (Eval ∘ ⟨ Curry′ × Id ⟩)) x
-            ≈⟨ NatIso→≅ (lem x) ⟩
+            ≈⟨ ≈→≅ (lem x) ⟩
               fobj Curry′ x
             ∎
           )

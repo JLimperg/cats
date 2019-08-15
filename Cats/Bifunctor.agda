@@ -8,6 +8,7 @@ open import Cats.Category
 open import Cats.Category.Cat using (_∘_ ; ∘-resp ; _≈_ ; equiv)
 open import Cats.Category.Cat.Facts.Product using (Swap ; hasBinaryProducts)
 open import Cats.Category.Fun using (_↝_ ; Trans; ≈-intro)
+open import Cats.Category.Fun.Facts.Iso using (≈→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
@@ -15,7 +16,6 @@ open import Cats.Trans.Iso using (NatIso)
 open import Cats.Util.Simp using (simp!)
 
 import Cats.Category.Constructions.Iso as Iso
-import Cats.Category.Fun.Facts as Fun
 
 open Functor
 open Trans
@@ -163,7 +163,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
       → F ≈ G
       → transposeBifunctor₁ F ≈ transposeBifunctor₁ G
     transposeBifunctor₁-resp {F} {G} F≈G = record
-        { iso = Fun.≈→≅ (Bifunctor→Functor₁-resp F≈G C.≅.refl)
+        { iso = ≈→≅ (Bifunctor→Functor₁-resp F≈G C.≅.refl)
         ; forth-natural = λ {c} {d} {f} → ≈-intro (
             let open E.≈-Reasoning in
             triangle (fmap G (f , D.id) E.∘ forth (iso F≈G))

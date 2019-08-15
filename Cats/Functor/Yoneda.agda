@@ -9,7 +9,7 @@ open import Cats.Category
 open import Cats.Category.Cat.Facts.Exponential using (Eval)
 open import Cats.Category.Cat.Facts.Product using (First ; Swap)
 open import Cats.Category.Fun using (_↝_ ; Trans ; ≈-intro ; ≈-elim)
-open import Cats.Category.Fun.Facts using (NatIso→≅)
+open import Cats.Category.Fun.Facts.Iso using (≈→≅)
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Setoids using (Setoids ; ≈-intro ; ≈-elim ; ≈-elim′)
@@ -129,7 +129,7 @@ module _ {l} {C : Category l l l} where
 
 
   yoneda : (Hom[ Presheaves ] ∘ First (Op y)) Funs.≅ (Eval ∘ Swap)
-  yoneda = NatIso→≅ record
+  yoneda = ≈→≅ record
       { iso = λ { {c , F} → iso c F }
       ; forth-natural = λ where
           {c , F} {c′ , F′} {f , θ} → ≈-intro λ {ι} {τ} ι≈τ →
