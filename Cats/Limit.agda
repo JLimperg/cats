@@ -73,6 +73,23 @@ module _ {lo la l≈ lo′ la′ l≈′}
     arr∘!! cone′ = ! cone′ .commute _
 
 
+    !!∘ : ∀ {C D} (f : C Cs.⇒ D)
+      → !! D Z.∘ f .arr Z.≈ !! C
+    !!∘ {C} {D} f = Z.≈.sym (!!-unique record
+      { commute = λ j →
+        let open Z.≈-Reasoning in
+        begin
+          proj j Z.∘ !! D Z.∘ f .arr
+        ≈⟨ Z.unassoc ⟩
+          (proj j Z.∘ !! D) Z.∘ f .arr
+        ≈⟨ Z.∘-resp-l (arr∘!! D) ⟩
+          D .arr j Z.∘ f .arr
+        ≈⟨ f .commute j ⟩
+          C .arr j
+        ∎
+      })
+
+
     open Cone cone public
 
 
