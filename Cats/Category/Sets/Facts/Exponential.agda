@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 -- NOTE: requires functional extensionality.
 module Cats.Category.Sets.Facts.Exponential where
 

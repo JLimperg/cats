@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Profunctor where
 
 open import Data.Product using (_,_)

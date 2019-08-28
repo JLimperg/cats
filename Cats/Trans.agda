@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Trans where
 
 open import Level using (_⊔_)

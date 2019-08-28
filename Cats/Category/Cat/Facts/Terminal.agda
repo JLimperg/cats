@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Cat.Facts.Terminal where
 
 open import Cats.Category

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Wedges where
 
 open import Level using (_⊔_ ; suc)

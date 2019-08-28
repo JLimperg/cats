@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Setoids where
 
 open import Cats.Util.SetoidMorphism public using

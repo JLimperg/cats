@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Fun where
 
 open import Cats.Trans public using (Trans ; component ; natural ; id ; _∘_)

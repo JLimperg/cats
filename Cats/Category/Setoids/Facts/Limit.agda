@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Setoids.Facts.Limit where
 
 open import Level using (_⊔_)

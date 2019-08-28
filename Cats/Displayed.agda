@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Displayed where
 
 open import Data.Product using (Σ ; Σ-syntax ; _,_)

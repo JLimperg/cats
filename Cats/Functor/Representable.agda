@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Functor.Representable where
 
 open import Data.Product using (_×_ ; _,_)
@@ -8,7 +9,6 @@ open import Cats.Category
 open import Cats.Category.Op using (_ᵒᵖ)
 open import Cats.Category.Setoids as Setoids using (Setoids ; ≈-intro)
 open import Cats.Util.SetoidReasoning
-open import Cats.Util.Simp using (simp!)
 
 import Relation.Binary.PropositionalEquality as ≡
 
@@ -20,6 +20,7 @@ module Build {lo la l≈} (C : Category lo la l≈) where
 
   private
     module S = Category (Setoids la l≈)
+
 
   fmap : ∀ {A B A′ B′} → (A′ ⇒ A) × (B ⇒ B′) → Homset A B S.⇒ Homset A′ B′
   fmap {A} {B} {A′} {B′} (f , g) = record
@@ -39,7 +40,13 @@ module Build {lo la l≈} (C : Category lo la l≈) where
           {A , B} {A′ , B′} {A″ , B″} {f , f′} {g , g′} → ≈-intro λ {x} {y} x≈y →
             begin⟨ Homset A″ B″ ⟩
               f′ ∘ (g′ ∘ x ∘ g) ∘ f
-            ≈⟨ simp! C ⟩
+            ≈⟨ unassoc ⟩
+              (f′ ∘ (g′ ∘ x ∘ g)) ∘ f
+            ≈⟨ ∘-resp-l unassoc ⟩
+              ((f′ ∘ g′) ∘ x ∘ g) ∘ f
+            ≈⟨ assoc ⟩
+              (f′ ∘ g′) ∘ (x ∘ g) ∘ f
+            ≈⟨ ∘-resp-r assoc ⟩
               (f′ ∘ g′) ∘ x ∘ g ∘ f
             ≈⟨ ∘-resp-r (∘-resp-l x≈y) ⟩
               (f′ ∘ g′) ∘ y ∘ g ∘ f

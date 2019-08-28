@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Util.Monad where
 
 open import Category.Monad public

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.One where
 
 open import Data.Unit using (⊤ ; tt)

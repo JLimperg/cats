@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 module Cats.Category.Sets.Facts.Terminal where
 
 open import Data.Unit using (⊤)

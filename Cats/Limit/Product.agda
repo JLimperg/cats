@@ -1,7 +1,9 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Limit.Product where
 
 open import Data.Bool using (Bool ; true ; false)
 open import Data.Product using (_×_ ; _,_ ; ∃-syntax ; proj₁ ; proj₂)
+open import Relation.Binary.PropositionalEquality using (_≡_)
 
 open import Cats.Category
 open import Cats.Category.Cones using (Cones ; Cone ; HasObj-Cone)
@@ -13,7 +15,8 @@ open import Cats.Util.Conv
 
 module _ {lo la l≈ li}
   {Cat : Category lo la l≈}
-  {I : Set li} {O : I → Category.Obj Cat}
+  {I : Set li} (I-set : {i j : I} (p q : i ≡ j) → p ≡ q)
+  {O : I → Category.Obj Cat}
   where
 
   open Category Cat
@@ -21,8 +24,8 @@ module _ {lo la l≈ li}
   open Cone using (arr)
 
 
-  F : Functor (Discrete I) Cat
-  F = Discrete.functor I O
+  F : Functor (Discrete I-set) Cat
+  F = Discrete.functor I-set O
 
 
   private

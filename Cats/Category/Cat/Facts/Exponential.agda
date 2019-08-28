@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Cat.Facts.Exponential where
 
 open import Data.Product using (_,_)
@@ -16,7 +17,6 @@ open import Cats.Category.Fun.Facts.Iso using (≈→≅)
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Trans.Iso as NatIso using (NatIso)
 open import Cats.Util.Conv
-open import Cats.Util.Simp using (simp!)
 
 import Cats.Category.Base as Base
 import Cats.Category.Constructions.Unique as Unique
@@ -63,7 +63,9 @@ module _ {lo la l≈ lo′ la′ l≈′}
               (fmap H f C.∘ component θ b) C.∘ (fmap G g C.∘ component ι a)
             ≈⟨ C.∘-resp-l (C.≈.sym (natural θ)) ⟩
               (component θ c C.∘ fmap G f) C.∘ (fmap G g C.∘ component ι a)
-            ≈⟨ simp! C ⟩
+            ≈⟨ C.assoc ⟩
+              component θ c C.∘ fmap G f C.∘ (fmap G g C.∘ component ι a)
+            ≈⟨ C.∘-resp-r C.unassoc ⟩
               component θ c C.∘ (fmap G f C.∘ fmap G g) C.∘ component ι a
             ≈⟨ C.∘-resp-r (C.∘-resp-l (fmap-∘ G)) ⟩
               component θ c C.∘ fmap G (f B.∘ g) C.∘ component ι a
@@ -195,9 +197,9 @@ instance
       { _↝′_ = λ B C → record
           { Cᴮ = B ↝ C
           ; eval = Eval
-          ; curry′ = λ F → record
+          ; curry′ = λ {A} F → record
               { arr = Curry F
-              ; prop = Curry-correct {F = F}
+              ; prop = Curry-correct {B = A} {B} {C} {F}
               ; unique = λ {g} eq → Cat≈.sym (Curry-unique eq)
               }
           }

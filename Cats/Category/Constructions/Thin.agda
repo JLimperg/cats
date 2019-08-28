@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Constructions.Thin where
 
 open import Cats.Category.Base

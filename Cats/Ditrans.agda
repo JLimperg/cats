@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Ditrans where
 
 open import Level using (Level ; _⊔_)

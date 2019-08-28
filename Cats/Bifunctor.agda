@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Bifunctor where
 
 open import Data.Product using (_,_)
@@ -13,7 +14,6 @@ open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Functor using (Functor)
 open import Cats.Trans.Iso using (NatIso)
-open import Cats.Util.Simp using (simp!)
 
 import Cats.Category.Constructions.Iso as Iso
 
@@ -98,11 +98,13 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
             triangle (fmap G (forth x≅y , f) E.∘ forth Fx≅Gx)
             ( begin
                 ((E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx) E.∘ fmap F (C.id , f)
-              ≈⟨ simp! E ⟩
+              ≈⟨ E.assoc ⟩
+                (E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx E.∘ fmap F (C.id , f)
+              ≈⟨ E.∘-resp-l E.id-l ⟩
                 fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx E.∘ fmap F (C.id , f)
               ≈⟨ E.∘-resp-r fnat ⟩
                 fmap G (forth x≅y , D.id) E.∘ (fmap G (C.id , f) E.∘ forth Fx≅Gx)
-              ≈⟨ simp! E ⟩
+              ≈⟨ E.unassoc ⟩
                 (fmap G (forth x≅y , D.id) E.∘ fmap G (C.id , f)) E.∘ forth Fx≅Gx
               ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
                 fmap G (forth x≅y C.∘ C.id , D.id D.∘ f) E.∘ forth Fx≅Gx
@@ -114,7 +116,7 @@ module _ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″} where
                 fmap G (C.id , f) E.∘ (E.id E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
               ≈⟨ E.∘-resp-r (E.∘-resp-l E.id-l) ⟩
                 fmap G (C.id , f) E.∘ fmap G (forth x≅y , D.id) E.∘ forth Fx≅Gx
-              ≈⟨ simp! E ⟩
+              ≈⟨ E.unassoc ⟩
                 (fmap G (C.id , f) E.∘ fmap G (forth x≅y , D.id)) E.∘ forth Fx≅Gx
               ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
                 fmap G (C.id C.∘ forth x≅y , f D.∘ D.id) E.∘ forth Fx≅Gx

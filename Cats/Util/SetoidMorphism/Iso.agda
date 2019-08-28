@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Util.SetoidMorphism.Iso where
 
 open import Data.Product using (_,_ ; proj₁ ; proj₂)

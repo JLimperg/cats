@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Setoids.Facts.Terminal where
 
 open import Level

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Trans.Iso where
 
 open import Level using (_⊔_)
@@ -5,7 +6,6 @@ open import Relation.Binary.PropositionalEquality using (_≡_ ; refl)
 
 open import Cats.Category.Base
 open import Cats.Functor using (Functor)
-open import Cats.Util.Simp using (simp!)
 open import Cats.Trans using (Trans ; component ; natural)
 
 import Cats.Category.Constructions.Iso as Iso
@@ -44,11 +44,15 @@ module _ {lo la l≈ lo′ la′ l≈′}
           back iso D.∘ fmap G f D.∘ D.id
         ≈⟨ D.∘-resp-r (D.∘-resp-r (D.≈.sym (forth-back iso))) ⟩
           back iso D.∘ fmap G f D.∘ forth iso D.∘ back iso
-        ≈⟨ simp! D ⟩
+        ≈⟨ D.∘-resp-r D.unassoc ⟩
           back iso D.∘ (fmap G f D.∘ forth iso) D.∘ back iso
         ≈⟨ D.∘-resp-r (D.∘-resp-l (D.≈.sym forth-natural)) ⟩
           back iso D.∘ (forth iso D.∘ fmap F f) D.∘ back iso
-        ≈⟨ simp! D ⟩
+        ≈⟨ D.unassoc ⟩
+          (back iso D.∘ (forth iso D.∘ fmap F f)) D.∘ back iso
+        ≈⟨ D.∘-resp-l D.unassoc ⟩
+          ((back iso D.∘ forth iso) D.∘ fmap F f) D.∘ back iso
+        ≈⟨ D.assoc ⟩
           (back iso D.∘ (forth iso)) D.∘ fmap F f D.∘ back iso
         ≈⟨ D.∘-resp-l (back-forth iso) ⟩
           D.id D.∘ fmap F f D.∘ back iso

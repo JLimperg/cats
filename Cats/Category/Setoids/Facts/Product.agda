@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Setoids.Facts.Product where
 
 open import Data.Product as P using (_,_ ; <_,_>)

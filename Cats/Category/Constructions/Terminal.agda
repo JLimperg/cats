@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Constructions.Terminal where
 
 open import Data.Product using (proj₁ ; proj₂)

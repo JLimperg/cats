@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Util.Logic.Constructive where
 
 open import Data.Empty public

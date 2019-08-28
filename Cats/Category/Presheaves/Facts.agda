@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Presheaves.Facts where
 
 open import Cats.Category.Presheaves.Facts.Exponential public using

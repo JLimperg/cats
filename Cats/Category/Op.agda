@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Op where
 
 open import Relation.Binary using (Rel ; _Preserves₂_⟶_⟶_)

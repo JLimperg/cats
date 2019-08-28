@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Fun.Facts.Product where
 
 open import Data.Product using (_,_)

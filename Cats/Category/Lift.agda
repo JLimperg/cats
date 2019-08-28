@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Lift where
 
 open import Relation.Binary using (IsEquivalence)

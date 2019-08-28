@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Preorder where
 
 open import Data.Unit using (⊤ ; tt)

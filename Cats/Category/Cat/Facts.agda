@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Cat.Facts where
 
 open import Cats.Category.Cat.Facts.Initial public using (hasInitial)

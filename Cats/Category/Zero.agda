@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Zero where
 
 open import Data.Empty using (⊥ ; ⊥-elim)

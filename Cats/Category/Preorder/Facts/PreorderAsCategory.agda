@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Preorder.Facts.PreorderAsCategory where
 
 open import Data.Bool using (true ; false)

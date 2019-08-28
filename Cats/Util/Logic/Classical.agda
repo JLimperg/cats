@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 module Cats.Util.Logic.Classical where
 
 open import Cats.Util.Logic.Constructive public

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Sets where
 
 open import Data.Product using (Σ ; _×_ ; proj₁ ; proj₂)

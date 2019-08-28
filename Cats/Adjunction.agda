@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Adjunction where
 
 open import Level using (suc ; _⊔_)

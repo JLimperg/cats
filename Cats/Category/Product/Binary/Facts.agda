@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Product.Binary.Facts where
 
 open import Cats.Category

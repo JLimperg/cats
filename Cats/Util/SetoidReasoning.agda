@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Util.SetoidReasoning where
 
 open import Relation.Binary.Reasoning.MultiSetoid public

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Presheaves where
 
 open import Level using (_⊔_ ; suc)

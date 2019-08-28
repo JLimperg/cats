@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Cat where
 
 open import Cats.Functor public using (Functor ; _∘_ ; id)
@@ -13,7 +14,6 @@ open import Cats.Category.Base
 open import Cats.Category.Zero
 open import Cats.Category.One
 open import Cats.Trans.Iso as NatIso using (NatIso ; iso ; forth-natural)
-open import Cats.Util.Simp using (simp!)
 
 import Cats.Category.Constructions.Iso as Iso
 
@@ -66,11 +66,11 @@ module _ {lo la l≈ lo′ la′ l≈′}
       ; forth-natural = λ {_} {_} {f} →
           begin
             (fmap G (forth H≅I) E.∘ forth F≅G) E.∘ fmap F (fmap H f)
-          ≈⟨ simp! E ⟩
+          ≈⟨ E.assoc ⟩
             fmap G (forth H≅I) E.∘ forth F≅G E.∘ fmap F (fmap H f)
           ≈⟨ E.∘-resp-r fnat-GH ⟩
             fmap G (forth H≅I) E.∘ fmap G (fmap H f) E.∘ forth F≅G
-          ≈⟨ simp! E ⟩
+          ≈⟨ E.unassoc ⟩
             (fmap G (forth H≅I) E.∘ fmap G (fmap H f)) E.∘ forth F≅G
           ≈⟨ E.∘-resp-l (fmap-∘ G) ⟩
             fmap G (forth H≅I D.∘ fmap H f) E.∘ forth F≅G
@@ -78,7 +78,7 @@ module _ {lo la l≈ lo′ la′ l≈′}
             fmap G (fmap I f D.∘ forth H≅I) E.∘ forth F≅G
           ≈⟨ E.∘-resp-l (E.≈.sym (fmap-∘ G)) ⟩
             (fmap G (fmap I f) E.∘ fmap G (forth H≅I)) E.∘ forth F≅G
-          ≈⟨ simp! E ⟩
+          ≈⟨ E.assoc ⟩
             fmap G (fmap I f) E.∘ fmap G (forth H≅I) E.∘ forth F≅G
           ∎
       }

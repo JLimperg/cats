@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Product.Binary where
 
 open import Data.Product.Relation.Pointwise.NonDependent using

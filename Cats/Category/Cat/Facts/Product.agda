@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Cat.Facts.Product where
 
 open import Data.Bool using (true ; false)

@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Fun.Facts where
 
 open import Cats.Category.Fun.Facts.Iso public using

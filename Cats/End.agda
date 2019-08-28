@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.End where
 
 open import Level using (_⊔_)

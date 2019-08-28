@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Functor.Op where
 
 open import Cats.Category.Base

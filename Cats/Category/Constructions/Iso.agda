@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Constructions.Iso where
 
 open import Relation.Binary using (IsEquivalence ; Setoid)
