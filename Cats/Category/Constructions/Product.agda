@@ -26,6 +26,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   open Iso.Build Cat
   open Unique.Build Cat
   open Terminal.Build Cat
+  open _≅_
 
 
   IsProduct : ∀ {li} {I : Set li} (O : I → Obj) P → (∀ i → P ⇒ O i)
@@ -193,6 +194,26 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
         ∎
 
 
+  Product-resp-≅ : ∀ {li} {I : Set li} {O O′ : I → Obj}
+    → (∀ i → O i ≅ O′ i)
+    → (P : Product O) (P′ : Product O′)
+    → P ᴼ ≅ P′ ᴼ
+  Product-resp-≅ O≅O′ P P′ = record
+    { forth = factorizer P′ (λ i → O≅O′ i .forth ∘ proj P i)
+    ; back = factorizer P (λ i → O≅O′ i .back ∘ proj P′ i)
+    ; back-forth = ≈.trans (factorizer-∘ P)
+        (factorizer-unique P id λ i →
+          ≈.trans assoc (≈.trans (∘-resp-r (factorizer-proj P′))
+            (≈.trans unassoc (≈.trans (∘-resp-l (O≅O′ i .back-forth))
+              (≈.trans id-l (≈.sym id-r))))))
+    ; forth-back = ≈.trans (factorizer-∘ P′)
+        (factorizer-unique P′ id λ i →
+          ≈.trans assoc (≈.trans (∘-resp-r (factorizer-proj P))
+            (≈.trans unassoc (≈.trans (∘-resp-l (O≅O′ i .forth-back))
+              (≈.trans id-l (≈.sym id-r))))))
+    }
+
+
 open Build public using
   (IsProduct ; IsBinaryProduct ; Product ; BinaryProduct ; HasObj-Product)
 
@@ -202,6 +223,7 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
   where
   private module Bld = Build C
   open Category C
+  open Iso.Build C
 
   field
     Π′ : {I : Set li} (O : I → Obj) → Product C O
@@ -280,6 +302,12 @@ record HasProducts {lo la l≈} li (C : Category lo la l≈)
     times-factorizer {O} {O′} = Bld.times-factorizer (Π′ O) (Π′ O′)
 
 
+    Π-resp-≅ : ∀ {O O′ : I → Obj}
+      → (∀ i → O i ≅ O′ i)
+      → Π O ≅ Π O′
+    Π-resp-≅ {O} {O′} O≅O′ = Bld.Product-resp-≅ O≅O′ (Π′ O) (Π′ O′)
+
+
 HasProducts→HasTerminal : ∀ {lo la l≈} {C : Category lo la l≈}
   → HasProducts zero C
   → HasTerminal C
@@ -296,6 +324,7 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   where
   private module Bld = Build C
   open Category C
+  open Iso.Build C
   open ≈-Reasoning
 
   infixr 2 _×_ _×′_ ⟨_×_⟩ ⟨_,_⟩
@@ -415,6 +444,14 @@ record HasBinaryProducts {lo la l≈} (C : Category lo la l≈)
   ⟨×⟩-⟨,⟩ {A} {B} {C} {B′} {C′} = ≈.trans
     (Bld.times-factorizer (B ×′ C) (B′ ×′ C′))
     (Bld.factorizer-resp (B′ ×′ C′) (Bool-elim ≈.refl ≈.refl))
+
+
+  ×-resp-≅ : ∀ {A A′ B B′}
+    → A ≅ A′
+    → B ≅ B′
+    → (A × B) ≅ (A′ × B′)
+  ×-resp-≅ {A} {A′} {B} {B′} A≅A′ B≅B′
+    = Bld.Product-resp-≅ (Bool-elim A≅A′ B≅B′) (A ×′ B) (A′ ×′ B′)
 
 
 -- The following is conceptually trivial, but we have to dig quite deep to
