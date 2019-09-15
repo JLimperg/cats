@@ -8,6 +8,7 @@ open import Cats.Category.Constructions.Product as Product using
   (HasBinaryProducts)
 open import Cats.Util.Conv
 
+import Cats.Category.Constructions.Iso as Iso
 import Cats.Category.Constructions.Unique as Unique
 
 
@@ -19,7 +20,9 @@ module Build {lo la l≈}
   open Category Cat
   open ≈-Reasoning
   open Unique.Build Cat
+  open Iso.Build Cat
   open HasBinaryProducts hasBinaryProducts
+  open _≅_
 
 
   record Exp (B C : Obj) : Set (lo ⊔ la ⊔ l≈) where
@@ -83,6 +86,39 @@ module Build {lo la l≈}
     ))
 
 
+  Exp-resp-≅ : ∀ {A A′ B B′}
+    → A ≅ A′
+    → B ≅ B′
+    → (E : Exp A B) (E′ : Exp A′ B′)
+    → E ᴼ ≅ E′ ᴼ
+  Exp-resp-≅ A≅A′ B≅B′ E E′ = record
+    { forth = curry E′ (B≅B′ .forth ∘ eval E ∘ ⟨ id × A≅A′ .back ⟩)
+    ; back = curry E (B≅B′ .back ∘ eval E′ ∘ ⟨ id × A≅A′ .forth ⟩)
+    -- Today in our series on 'trivial' properties (also copy-and-paste
+    -- programming).
+    ; back-forth = ≈.trans (curry∘curry E′ E)
+        (curry-unique E (≈.trans (∘-resp-r ⟨×⟩-id) (≈.trans id-r
+        (≈.sym (≈.trans assoc (≈.trans (∘-resp-r (≈.trans assoc (≈.trans
+        (∘-resp-r (≈.trans ⟨×⟩-∘
+        (≈.trans (⟨×⟩-resp (≈.trans id-l (≈.sym id-r)) (≈.trans id-r (≈.sym id-l)))
+        (≈.sym ⟨×⟩-∘)))) (≈.trans unassoc (∘-resp-l (eval-curry E′))))))
+        (≈.trans unassoc (≈.trans (∘-resp-l (≈.trans unassoc
+        (≈.trans (∘-resp-l (B≅B′ .back-forth)) id-l)))
+        (≈.trans assoc (≈.trans (∘-resp-r (≈.trans ⟨×⟩-∘
+        (≈.trans (⟨×⟩-resp id-l (A≅A′ .back-forth)) ⟨×⟩-id))) id-r))))))))))
+    ; forth-back = ≈.trans (curry∘curry E E′)
+        (curry-unique E′ (≈.trans (∘-resp-r ⟨×⟩-id) (≈.trans id-r
+        (≈.sym (≈.trans assoc (≈.trans (∘-resp-r (≈.trans assoc (≈.trans
+        (∘-resp-r (≈.trans ⟨×⟩-∘
+        (≈.trans (⟨×⟩-resp (≈.trans id-l (≈.sym id-r)) (≈.trans id-r (≈.sym id-l)))
+        (≈.sym ⟨×⟩-∘)))) (≈.trans unassoc (∘-resp-l (eval-curry E))))))
+        (≈.trans unassoc (≈.trans (∘-resp-l (≈.trans unassoc
+        (≈.trans (∘-resp-l (B≅B′ .forth-back)) id-l)))
+        (≈.trans assoc (≈.trans (∘-resp-r (≈.trans ⟨×⟩-∘
+        (≈.trans (⟨×⟩-resp id-l (A≅A′ .forth-back)) ⟨×⟩-id))) id-r))))))))))
+    }
+
+
 record HasExponentials {lo la l≈}
   (Cat : Category lo la l≈)
   : Set (lo ⊔ la ⊔ l≈)
@@ -90,6 +126,7 @@ record HasExponentials {lo la l≈}
   private open module Bld = Build Cat using (Exp)
   open Category Cat
   open Unique.Build Cat
+  open Iso.Build Cat
 
   infixr 1 _↝′_ _↝_
 
@@ -142,6 +179,14 @@ record HasExponentials {lo la l≈}
     → {f : (B ↝ C) × Y ⇒ Z} {g : A × B ⇒ C}
     → curry f ∘ curry g ≈ curry (f ∘ ⟨ curry g × id ⟩)
   curry∘curry {B = B} {C} {Y} {Z} = Bld.curry∘curry (B ↝′ C) (Y ↝′ Z)
+
+
+  ↝-resp-≅ : ∀ {A A′ B B′}
+    → A ≅ A′
+    → B ≅ B′
+    → (A ↝ B) ≅ (A′ ↝ B′)
+  ↝-resp-≅ {A} {A′} {B} {B′} A≅A′ B≅B′
+    = Bld.Exp-resp-≅ A≅A′ B≅B′ (A ↝′ B) (A′ ↝′ B′)
 
 
 open Build public
