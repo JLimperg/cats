@@ -154,7 +154,7 @@ module _ {l} {C : Category l l l} where
                   arr (component (θ Pre.∘ τ) c′ Sets.∘ fmap (fobj y c) f) C.id
                 ≡⟨⟩
                   arr (component (θ Pre.∘ τ) c′) (C.id C.∘ C.id C.∘ f)
-                ≈⟨ ≈-elim (≈-elim (Pre.∘-resp-r {f = θ} (Pre.≈.sym {i = ι} {τ} ι≈τ)))
+                ≈⟨ ≈-elim (≈-elim (Pre.∘-resp-r {f = θ} (Pre.≈.sym ι≈τ)))
                     (C.≈.trans C.id-l C.id-l) ⟩
                   arr (component (θ Pre.∘ ι) c′) f
                 ∎
