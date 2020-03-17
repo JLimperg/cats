@@ -4,7 +4,7 @@ module Cats.Category.Base where
 open import Level
 open import Relation.Binary using
   (Rel ; IsEquivalence ; _Preserves_⟶_ ; _Preserves₂_⟶_⟶_ ; Setoid)
-open import Relation.Binary.EqReasoning as EqReasoning
+open import Relation.Binary.Reasoning.Setoid as EqReasoning
 
 import Cats.Util.SetoidReasoning as SetoidR
 

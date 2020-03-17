@@ -23,11 +23,11 @@ pattern argD x = arg (arg-info visible relevant) x
 pattern defD x = def x []
 
 
-fromArg : ∀ {A} → Arg A → A
+fromArg : ∀ {α} {A : Set α} → Arg A → A
 fromArg (arg _ x) = x
 
 
-fromAbs : ∀ {A} → Abs A → A
+fromAbs : ∀ {α} {A : Set α} → Abs A → A
 fromAbs (abs _ x) = x
 
 
@@ -47,12 +47,12 @@ blockOnAnyMeta (pat-lam cs args) = do
 blockOnAnyMeta (pi a b) = do
     blockOnAnyMeta (fromArg a)
     blockOnAnyMeta (fromAbs b)
-blockOnAnyMeta (sort (set t)) = blockOnAnyMeta t
-blockOnAnyMeta (sort (lit n)) = return _
-blockOnAnyMeta (sort unknown) = return _
+blockOnAnyMeta (agda-sort (Sort.set t)) = blockOnAnyMeta t
+blockOnAnyMeta (agda-sort (Sort.lit n)) = return _
+blockOnAnyMeta (agda-sort Sort.unknown) = return _
 blockOnAnyMeta (lit l) = return _
 blockOnAnyMeta (meta x _) = blockOnMeta x
 blockOnAnyMeta unknown = return _
 
-blockOnAnyMeta-clause (clause ps t) = blockOnAnyMeta t
-blockOnAnyMeta-clause (absurd-clause ps) = return _
+blockOnAnyMeta-clause (Clause.clause ps t) = blockOnAnyMeta t
+blockOnAnyMeta-clause (Clause.absurd-clause ps) = return _

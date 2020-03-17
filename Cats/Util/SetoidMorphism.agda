@@ -4,7 +4,7 @@ module Cats.Util.SetoidMorphism where
 open import Data.Product using (∃-syntax ; _,_ ; proj₁ ; proj₂)
 open import Level using (_⊔_ ; suc)
 open import Relation.Binary using (Rel ; Setoid ; IsEquivalence ; _Preserves_⟶_)
-open import Relation.Binary.SetoidReasoning
+open import Relation.Binary.Reasoning.MultiSetoid
 
 open import Cats.Util.Function using () renaming (_∘_ to _⊚_)
 

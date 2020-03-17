@@ -1,7 +1,7 @@
 {-# OPTIONS --without-K --safe #-}
 module Cats.Category.Product.Binary where
 
-open import Data.Product.Relation.Pointwise.NonDependent using
+open import Data.Product.Relation.Binary.Pointwise.NonDependent using
   (×-isEquivalence ; Pointwise)
 open import Level using (_⊔_)
 open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)

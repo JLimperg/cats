@@ -2,7 +2,7 @@
 module Cats.Category.Setoids.Facts.Product where
 
 open import Data.Product as P using (_,_ ; <_,_>)
-open import Data.Product.Relation.Pointwise.NonDependent using (×-setoid)
+open import Data.Product.Relation.Binary.Pointwise.NonDependent using (×-setoid)
 open import Relation.Binary using (Setoid)
 
 open import Cats.Category

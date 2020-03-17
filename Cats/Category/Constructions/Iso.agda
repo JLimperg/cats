@@ -7,7 +7,7 @@ open import Level
 open import Cats.Category.Base
 open import Cats.Util.Conv
 
-import Relation.Binary.EqReasoning as EqReasoning
+import Relation.Binary.Reasoning.Setoid as EqReasoning
 
 import Cats.Category.Constructions.Epi as Epi
 import Cats.Category.Constructions.Mono as Mono
