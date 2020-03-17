@@ -1,7 +1,11 @@
-{-# OPTIONS --without-K #-}
-module Cats.Category.Sets.Facts where
+{-# OPTIONS --without-K --safe #-}
+open import Axiom.Extensionality.Propositional using (Extensionality)
 
-open import Cats.Category.Sets.Facts.Exponential public using (hasExponentials)
+module Cats.Category.Sets.Facts
+  (funext : ∀ {a b} → Extensionality a b)
+  where
+
+open import Cats.Category.Sets.Facts.Exponential funext public using (hasExponentials)
 open import Cats.Category.Sets.Facts.Initial public using (hasInitial)
 open import Cats.Category.Sets.Facts.Product public using
   (hasBinaryProducts ; hasFiniteProducts)

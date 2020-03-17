@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 module Cats.Category.Sets.Facts.Initial where
 
 open import Data.Empty using (⊥ ; ⊥-elim)

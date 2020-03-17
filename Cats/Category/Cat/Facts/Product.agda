@@ -2,7 +2,7 @@
 module Cats.Category.Cat.Facts.Product where
 
 open import Data.Bool using (true ; false)
-open import Data.Product using (_,_)
+open import Data.Product using (_,_ ; proj₁ ; proj₂)
 open import Level using (_⊔_)
 
 open import Cats.Category
@@ -10,7 +10,6 @@ open import Cats.Category.Cat as Cat using (Cat ; Functor ; _⇒_ ; _∘_ ; id ;
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Category.Product.Binary.Facts using (iso-intro)
 open import Cats.Trans.Iso using (NatIso)
-open import Cats.Util.Logic.Constructive using (_∧_ ; ∧-eliml ; ∧-elimr)
 
 open Functor
 
@@ -24,21 +23,21 @@ module _ {lo la l≈ lo′ la′ l≈′}
     module D = Category D
 
 
-  proj₁ : (C × D) ⇒ C
-  proj₁ = record
-      { fobj = ∧-eliml
-      ; fmap = ∧-eliml
-      ; fmap-resp = ∧-eliml
+  projl : (C × D) ⇒ C
+  projl = record
+      { fobj = proj₁
+      ; fmap = proj₁
+      ; fmap-resp = proj₁
       ; fmap-id = C.≈.refl
       ; fmap-∘ = C.≈.refl
       }
 
 
-  proj₂ : (C × D) ⇒ D
-  proj₂ = record
-      { fobj = ∧-elimr
-      ; fmap = ∧-elimr
-      ; fmap-resp = ∧-elimr
+  projr : (C × D) ⇒ D
+  projr = record
+      { fobj = proj₂
+      ; fmap = proj₂
+      ; fmap-resp = proj₂
       ; fmap-id = D.≈.refl
       ; fmap-∘ = D.≈.refl
       }
@@ -58,21 +57,21 @@ module _ {lo la l≈ lo′ la′ l≈′}
 
     module _ {F : X ⇒ C} {G : X ⇒ D} where
 
-      ⟨,⟩-proj₁ : proj₁ ∘ ⟨ F , G ⟩ ≈ F
+      ⟨,⟩-proj₁ : projl ∘ ⟨ F , G ⟩ ≈ F
       ⟨,⟩-proj₁ = record
           { iso = C.≅.refl
           ; forth-natural = C.≈.trans C.id-l (C.≈.sym C.id-r)
           }
 
 
-      ⟨,⟩-proj₂ : proj₂ ∘ ⟨ F , G ⟩ ≈ G
+      ⟨,⟩-proj₂ : projr ∘ ⟨ F , G ⟩ ≈ G
       ⟨,⟩-proj₂ = record
           { iso = D.≅.refl
           ; forth-natural = D.≈.trans D.id-l (D.≈.sym D.id-r)
           }
 
 
-      ⟨,⟩-unique : ∀ {H} → proj₁ ∘ H ≈ F → proj₂ ∘ H ≈ G → H ≈ ⟨ F , G ⟩
+      ⟨,⟩-unique : ∀ {H} → projl ∘ H ≈ F → projr ∘ H ≈ G → H ≈ ⟨ F , G ⟩
       ⟨,⟩-unique {H} eq₁ eq₂ = record
           { iso = iso-intro (iso eq₁) (iso eq₂)
           ; forth-natural = forth-natural eq₁ , forth-natural eq₂
@@ -84,14 +83,14 @@ module _ {lo la l≈ lo′ la′ l≈′}
 instance
   hasBinaryProducts : ∀ {lo la l≈} → HasBinaryProducts (Cat lo la l≈)
   hasBinaryProducts {lo} {la} {l≈} .HasBinaryProducts._×′_ C D
-      = mkBinaryProduct proj₁ proj₂ isBinaryProduct
+      = mkBinaryProduct projl projr isBinaryProduct
     where
       open module Catt = Category (Cat lo la l≈) using
         (IsBinaryProduct ; mkBinaryProduct ; ∃!-intro)
       module ≈ = Catt.≈
 
       isBinaryProduct : ∀ {C D : Category lo la l≈}
-        → IsBinaryProduct (C × D) proj₁ proj₂
+        → IsBinaryProduct (C × D) projl projr
       isBinaryProduct {C} {D} {X} F G = ∃!-intro
           ⟨ F , G ⟩
           (≈.sym (⟨,⟩-proj₁ {G = G}) , ≈.sym (⟨,⟩-proj₂ {F = F}))
@@ -107,7 +106,7 @@ instance
   → {C : Category lo₁ la₁ l≈₁} {C′ : Category lo₂ la₂ l≈₂}
   → {D : Category lo₃ la₃ l≈₃} {D′ : Category lo₄ la₄ l≈₄}
   → C ⇒ C′ → D ⇒ D′ → (C × D) ⇒ (C′ × D′)
-⟨ F × G ⟩ = ⟨ F ∘ proj₁ , G ∘ proj₂ ⟩
+⟨ F × G ⟩ = ⟨ F ∘ projl , G ∘ projr ⟩
 
 
 First : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂ lo₃ la₃ l≈₃}
@@ -127,4 +126,4 @@ Second F = ⟨ id × F ⟩
 Swap : ∀ {lo₁ la₁ l≈₁ lo₂ la₂ l≈₂}
   → {C : Category lo₁ la₁ l≈₁} {D : Category lo₂ la₂ l≈₂}
   → (C × D) ⇒ (D × C)
-Swap = ⟨ proj₂ , proj₁ ⟩
+Swap = ⟨ projr , projl ⟩

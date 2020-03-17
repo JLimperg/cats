@@ -1,10 +1,11 @@
 {-# OPTIONS --without-K --safe #-}
 module Cats.Category.Product.Binary.Facts where
 
+open import Data.Product using (_,_ ; proj₁ ; proj₂) renaming (_×_ to _×T_)
+
 open import Cats.Category
 open import Cats.Category.Product.Binary using (_×_)
 open import Cats.Functor
-open import Cats.Util.Logic.Constructive using (_∧_ ; _,_ ; ∧-eliml ; ∧-elimr)
 
 
 module _ {lo la l≈ lo′ la′ l≈′}
@@ -29,17 +30,17 @@ module _ {lo la l≈ lo′ la′ l≈′}
       }
 
 
-  iso-elim : ∀ {A A′ B B′} → (A , B) ×.≅ (A′ , B′) → A C.≅ A′ ∧ B D.≅ B′
+  iso-elim : ∀ {A A′ B B′} → (A , B) ×.≅ (A′ , B′) → A C.≅ A′ ×T B D.≅ B′
   iso-elim f
       = record
-      { forth = ∧-eliml (forth f)
-      ; back = ∧-eliml (back f)
-      ; back-forth = ∧-eliml (back-forth f)
-      ; forth-back = ∧-eliml (forth-back f)
+      { forth = proj₁ (forth f)
+      ; back = proj₁ (back f)
+      ; back-forth = proj₁ (back-forth f)
+      ; forth-back = proj₁ (forth-back f)
       }
       , record
-      { forth = ∧-elimr (forth f)
-      ; back = ∧-elimr (back f)
-      ; back-forth = ∧-elimr (back-forth f)
-      ; forth-back = ∧-elimr (forth-back f)
+      { forth = proj₂ (forth f)
+      ; back = proj₂ (back f)
+      ; back-forth = proj₂ (back-forth f)
+      ; forth-back = proj₂ (forth-back f)
       }

@@ -7,8 +7,7 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 open import Relation.Binary.PropositionalEquality as ≡ using (_≡_)
 
 open import Cats.Category.Base
-open import Cats.Util.Function
-open import Cats.Util.Logic.Constructive
+open import Cats.Util.Function using (id ; _∘_)
 
 
 module _ {l} {A B : Set l} where

@@ -1,6 +1,7 @@
 {-# OPTIONS --without-K --safe #-}
 module Cats.Category.Product.Binary where
 
+open import Data.Product using (_,_) renaming (_×_ to _×T_)
 open import Data.Product.Relation.Binary.Pointwise.NonDependent using
   (×-isEquivalence ; Pointwise)
 open import Level using (_⊔_)
@@ -8,7 +9,6 @@ open import Relation.Binary using (Rel ; IsEquivalence ; _Preserves₂_⟶_⟶_)
 
 
 open import Cats.Category.Base
-open import Cats.Util.Logic.Constructive using (_∧_ ; _,_)
 
 
 module Build {lo la l≈ lo′ la′ l≈′}
@@ -26,11 +26,11 @@ module Build {lo la l≈ lo′ la′ l≈′}
 
 
   Obj : Set (lo ⊔ lo′)
-  Obj = C.Obj ∧ D.Obj
+  Obj = C.Obj ×T D.Obj
 
 
   _⇒_ : Obj → Obj → Set (la ⊔ la′)
-  (A , A′) ⇒ (B , B′) = (A C.⇒ B) ∧ (A′ D.⇒ B′)
+  (A , A′) ⇒ (B , B′) = (A C.⇒ B) ×T (A′ D.⇒ B′)
 
 
   _≈_ : ∀ {A B} → Rel (A ⇒ B) (l≈ ⊔ l≈′)

@@ -1,11 +1,13 @@
-{-# OPTIONS --without-K #-}
--- NOTE: requires functional extensionality.
-module Cats.Category.Sets.Facts.Exponential where
+{-# OPTIONS --without-K --safe #-}
+open import Axiom.Extensionality.Propositional using (Extensionality)
+
+module Cats.Category.Sets.Facts.Exponential
+  (funext : ∀ {a b} → Extensionality a b)
+  where
 
 open import Data.Product using (_×_ ; _,_ ; proj₁ ; proj₂)
 open import Relation.Binary.PropositionalEquality using (_≡_ ; refl ; sym)
 
-open import Cats.Axioms using (funext)
 open import Cats.Category
 open import Cats.Category.Sets using (Sets)
 open import Cats.Category.Sets.Facts.Product using (hasBinaryProducts)

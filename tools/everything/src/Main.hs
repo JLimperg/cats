@@ -30,7 +30,7 @@ main = do
                     (extension ==? ".agda" ||? extension ==? ".lagda")
                     srcDir
   writeFileUTF8 outputFile $ unlines
-    [ "{-# OPTIONS --without-K #-}"
+    [ "{-# OPTIONS --without-K --safe #-}"
     , format modules
     ]
 

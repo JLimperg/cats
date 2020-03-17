@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 module Cats.Functor.Yoneda where
 
 open import Data.Product using (_,_)

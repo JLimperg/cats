@@ -2,13 +2,14 @@
 module Cats.Category.Preorder.Facts.PreorderAsCategory where
 
 open import Data.Bool using (true ; false)
+open import Data.Product using (_×_ ; _,_ ; proj₁ ; proj₂)
+open import Data.Sum using (_⊎_ ; inj₁ ; inj₂)
 open import Relation.Binary using (Preorder)
 
 import Level
 
 open import Cats.Category
 open import Cats.Category.Preorder using (preorderAsCategory)
-open import Cats.Util.Logic.Constructive
 
 
 module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
@@ -22,11 +23,11 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
 
 
   _≈_⊔_ : Obj → Obj → Obj → Set l≤
-  lub ≈ x ⊔ y = x ∼ lub ∧ y ∼ lub ∧ (lub ∼ x ∨ lub ∼ y)
+  lub ≈ x ⊔ y = x ∼ lub × y ∼ lub × (lub ∼ x ⊎ lub ∼ y)
 
 
   _≈_⊓_ : Obj → Obj → Obj → Set l≤
-  glb ≈ x ⊓ y = glb ∼ x ∧ glb ∼ y ∧ (x ∼ glb ∨ y ∼ glb)
+  glb ≈ x ⊓ y = glb ∼ x × glb ∼ y × (x ∼ glb ⊎ y ∼ glb)
 
 
   IsMinimum : Obj → Set (lc Level.⊔ l≤)
@@ -48,10 +49,10 @@ module _ {lc l≈ l≤} (P : Preorder lc l≈ l≤) where
   ⊓-isBinaryProduct : ∀ {glb x y}
     → (pl : glb ∼ x)
     → (pr : glb ∼ y)
-    → (x ∼ glb ∨ y ∼ glb)
+    → (x ∼ glb ⊎ y ∼ glb)
     → IsBinaryProduct glb pl pr
-  ⊓-isBinaryProduct pl pr (∨-introl x∼glb) xl xr = ∃!-intro (x∼glb ∘ xl) _ _
-  ⊓-isBinaryProduct pl pr (∨-intror y∼glb) xl xr = ∃!-intro (y∼glb ∘ xr) _ _
+  ⊓-isBinaryProduct pl pr (inj₁ x∼glb) xl xr = ∃!-intro (x∼glb ∘ xl) _ _
+  ⊓-isBinaryProduct pl pr (inj₂ y∼glb) xl xr = ∃!-intro (y∼glb ∘ xr) _ _
 
 
   ⊓-to-BinaryProduct : ∀ {glb x y} → glb ≈ x ⊓ y → BinaryProduct x y

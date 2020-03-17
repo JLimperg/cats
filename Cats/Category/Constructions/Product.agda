@@ -2,13 +2,14 @@
 module Cats.Category.Constructions.Product where
 
 open import Data.Bool using (Bool ; true ; false ; not)
+open import Data.Empty using (⊥)
+open import Data.Product using (_,_ ; proj₁ ; proj₂) renaming (_×_ to _×T_)
 open import Level
 
 open import Cats.Category.Base
 open import Cats.Category.Constructions.Terminal as Terminal using (HasTerminal)
 open import Cats.Functor using (Functor)
 open import Cats.Util.Conv
-open import Cats.Util.Logic.Constructive
 
 import Cats.Category.Constructions.Iso as Iso
 import Cats.Category.Constructions.Unique as Unique
@@ -41,7 +42,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
   IsBinaryProduct : ∀ {A B} P → (P ⇒ A) → (P ⇒ B) → Set (lo ⊔ la ⊔ l≈)
   IsBinaryProduct {A} {B} P projl projr
       = ∀ {X} (xl : X ⇒ A) (xr : X ⇒ B)
-        → ∃![ u ] (xl ≈ projl ∘ u ∧ xr ≈ projr ∘ u)
+        → ∃![ u ] (xl ≈ projl ∘ u ×T xr ≈ projr ∘ u)
 
 
   IsBinaryProduct→IsProduct : ∀ {A B P} {pl : P ⇒ A} {pr : P ⇒ B}
@@ -49,7 +50,7 @@ module Build {lo la l≈} (Cat : Category lo la l≈) where
     → IsProduct (Bool-elim A B) P (Bool-elim pl pr)
   IsBinaryProduct→IsProduct isBinProd x = record
       { arr = f ⃗
-      ; prop = Bool-elim (∧-eliml (∃!′.prop f)) (∧-elimr (∃!′.prop f))
+      ; prop = Bool-elim (proj₁ (∃!′.prop f)) (proj₂ (∃!′.prop f))
       ; unique = λ eq → ∃!′.unique f (eq true , eq false)
       }
     where

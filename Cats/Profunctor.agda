@@ -66,11 +66,11 @@ Functor→Profunctor₁ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈�
   → {C : Category lo la l≈} {D : Category lo′ la′ l≈′} {X : Category lo″ la″ l≈″}
   → Functor (C ᵒᵖ) D
   → Profunctor C X D
-Functor→Profunctor₁ F = F Cat.∘ Cat.proj₁
+Functor→Profunctor₁ F = F Cat.∘ Cat.projl
 
 
 Functor→Profunctor₂ : ∀ {lo la l≈ lo′ la′ l≈′ lo″ la″ l≈″}
   → {C : Category lo la l≈} {D : Category lo′ la′ l≈′} {X : Category lo″ la″ l≈″}
   → Functor C D
   → Profunctor X C D
-Functor→Profunctor₂ F = F Cat.∘ Cat.proj₂
+Functor→Profunctor₂ F = F Cat.∘ Cat.projr
