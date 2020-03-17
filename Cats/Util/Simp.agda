@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 module Cats.Util.Simp where
 
 open import Data.List using (List ; [] ; _∷_)

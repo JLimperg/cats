@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 module Cats.Util.Reflection where
 
 open import Reflection as Base hiding (return ; _>>_ ; _>>=_) public

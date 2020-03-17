@@ -29,7 +29,10 @@ main = do
                find always
                     (extension ==? ".agda" ||? extension ==? ".lagda")
                     srcDir
-  writeFileUTF8 outputFile $ format modules
+  writeFileUTF8 outputFile $ unlines
+    [ "{-# OPTIONS --without-K #-}"
+    , format modules
+    ]
 
 
 -- | Usage info.

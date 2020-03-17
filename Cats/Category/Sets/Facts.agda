@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K #-}
 module Cats.Category.Sets.Facts where
 
 open import Cats.Category.Sets.Facts.Exponential public using (hasExponentials)
