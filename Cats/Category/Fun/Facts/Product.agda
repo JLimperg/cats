@@ -20,7 +20,7 @@ module Build {lo la l≈ lo′ la′ l≈′}
   {{D× : HasBinaryProducts D}}
   where
 
-  infixr 2 _×_ _×′_ ⟨_,_⟩
+  infixr 2 _×_ _×′_
 
 
   private
